@@ -1,5 +1,11 @@
 <template>
-  <span class="text-red-500">test</span>
+  <router-view />
 </template>
 
-<script setup lang="ts"></script>
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
+  name: 'App'
+})
+</script>
