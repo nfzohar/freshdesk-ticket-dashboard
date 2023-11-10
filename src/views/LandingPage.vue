@@ -1,24 +1,24 @@
 <template>
-  <div class="w-screen h-screen overflow-hidden"></div>
+  <div class="w-screen h-screen overflow-hidden bg-secondary-500">
+    <div class="m-auto w-min align-middle mt-44 animate-spin">
+      <logo-icon pt-width="300" pt-height="300" class="shadow-lg rounded-full" />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import LogoIcon from '/src/components/icons/LogoIcon.vue'
 
 export default defineComponent({
   name: 'LandingPage',
 
-  computed: {
-    themePrimaryColor() {
-      return ''
-    },
-    themeSecondaryColor() {
-      return ''
-    }
-  }
+  components: { LogoIcon },
 
-  // created() {
-  //   this.$router.push('/login')
-  // }
+  created() {
+    setTimeout(() => {
+        this.$router.push('/login')
+      }, 500);
+  },
 })
 </script>
