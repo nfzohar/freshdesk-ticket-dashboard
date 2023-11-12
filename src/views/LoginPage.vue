@@ -1,28 +1,58 @@
 <template>
   <the-layout>
     <div
-      class="flex flex-col m-auto text-center w-9/12 md:w-6/12 xl:w-4/12 2xl:w-3/12 shadow-lg rounded-lg p-5 mt-16 bg-none border"
+      class="flex flex-col m-auto text-center w-9/12 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12 shadow-lg rounded-lg p-5 mt-16 bg-none border"
     >
       <logo-icon pt-width="190" pt-height="190" class="m-auto shadow-lg rounded-full" />
+      <p class="py-3 opacity-50 w-full" v-text="'Freshdesk Ticket Dashboard'" />
+      <hr class="w-full my-2" />
 
-      <p class="py-3 opacity-50 w-full" v-text="'Freshdesk Ticket Dashboard'"/>
+      <form class="block w-full bg-none">
+        <div v-if="!freshdeskDomainUrl" class="grid grid-cols-1 text-left m-auto px-1 py-2">
+          <label v-text="'Freshdesk Domain Url:'" />
+          <input
+            v-model="domainUrl"
+            type="text"
+            class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
+            :placeholder="'https://your-domain.freshdesk.com/api/v2/'"
+          />
+        </div>
 
-      <hr class="w-full my-2">
+        <div v-if="!freshdeskApiKey" class="grid grid-cols-1 text-left m-auto px-1 py-2">
+          <label v-text="'Freshdesk API Key:'" />
+          <input
+            v-model="apiKey"
+            type="text"
+            class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
+            :placeholder="'Your Freshdesk API key...'"
+          />
+        </div>
 
-      <form class="block w-full bg-none" @submit="authenticateWithFreshdesk()">
-        <template v-for="(input, i) in inputs" :key="i">
-           <div v-if="input.show" class="grid grid-cols-1 text-left m-auto py-2 px-1">
-              <label v-text="input.label" />
-              <input
-                v-model="input.value"
-                type="text"
-                class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
-                :placeholder="input.placeholder"
-              />
-            </div>
-        </template>
+        <div class="grid grid-cols-1 text-left m-auto px-1 py-2">
+          <label v-text="'E-mail:'" />
+          <input
+            v-model="email"
+            type="text"
+            class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
+            :placeholder="'john.doe@mail.com'"
+          />
+        </div>
 
-        <button class="primary-button mt-5 w-full bg-primary text-secondary py-2 px-10" v-text="'Login'" />
+        <div class="grid grid-cols-1 text-left m-auto px-1 py-2">
+          <label v-text="'Password:'" />
+          <input
+            v-model="password"
+            type="text"
+            class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
+            :placeholder="'********'"
+          />
+        </div>
+
+        <button
+          class="primary-button mt-5 w-full bg-primary text-secondary py-2 px-10"
+          v-text="'Login'"
+          @click.stop="authenticateWithFreshdesk()"
+        />
       </form>
     </div>
   </the-layout>
@@ -30,9 +60,11 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import LogoIcon from '../components/icons/LogoIcon.vue'
 import TheLayout from './TheLayout.vue'
+import ApiCall from '../helpers/APICallHelper'
 import axios from 'axios'
+import LogoIcon from '../components/icons/LogoIcon.vue'
+import { json } from 'node:stream/consumers'
 
 export default defineComponent({
   name: 'LoginPage',
@@ -41,32 +73,10 @@ export default defineComponent({
 
   data() {
     return {
-      inputs: {
-        domainUrl: {
-          show: true,
-          value: '',
-          label: 'Freshdesk Domain Url:',
-          placeholder: 'Your Freshdesk domain url...'
-        },
-        apiKey: {
-          show: true,
-          value: '',
-          label: 'Freshdesk API Key:',
-          placeholder: 'Your Freshdesk API key...'
-        },
-        email: {
-          show: true,
-          value: '',
-          label: 'E-mail:',
-          placeholder: 'john.doe@mail.com'
-        },
-        password:{
-          show: true,
-          value: '',
-          label: 'Password:',
-          placeholder: '********'
-        }
-      }
+      domainUrl: '',
+      apiKey: '',
+      email: '',
+      password: ''
     }
   },
 
@@ -79,20 +89,40 @@ export default defineComponent({
     }
   },
 
-  mounted(){
-    if(this.freshdeskDomainUrl){
-      this.inputs.domainUrl.value = this.freshdeskDomainUrl
-      this.inputs.domainUrl.show = false
+  watch: {
+    domainUrl() {
+      this.$store.$state.domainUrl = this.domainUrl
+    },
+    apiKey() {
+      this.$store.$state.apiKey = this.apiKey
     }
-    if(this.freshdeskApiKey){
-      this.inputs.apiKey.value = this.freshdeskApiKey
-      this.inputs.apiKey.show = false
+  },
+
+  created() {
+    if (this.freshdeskDomainUrl) {
+      this.domainUrl = this.freshdeskDomainUrl
+    }
+    if (this.freshdeskApiKey) {
+      this.apiKey = this.freshdeskApiKey
     }
   },
 
   methods: {
     authenticateWithFreshdesk() {
-      axios.get('google')
+      this.performCall('tickets/1320')
+    },
+
+    performCall(path) {
+      axios
+        .get(this.freshdeskDomainUrl + path, {
+          auth: {
+            username: 'TkKD2GRNNL8SWWxm5ovz',
+            password: 'X'
+          }
+        })
+        .then((response) => {
+          console.log(response)
+        })
     }
   }
 })
