@@ -1,13 +1,10 @@
 import axios from 'axios'
+import { Store } from '@/stores'
 
 export default class ApiCall {
-  protected freshdeskDomainUrl = ''
-  protected freshdeskApiKey = ''
+  protected freshdeskDomainUrl = Store().domain
 
-  constructor() {
-    this.freshdeskDomainUrl = this.$store.$state.domainUrl
-    this.freshdeskApiKey = this.$store.$state.apiKey
-  }
+  protected freshdeskApiKey = Store().api_key
 
   get(path: string) {
     return this.performCall('get', path)
@@ -25,7 +22,7 @@ export default class ApiCall {
     return new this().post(path, data)
   }
 
-  performCall(
+  async performCall(
     method: string,
     path: string,
     params: Object = [],
@@ -33,9 +30,11 @@ export default class ApiCall {
   ) {
     const config = {
       method: method,
-      url: this.freshdeskDomainUrl + path,
+      auth: {
+        username: this.freshdeskApiKey,
+        password: 'X'
+      },
       headers: {
-        Authorization: 'Bearer ' + this.freshdeskApiKey,
         'Content-Type': typeOfContent
       },
       params: params
@@ -43,15 +42,14 @@ export default class ApiCall {
 
     let result = []
 
-    axios(config)
+    await axios(this.freshdeskDomainUrl + path, config)
       .then((response) => {
         result = response
       })
       .catch((error) => {
         console.error(error)
       })
-      .finally(() => {
-        return result
-      })
+
+    return result
   }
 }

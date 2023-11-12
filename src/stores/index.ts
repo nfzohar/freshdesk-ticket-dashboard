@@ -2,17 +2,32 @@ import { defineStore } from 'pinia'
 
 export const Store = defineStore('default', {
   state: () => ({
-    authToken: '',
+    auth: false,
     domainURL: '',
-    apiKey: '',
-    user: {
-      username: '',
-      password: ''
-    },
-    auth: false
+    apiKey: ''
   }),
 
+  getters: {
+    authenticated(): Boolean {
+      return this.auth
+    },
+    domain(): String {
+      return this.domainURL
+    },
+    api_key(): String {
+      return this.apiKey
+    }
+  },
+
   actions: {
-    authenticateUser() {}
+    canAuthenticate(correctCredentials) {
+      this.auth = correctCredentials
+    },
+    setNewDomainUrl(newDomainUrl) {
+      this.domainURL = newDomainUrl
+    },
+    setNewApiKey(newApiKey) {
+      this.apiKey = newApiKey
+    }
   }
 })

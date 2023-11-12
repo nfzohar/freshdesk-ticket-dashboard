@@ -1,35 +1,51 @@
 <template>
-  <span v-text="'This is a Dashboard.'" />
+  <the-layout>
+    <div class="flex flex-col">
+      <div class="w-full px-24 border-2 border-primary m-auto">
+        <span
+          v-for="(ticket, t) in tickets"
+          :key="t"
+          class="block m-auto border p-2"
+          v-text="ticket.subject"
+        />
+      </div>
+    </div>
+  </the-layout>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import TheLayout from './TheLayout.vue'
+import ApiCall from '@/helpers/APICallHelper'
 
 export default defineComponent({
   name: 'TheDashboard',
 
-  props: {
-    customClass: {
-      type: String,
-      required: false,
-      default: 'text-sm w-auto text-left text-primary'
-    }
-  },
+  components: { TheLayout },
 
   emits: [],
 
   data() {
-    return {}
+    return {
+      tickets: ['1']
+    }
   },
 
-  computed: {},
+  created() {
+    if (!this.$store.authenticated) {
+      this.$router.push('/')
+    }
+  },
 
-  watch: {},
+  mounted() {
+    this.loadTickets()
+  },
 
-  created() {},
-
-  mounted() {},
-
-  methods: {}
+  methods: {
+    loadTickets() {
+      this.tickets = ApiCall.get('tickets')
+      console.log(this.tickets)
+    }
+  }
 })
 </script>

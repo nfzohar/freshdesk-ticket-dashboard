@@ -7,7 +7,7 @@
       <p class="py-3 opacity-50 w-full" v-text="'Freshdesk Ticket Dashboard'" />
       <hr class="w-full my-2" />
 
-      <form class="block w-full bg-none">
+      <div class="block w-full bg-none">
         <div v-if="!freshdeskDomainUrl" class="grid grid-cols-1 text-left m-auto px-1 py-2">
           <label v-text="'Freshdesk Domain Url:'" />
           <input
@@ -15,6 +15,7 @@
             type="text"
             class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
             :placeholder="'https://your-domain.freshdesk.com/api/v2/'"
+            autofocus
           />
         </div>
 
@@ -28,32 +29,42 @@
           />
         </div>
 
-        <div class="grid grid-cols-1 text-left m-auto px-1 py-2">
-          <label v-text="'E-mail:'" />
-          <input
-            v-model="email"
-            type="text"
-            class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
-            :placeholder="'john.doe@mail.com'"
+        <template v-if="freshdeskDomainUrl && freshdeskApiKey">
+          <span
+            v-if="!userCredentialsSet"
+            class="block font-semibold my-3"
+            v-text="'Credentials not set in environment file!'"
           />
-        </div>
 
-        <div class="grid grid-cols-1 text-left m-auto px-1 py-2">
-          <label v-text="'Password:'" />
-          <input
-            v-model="password"
-            type="text"
-            class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
-            :placeholder="'********'"
-          />
-        </div>
+          <section v-else @keydown.enter="authenticate()">
+            <div class="grid grid-cols-1 text-left m-auto px-1 py-2">
+              <label v-text="'Username:'" />
+              <input
+                v-model="username"
+                type="text"
+                class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
+                :placeholder="'john.doe@mail.com'"
+                autofocus
+              />
+            </div>
+            <div class="grid grid-cols-1 text-left m-auto px-1 py-2">
+              <label v-text="'Password:'" />
+              <input
+                v-model="password"
+                type="password"
+                class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
+                :placeholder="'********'"
+              />
+            </div>
+          </section>
+        </template>
 
         <button
           class="primary-button mt-5 w-full bg-primary text-secondary py-2 px-10"
           v-text="'Login'"
-          @click.stop="authenticateWithFreshdesk()"
+          @click.stop="authenticate()"
         />
-      </form>
+      </div>
     </div>
   </the-layout>
 </template>
@@ -61,10 +72,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import TheLayout from './TheLayout.vue'
-import ApiCall from '../helpers/APICallHelper'
-import axios from 'axios'
 import LogoIcon from '../components/icons/LogoIcon.vue'
-import { json } from 'node:stream/consumers'
+import { checkAuthCredentials } from '../helpers/CommonMethods'
 
 export default defineComponent({
   name: 'LoginPage',
@@ -73,10 +82,10 @@ export default defineComponent({
 
   data() {
     return {
+      username: '',
+      password: '',
       domainUrl: '',
-      apiKey: '',
-      email: '',
-      password: ''
+      apiKey: ''
     }
   },
 
@@ -86,15 +95,25 @@ export default defineComponent({
     },
     freshdeskApiKey() {
       return import.meta.env.VITE_FRESHDESK_API_KEY ?? ''
+    },
+    userCredentialsSet() {
+      return (
+        import.meta.env.VITE_ACCESS_CONTROL_USERNAME && import.meta.env.VITE_ACCESS_CONTROL_PASSWORD
+      )
     }
   },
 
   watch: {
     domainUrl() {
-      this.$store.$state.domainUrl = this.domainUrl
+      this.$store.setNewDomainUrl(this.domainUrl)
     },
     apiKey() {
-      this.$store.$state.apiKey = this.apiKey
+      this.$store.setNewApiKey(this.apiKey)
+    },
+    '$store.$state.auth'() {
+      if (this.$store.authenticated) {
+        this.$router.push('/dashboard')
+      }
     }
   },
 
@@ -107,22 +126,21 @@ export default defineComponent({
     }
   },
 
-  methods: {
-    authenticateWithFreshdesk() {
-      this.performCall('tickets/1320')
-    },
+  mounted() {
+    if (this.$store.authenticated) {
+      this.$router.push('/dashboard')
+    }
+  },
 
-    performCall(path) {
-      axios
-        .get(this.freshdeskDomainUrl + path, {
-          auth: {
-            username: 'TkKD2GRNNL8SWWxm5ovz',
-            password: 'X'
-          }
-        })
-        .then((response) => {
-          console.log(response)
-        })
+  methods: {
+    authenticate() {
+      if (this.userCredentialsSet) {
+        checkAuthCredentials(this.username, this.password)
+      } else {
+        if (this.$store.domain && this.$store.api_key) {
+          this.$router.push('/dashboard')
+        }
+      }
     }
   }
 })
