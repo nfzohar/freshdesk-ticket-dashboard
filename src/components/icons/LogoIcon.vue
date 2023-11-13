@@ -1,5 +1,5 @@
 <template>
-  <div class="border border-primary bg-secondary-500">
+  <div class="border border-primary-500 bg-secondary-500">
     <svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +78,7 @@ export default defineComponent({
   computed: {
     themePrimaryColor() {
       return import.meta.env.VITE_THEME_PRIMARY_COLOR ?? '#00bf63'
-    },
-  },
+    }
+  }
 })
 </script>

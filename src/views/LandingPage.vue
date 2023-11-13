@@ -17,8 +17,8 @@ export default defineComponent({
 
   created() {
     setTimeout(() => {
-        this.$router.push('/login')
-      }, 500);
-  },
+      this.$router.push('/login')
+    }, 500)
+  }
 })
 </script>

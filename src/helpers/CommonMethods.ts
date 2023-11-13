@@ -25,3 +25,26 @@ export function checkAuthCredentials(username: String, password: String) {
 
   Store().canAuthenticate(authenticationSuccess)
 }
+
+// src(modified): https://gist.github.com/krabs-github/ec56e4f1c12cddf86ae9c551aa9d9e04
+export function colorIsDark(color: String) {
+  let r, g, b, hsp
+
+  if (color.match(/^rgb/)) {
+    let colorAsRGB = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/)
+
+    r = colorAsRGB[1]
+    g = colorAsRGB[2]
+    b = colorAsRGB[3]
+  } else {
+    let colorAsHex = +('0x' + color.slice(1).replace(color.length < 5 && /./g, '$&$&'))
+
+    r = colorAsHex >> 16
+    g = (colorAsHex >> 8) & 255
+    b = colorAsHex & 255
+  }
+
+  hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
+
+  return !(hsp > 127.5)
+}

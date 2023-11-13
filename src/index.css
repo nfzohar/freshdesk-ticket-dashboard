@@ -5,6 +5,7 @@
 body {
   padding: 0;
   margin: 0;
+  @apply bg-secondary-100;
 }
 
 .primary-button {

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col bg-secondary h-screen w-screen transition-colors">
+  <div class="flex flex-col bg-secondary-500 h-screen w-screen transition-colors">
     <slot></slot>
   </div>
 </template>

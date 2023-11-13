@@ -1,11 +1,11 @@
 <template>
   <the-layout>
     <div
-      class="flex flex-col m-auto text-center w-9/12 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12 shadow-lg rounded-lg p-5 mt-16 bg-none border"
+      class="flex flex-col m-auto text-center w-9/12 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12 shadow-lg rounded-lg p-5 mt-16 bg-none border border-primary-500"
     >
       <logo-icon pt-width="190" pt-height="190" class="m-auto shadow-lg rounded-full" />
       <p class="py-3 opacity-50 w-full" v-text="'Freshdesk Ticket Dashboard'" />
-      <hr class="w-full my-2" />
+      <hr class="w-full my-2 border-primary-500" />
 
       <div class="block w-full bg-none">
         <div v-if="!freshdeskDomainUrl" class="grid grid-cols-1 text-left m-auto px-1 py-2">
@@ -13,7 +13,7 @@
           <input
             v-model="domainUrl"
             type="text"
-            class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
+            class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base text-black"
             :placeholder="'https://your-domain.freshdesk.com/api/v2/'"
             autofocus
           />
@@ -24,7 +24,7 @@
           <input
             v-model="apiKey"
             type="text"
-            class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
+            class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base text-black"
             :placeholder="'Your Freshdesk API key...'"
           />
         </div>
@@ -42,7 +42,7 @@
               <input
                 v-model="username"
                 type="text"
-                class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
+                class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base text-black"
                 :placeholder="'john.doe@mail.com'"
                 autofocus
               />
@@ -52,7 +52,7 @@
               <input
                 v-model="password"
                 type="password"
-                class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base"
+                class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base text-black"
                 :placeholder="'********'"
               />
             </div>
@@ -60,7 +60,7 @@
         </template>
 
         <button
-          class="primary-button mt-5 w-full bg-primary text-secondary py-2 px-10"
+          class="primary-button mt-5 w-full bg-primary-500 text-secondary-500 border-secondary-500 py-2 px-10"
           v-text="'Login'"
           @click.stop="authenticate()"
         />

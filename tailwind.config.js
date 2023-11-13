@@ -1,48 +1,40 @@
-function paletteColorMixer (envColor, intensity, mixWithColor) {
-  let color = '';
+require('dotenv').config()
 
-  if(envColor == 'primary'){
-    color = process.env.VITE_THEME_PRIMARY_COLOR || '#00bf63';
-  }
-  if(envColor == 'secondary'){
-    color = process.env.VITE_THEME_SECONDARY_COLOR || '#ffffff'
-  }
+const primaryColor = process.env.VITE_THEME_PRIMARY_COLOR || '#00bf63'
+const secondaryColor = process.env.VITE_THEME_SECONDARY_COLOR || '#ffffff'
 
-  if(!color){
-    return 'gainsboro';
-  }
-
-  return `color-mix(in srgb, ${color}, ` + mixWithColor + ` ${intensity * 100}%)`;
-};
+function paletteColorMixer(color, intensity, mixWithColor) {
+  return `color-mix(in srgb, ${color}, ` + mixWithColor + ` ${intensity * 100}%)`
+}
 
 module.exports = {
   purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
-  darkMode: 'class', // or 'media' or 'class'
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
-          100: paletteColorMixer('primary', 0.9, 'white'),
-          200: paletteColorMixer('primary', 0.7, 'white'),
-          300: paletteColorMixer('primary', 0.5, 'white'),
-          400: paletteColorMixer('primary', 0.3, 'white'),
-          500: process.env.VITE_THEME_PRIMARY_COLOR || '#00bf63',
-          600: paletteColorMixer('primary', 0.3, 'black'),
-          700: paletteColorMixer('primary', 0.5, 'black'),
-          800: paletteColorMixer('primary', 0.7, 'black'),
-          900: paletteColorMixer('primary', 0.9, 'black'),
+          100: paletteColorMixer(primaryColor, 0.9, 'white'),
+          200: paletteColorMixer(primaryColor, 0.7, 'white'),
+          300: paletteColorMixer(primaryColor, 0.5, 'white'),
+          400: paletteColorMixer(primaryColor, 0.3, 'white'),
+          500: primaryColor,
+          600: paletteColorMixer(primaryColor, 0.3, 'black'),
+          700: paletteColorMixer(primaryColor, 0.5, 'black'),
+          800: paletteColorMixer(primaryColor, 0.7, 'black'),
+          900: paletteColorMixer(primaryColor, 0.9, 'black')
         },
         secondary: {
-          100: paletteColorMixer('secondary', 0.9, 'white'),
-          200: paletteColorMixer('secondary', 0.7, 'white'),
-          300: paletteColorMixer('secondary', 0.5, 'white'),
-          400: paletteColorMixer('secondary', 0.3, 'white'),
-          500: process.env.VITE_THEME_SECONDARY_COLOR || '#ffffff',
-          600: paletteColorMixer('secondary', 0.3, 'black'),
-          700: paletteColorMixer('secondary', 0.5, 'black'),
-          800: paletteColorMixer('secondary', 0.7, 'black'),
-          900: paletteColorMixer('secondary', 0.9, 'black'),
-        },
+          100: paletteColorMixer(secondaryColor, 0.9, 'white'),
+          200: paletteColorMixer(secondaryColor, 0.7, 'white'),
+          300: paletteColorMixer(secondaryColor, 0.5, 'white'),
+          400: paletteColorMixer(secondaryColor, 0.3, 'white'),
+          500: secondaryColor,
+          600: paletteColorMixer(secondaryColor, 0.3, 'black'),
+          700: paletteColorMixer(secondaryColor, 0.5, 'black'),
+          800: paletteColorMixer(secondaryColor, 0.7, 'black'),
+          900: paletteColorMixer(secondaryColor, 0.9, 'black')
+        }
       }
     }
   },

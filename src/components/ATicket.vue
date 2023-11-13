@@ -1,30 +1,25 @@
 <template>
   <span v-text="'This is a new component.'" />
-  
-  <div class="flex flex-col">
-    
-
-  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: "NewComponentTemplate",
+  name: 'ATicket',
 
   props: {
     customClass: {
       type: String,
       required: false,
-      default: "text-sm w-auto text-left text-primary",
-    },
+      default: 'text-sm w-auto text-left text-primary'
+    }
   },
 
   emits: [],
 
   data() {
-    return {};
+    return {}
   },
 
   computed: {},
@@ -35,6 +30,6 @@ export default defineComponent({
 
   mounted() {},
 
-  methods: {},
-});
+  methods: {}
+})
 </script>

@@ -7,7 +7,7 @@ export default class ApiCall {
   protected freshdeskApiKey = Store().api_key
 
   get(path: string) {
-    return this.performCall('get', path)
+    return this.performApiCall('get', path)
   }
 
   static get(path: string) {
@@ -15,14 +15,14 @@ export default class ApiCall {
   }
 
   post(path: string, data: [Array, Object]) {
-    return this.performCall('post', path, data)
+    return this.performApiCall('post', path, data)
   }
 
   static post(path: string, data: [Array, Object]) {
     return new this().post(path, data)
   }
 
-  async performCall(
+  performApiCall(
     method: string,
     path: string,
     params: Object = [],
@@ -40,16 +40,14 @@ export default class ApiCall {
       params: params
     }
 
-    let result = []
-
-    await axios(this.freshdeskDomainUrl + path, config)
-      .then((response) => {
-        result = response
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-
-    return result
+    if (this.freshdeskDomainUrl) {
+      axios(this.freshdeskDomainUrl + path, config)
+        .then((response) => {
+          return response
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
   }
 }
