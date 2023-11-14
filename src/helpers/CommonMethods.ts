@@ -28,6 +28,10 @@ export function checkAuthCredentials(username: String, password: String) {
 
 // src(modified): https://gist.github.com/krabs-github/ec56e4f1c12cddf86ae9c551aa9d9e04
 export function colorIsDark(color: String) {
+  if (!color) {
+    return false
+  }
+
   let r, g, b, hsp
 
   if (color.match(/^rgb/)) {

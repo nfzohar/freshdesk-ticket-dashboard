@@ -12,6 +12,16 @@ body {
   @apply border rounded-md bg-primary-500 text-secondary-500;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* For IE, Edge, Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 .is-loading {
   position: relative;
   pointer-events: none;

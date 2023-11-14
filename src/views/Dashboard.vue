@@ -1,20 +1,19 @@
 <template>
   <the-layout>
-    <div>
-      <h1 class="p-5 text-4xl font-semibold opacity-70" v-text="'Freshdesk Ticket Dashboard'" />
-
-      <!-- <dqshboard-settings /> -->
+    <div class="flex items-center justify-between p-5">
+      <h1 class="text-4xl font-semibold opacity-70" v-text="'Freshdesk Ticket Dashboard'" />
+      <dashboard-settings />
     </div>
 
-    <div class="flex flex-col gap-y-4 w-full h-screen overflow-y-scroll px-5 pt-4">
-      <ticket-count-statistics-section />
-      <ticket-tag-statistics-section />
+    <div class="flex flex-col gap-y-5 w-full h-screen overflow-y-scroll p-5 scrollbar-hide">
+      <ticket-count-section />
 
-      <!-- <ticket-group-statistics-section /> -->
-
-      <div class="w-full px-24 border-2 border-primary m-auto">
-        <a-ticket v-for="(ticket, t) in tickets" :key="t" :ticket="ticket" />
+      <div class="grid grid-cols-2 gap-4">
+        <ticket-tags-section />
+        <ticket-groups-section />
       </div>
+
+      <ticket-list-section />
     </div>
   </the-layout>
 </template>
@@ -23,18 +22,22 @@
 import { defineComponent } from 'vue'
 import TheLayout from './TheLayout.vue'
 import ApiCall from '@/helpers/APICallHelper'
-import ATicket from '@/components/ATicket.vue'
-import TicketTagStatisticsSection from '/src/components/TicketTagStatisticsSection.vue'
-import TicketCountStatisticsSection from '/src/components/TicketCountStatisticsSection.vue'
+import TicketTagsSection from '/src/components/TicketTagsSection.vue'
+import TicketListSection from '/src/components/TicketListSection.vue'
+import TicketCountSection from '/src/components/TicketCountSection.vue'
+import TicketGroupsSection from '/src/components/TicketGroupsSection.vue'
+import DashboardSettings from '/src/components/subcomponents/DashboardSettings.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
 
   components: {
-    ATicket,
     TheLayout,
-    TicketTagStatisticsSection,
-    TicketCountStatisticsSection
+    TicketTagsSection,
+    TicketListSection,
+    DashboardSettings,
+    TicketCountSection,
+    TicketGroupsSection
   },
 
   data() {
