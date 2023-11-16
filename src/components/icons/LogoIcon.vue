@@ -77,7 +77,7 @@ export default defineComponent({
 
   computed: {
     themePrimaryColor() {
-      return import.meta.env.VITE_THEME_PRIMARY_COLOR ?? '#00bf63'
+      return import.meta.env.VITE_THEME_PRIMARY_COLOR ?? 'gray'
     }
   }
 })

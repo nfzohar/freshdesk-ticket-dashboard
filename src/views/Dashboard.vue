@@ -1,14 +1,15 @@
 <template>
   <the-layout>
-    <div class="flex items-center justify-between p-5">
-      <h1 class="text-4xl font-semibold opacity-70" v-text="'Freshdesk Ticket Dashboard'" />
+    <div class="flex items-center justify-between p-5 mb-3">
+      <h1 class="text-4xl w-auto font-semibold opacity-70" v-text="'Freshdesk Ticket Dashboard'" />
+
       <dashboard-settings />
     </div>
 
-    <div class="flex flex-col gap-y-5 w-full h-screen overflow-y-scroll p-5 scrollbar-hide">
+    <div class="flex flex-col gap-y-5 w-full h-screen overflow-y-scroll px-5 scrollbar-hide">
       <ticket-count-section />
 
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ticket-tags-section />
         <ticket-groups-section />
       </div>
@@ -20,13 +21,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import TheLayout from './TheLayout.vue'
 import ApiCall from '@/helpers/APICallHelper'
-import TicketTagsSection from '/src/components/TicketTagsSection.vue'
-import TicketListSection from '/src/components/TicketListSection.vue'
-import TicketCountSection from '/src/components/TicketCountSection.vue'
-import TicketGroupsSection from '/src/components/TicketGroupsSection.vue'
-import DashboardSettings from '/src/components/subcomponents/DashboardSettings.vue'
+import TheLayout from '@/views/TheLayout.vue'
+import DashboardSettings from '@/components/DashboardSettings.vue'
+import TicketTagsSection from '@/components/TicketTagsSection.vue'
+import TicketListSection from '@/components/TicketListSection.vue'
+import TicketCountSection from '@/components/TicketCountSection.vue'
+import TicketGroupsSection from '@/components/TicketGroupsSection.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
@@ -42,7 +43,9 @@ export default defineComponent({
 
   data() {
     return {
-      tickets: ['1']
+      tickets: [],
+      keepFetching: true,
+      startYear: new Date(import.meta.env.VITE_FRESHDESK_START_YEAR).toISOString()
     }
   },
 
@@ -53,12 +56,20 @@ export default defineComponent({
   },
 
   mounted() {
-    this.loadTickets()
+    for (let i = 1; this.keepFetching; i++) {
+      this.fetchTickets(i)
+    }
   },
 
   methods: {
-    loadTickets() {
-      this.tickets = ApiCall.get('tickets')
+    fetchTickets(i) {
+      this.tickets[i] = ApiCall.get(
+        'tickets?updated_since=' + this.startYear + '&per_page=100&page=' + i
+      )
+
+      if (!this.tickets[i]?.length) {
+        this.keepFetching = false
+      }
 
       console.log(this.tickets)
     }

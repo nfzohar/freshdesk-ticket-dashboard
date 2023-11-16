@@ -1,5 +1,7 @@
 <template>
-  <div class="flex items-center p-3 bg-primary-500 border-primary-600 border-2 rounded-md shadow-primary-700 shadow-md">
+  <div
+    class="flex items-center p-3 bg-primary-500 border-primary-600 rounded-md shadow-primary-700 shadow-md"
+  >
     <div class="w-10/12">
       <span class="block font-bold text-lg">ID: Subject</span>
       <span class="block text-base">Ticket Author</span>

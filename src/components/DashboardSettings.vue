@@ -1,11 +1,13 @@
 <template>
-  <default-tooltip>
+  <a-dialog>
     <template #trigger>
-      <span class="text-2xl cursor-pointer" v-text="'⚙️'" />
+      <span class="absolute right-5 top-5 text-2xl cursor-pointer">
+        <settings-icon />
+      </span>
     </template>
 
-    <template #body>
-      <div class="flex flex-col p-3 bg-secondary-500">
+    <template #content>
+      <div class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5">
         <h4 class="font-semibold w-full border-b mb-2" v-text="'Manage visible statistics:'" />
 
         <check-box
@@ -17,18 +19,19 @@
         />
       </div>
     </template>
-  </default-tooltip>
+  </a-dialog>
 </template>
 
 <script lang="ts">
-import CheckBox from './CheckBox.vue'
 import { defineComponent } from 'vue'
-import DefaultTooltip from '../DefaultTooltip.vue'
+import SettingsIcon from './icons/SettingsIcon.vue'
+import ADialog from '@/components/General/ADialog.vue'
+import CheckBox from '@/components/General/CheckBox.vue'
 
 export default defineComponent({
   name: 'DashboardSettings',
 
-  components: { CheckBox, DefaultTooltip },
+  components: { CheckBox, ADialog, SettingsIcon },
 
   props: {
     customClass: {

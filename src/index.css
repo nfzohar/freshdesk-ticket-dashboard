@@ -16,6 +16,10 @@ body {
   display: none;
 }
 
+.bg-linear-gradient {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
 /* For IE, Edge, Firefox */
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE, Edge */

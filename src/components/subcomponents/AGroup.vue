@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-md w-full bg-primary-500 border-secondary-600 border-2 px-3 py-2">
+  <div class="rounded-md w-full bg-primary-500 border-secondary-600 px-3 py-2">
     <span class="block font-bold">Group name</span>
     <span class="block">Ticket s in group count</span>
 

@@ -71,7 +71,6 @@ export default defineComponent({
 
   methods: {
     getTicketCounts() {
-      return ApiCall.get('tickets/all')
     }
   }
 })
