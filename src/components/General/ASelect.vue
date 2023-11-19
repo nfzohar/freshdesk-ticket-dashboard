@@ -51,7 +51,7 @@ export default defineComponent({
       default: ''
     },
     inputClass: {
-      type: String,
+      type: [String, Array],
       required: false,
       default: ''
     },

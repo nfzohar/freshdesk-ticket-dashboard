@@ -7,14 +7,14 @@
       :class="'overflow-y-scroll scrollbar-hide'"
       style="max-height: 50vh"
     >
-      <a-tag v-for="(tag, t) in tags" :key="t" :tag="[]" />
+      <a-tag v-for="(tag, t) in uniqueTags" :key="t" :tag="tag" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
-import ApiCall from '@/helpers/APICallHelper'
 import ATag from '@/components/subcomponents/ATag.vue'
 
 export default defineComponent({
@@ -22,18 +22,42 @@ export default defineComponent({
 
   components: { ATag },
 
+  props: {
+    tags: {
+      type: [Array, Object],
+      required: false,
+      default: () => {}
+    }
+  },
+
   data() {
     return {
-      tags: ['1', '2', '3']
+      uniqueTags: []
     }
   },
 
   mounted() {
-    this.getTicketGroups()
+    this.generateTagStatistics()
   },
 
   methods: {
-    getTicketGroups() {
+    generateTagStatistics() {
+      let uniqueTagList = uniq(this.tags.flat())
+
+      if (uniqueTagList.length >= 1) {
+        this.uniqueTags.push({
+          name: uniqueTagList[0],
+          ticket_count: this.tags.length
+        })
+        return
+      }
+
+      uniqueTagList.forEach((uniqueTag) => {
+        this.uniqueTags.push({
+          name: uniqueTag,
+          ticket_count: this.tags.filter((tag) => tag.includes(uniqueTag))
+        })
+      })
     }
   }
 })

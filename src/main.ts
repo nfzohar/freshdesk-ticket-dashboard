@@ -1,6 +1,6 @@
 import { createPinia } from 'pinia'
-import Tippy from 'vue-tippy'
 import { createApp } from 'vue'
+import Tippy from 'vue-tippy'
 import router from './router'
 import App from './App.vue'
 

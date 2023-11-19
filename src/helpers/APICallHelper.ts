@@ -22,7 +22,7 @@ export default class ApiCall {
     return new this().post(path, data)
   }
 
-  performApiCall(
+  async performApiCall(
     method: string,
     path: string,
     params: Object = [],
@@ -41,13 +41,15 @@ export default class ApiCall {
     }
 
     if (this.freshdeskDomainUrl) {
-      axios(this.freshdeskDomainUrl + path, config)
+      let results = await axios(this.freshdeskDomainUrl + path, config)
         .then((response) => {
-          return response
+          return response.data
         })
         .catch((error) => {
           console.error(error)
         })
+
+      return results
     }
   }
 }

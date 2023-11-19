@@ -7,16 +7,38 @@
     </template>
 
     <template #content>
-      <div class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5">
-        <h4 class="font-semibold w-full border-b mb-2" v-text="'Manage visible statistics:'" />
+      <div
+        class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
+        :class="'text-white'"
+      >
+        <div class="bg-secondary-500 z-100 w-full p-4">
+          <h1 class="w-full border-b font-bold mb-2" v-text="'Manage Dashboard Layout'" />
+          <div class="lg:grid grid-cols-3">
+            <a-checkbox
+              v-for="(section, s) in sections"
+              :key="s"
+              class="my-2"
+              :the-value="$dashboard.$state[section.state]"
+              :label="section.label"
+              @changed="(value) => ($dashboard.$state[section.state] = value)"
+            />
+          </div>
+        </div>
 
-        <check-box
-          v-for="(stat, sc) in [1, 2, 3]"
-          :key="sc"
-          :the-value="stat.show"
-          :label="stat.label"
-          @changed="(value) => (stat.show = value)"
-        />
+        <div class="flex items-center justify-between w-full">
+          <div class="bg-secondary-500 z-100 w-full p-4">
+            <h1 class="w-full border-b font-bold mb-2" v-text="'Manage visible statistics'" />
+            <div>
+              <a-checkbox
+                v-for="(section, s) in sections"
+                :key="s"
+                :the-value="$dashboard.$state[section.state]"
+                :label="section.label"
+                @changed="(value) => ($dashboard.$state[section.state] = value)"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </template>
   </a-dialog>
@@ -24,37 +46,40 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import SettingsIcon from './icons/SettingsIcon.vue'
 import ADialog from '@/components/General/ADialog.vue'
-import CheckBox from '@/components/General/CheckBox.vue'
+import ACheckbox from '@/components/General/ACheckbox.vue'
+import SettingsIcon from '@/components/icons/SettingsIcon.vue'
 
 export default defineComponent({
   name: 'DashboardSettings',
 
-  components: { CheckBox, ADialog, SettingsIcon },
-
-  props: {
-    customClass: {
-      type: String,
-      required: false,
-      default: 'text-sm w-auto text-left text-primary'
-    }
-  },
-
-  emits: [],
+  components: { ACheckbox, ADialog, SettingsIcon },
 
   data() {
-    return {}
-  },
-
-  computed: {},
-
-  watch: {},
-
-  created() {},
-
-  mounted() {},
-
-  methods: {}
+    return {
+      sections: [
+        {
+          state: 'ticket_counts',
+          label: 'Count of tickets Statistics'
+        },
+        {
+          state: 'tags',
+          label: 'Tags section'
+        },
+        {
+          state: 'groups',
+          label: 'Groups section'
+        },
+        {
+          state: 'top_requesters',
+          label: 'Top requesters section'
+        },
+        {
+          state: 'ticket_list',
+          label: 'List of tickets'
+        }
+      ]
+    }
+  }
 })
 </script>

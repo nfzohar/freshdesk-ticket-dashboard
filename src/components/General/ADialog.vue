@@ -8,14 +8,15 @@
       class="bg-opacity-50 bg-secondary-500 w-screen h-screen -mt-10"
       :open="open"
       @close="closeDialog"
+      @keydown.esc="closeDialog"
     >
-      <div class="absolute z-1000 right-10 top-10 cursor-pointer" @click="closeDialog">
-        <span class="bg-secondary-500 border-primary-500 border rounded-md w-10 h-10 p-1">
+      <div class="absolute right-0 top-10 cursor-pointer" @click="closeDialog">
+        <div class="mx-5 -mt-5 bg-secondary-500 border border-primary-500 rounded-md">
           <cross-icon />
-        </span>
+        </div>
       </div>
 
-      <div class="m-auto w-11/12 pt-10 h-full opacity-1 rounded-md">
+      <div class="m-auto w-12/12 pt-10 h-full opacity-1 rounded-md z-10">
         <slot :name="'content'" />
       </div>
     </dialog>
@@ -30,14 +31,6 @@ export default defineComponent({
   name: 'ADialog',
 
   components: { CrossIcon },
-
-  props: {
-    customClass: {
-      type: String,
-      required: false,
-      default: 'text-sm w-auto text-left text-primary'
-    }
-  },
 
   data() {
     return {

@@ -6,10 +6,10 @@
     <div
       v-for="(stat, s) in visibleStatistics"
       :key="s"
-      class="rounded-md border border-primary-500 shadow-md shadow-primary-600 bg-primary-500 px-10 py-5 w-full md:w-2/12 text-center"
+      class="rounded-md border border-primary-500 shadow-md shadow-primary-600 bg-primary-500 px-10 py-5 w-full md:w-2/12 text-center z-9"
     >
       <h1 class="text-7xl font-bold w-full" v-text="stat.count" />
-      <label class="font-bold opacity-50 w-full" v-text="stat.label" />
+      <label class="font-bold opacity-50 w-full z-8" v-text="stat.label" />
     </div>
   </div>
   <span
@@ -21,7 +21,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import ApiCall from '@/helpers/APICallHelper'
 
 export default defineComponent({
   name: 'TicketStatisticsSection',
@@ -70,8 +69,7 @@ export default defineComponent({
   },
 
   methods: {
-    getTicketCounts() {
-    }
+    getTicketCounts() {}
   }
 })
 </script>

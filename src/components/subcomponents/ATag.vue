@@ -1,9 +1,11 @@
 <template>
-  <div class="rounded-md w-full bg-primary-500 border-secondary-600 px-3 py-2">
-    <span class="block font-bold">Tag name</span>
-    <span class="block">Ticket s in tag count</span>
+  <div class="flex flex-col rounded-md w-full bg-primary-500 border-secondary-600 px-3 py-2">
+    <span class="font-bold" v-text="name" />
 
-    <span class="block">Latets Ticket with tag count</span>
+    <span class="text-sm">
+      <span class="font-semibold" v-text="'Count of tickets: '" />
+      <span v-text="ticketCount" />
+    </span>
   </div>
 </template>
 
@@ -21,18 +23,13 @@ export default defineComponent({
     }
   },
 
-  data() {
-    return {}
-  },
-
-  computed: {},
-
-  watch: {},
-
-  created() {},
-
-  mounted() {},
-
-  methods: {}
+  computed: {
+    name() {
+      return this.tag?.name
+    },
+    ticketCount() {
+      return this.tag?.ticket_count ?? 0
+    }
+  }
 })
 </script>

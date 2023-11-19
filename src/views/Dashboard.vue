@@ -1,20 +1,20 @@
 <template>
-  <the-layout>
-    <div class="flex items-center justify-between p-5 mb-3">
+  <the-layout :key="updateToken">
+    <div class="flex items-center justify-between p-5 mb-3 bg-transparent">
       <h1 class="text-4xl w-auto font-semibold opacity-70" v-text="'Freshdesk Ticket Dashboard'" />
-
       <dashboard-settings />
     </div>
 
     <div class="flex flex-col gap-y-5 w-full h-screen overflow-y-scroll px-5 scrollbar-hide">
-      <ticket-count-section />
+      <ticket-count-section v-if="layout.ticket_counts" />
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <ticket-tags-section />
-        <ticket-groups-section />
+      <div class="flex flex-col md:flex-row items-start gap-4">
+        <ticket-tags-section v-if="layout.tags" :tags="allTicketTags" />
+        <ticket-groups-section v-if="layout.groups" :groups="groups" />
       </div>
 
-      <ticket-list-section />
+      <ticket-filter-section />
+      <ticket-list-section v-if="layout.ticket_list" :tickets-list="allTickets" />
     </div>
   </the-layout>
 </template>
@@ -28,6 +28,7 @@ import TicketTagsSection from '@/components/TicketTagsSection.vue'
 import TicketListSection from '@/components/TicketListSection.vue'
 import TicketCountSection from '@/components/TicketCountSection.vue'
 import TicketGroupsSection from '@/components/TicketGroupsSection.vue'
+import TicketFilterSection from '@/components/TicketFilterSection.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
@@ -38,14 +39,30 @@ export default defineComponent({
     TicketListSection,
     DashboardSettings,
     TicketCountSection,
-    TicketGroupsSection
+    TicketGroupsSection,
+    TicketFilterSection
   },
 
   data() {
     return {
+      tags: [],
+      groups: [],
       tickets: [],
+      updateToken: 0,
       keepFetching: true,
       startYear: new Date(import.meta.env.VITE_FRESHDESK_START_YEAR).toISOString()
+    }
+  },
+
+  computed: {
+    layout() {
+      return this.$dashboard.$state.layout
+    },
+    allTickets() {
+      return this.tickets.flat()
+    },
+    allTicketTags() {
+      return this.allTickets.map((ticket) => ticket.tags)
     }
   },
 
@@ -55,23 +72,49 @@ export default defineComponent({
     }
   },
 
-  mounted() {
-    for (let i = 1; this.keepFetching; i++) {
-      this.fetchTickets(i)
+  watch: {
+    'allTickets.length'() {
+      this.updateToken++
     }
   },
 
+  async mounted() {
+    //for (let i = 1; this.keepFetching; i++) {
+    await this.fetchTickets(1)
+    //}
+
+    this.getTicketGroups()
+  },
+
   methods: {
-    fetchTickets(i) {
-      this.tickets[i] = ApiCall.get(
-        'tickets?updated_since=' + this.startYear + '&per_page=100&page=' + i
+    async fetchTickets(i) {
+      await ApiCall.get('tickets?updated_since=' + this.startYear + '&per_page=100&page=' + i).then(
+        (response) => {
+          this.tickets[i] = Object.values(response)
+        }
       )
 
       if (!this.tickets[i]?.length) {
         this.keepFetching = false
       }
+    },
 
-      console.log(this.tickets)
+    async getTicketGroups() {
+      let groupsList = []
+
+      await ApiCall.get('groups?per_page=100').then((response) => {
+        Object.values(response).forEach((group) => {
+          let aGroup = group
+
+          aGroup['ticket_count'] = this.allTickets.filter(
+            (ticket) => ticket.group_id == group.id
+          ).length
+
+          groupsList.push(aGroup)
+        })
+      })
+
+      this.groups = groupsList
     }
   }
 })
