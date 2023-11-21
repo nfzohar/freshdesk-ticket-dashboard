@@ -2,14 +2,15 @@
   <div
     :key="visibleStatistics?.length"
     class="grid grid-cols-2 md:flex items-center flex-col md:flex-row gap-2 justify-between w-full rounded-md px-10"
+    style="max-height: 40%"
   >
     <div
       v-for="(stat, s) in visibleStatistics"
       :key="s"
-      class="rounded-md border border-primary-500 shadow-md shadow-primary-600 bg-primary-500 px-10 py-5 w-full md:w-2/12 text-center z-9"
+      class="block rounded-md border border-primary-500 shadow-md shadow-primary-600 bg-primary-500 px-10 py-5 w-full md:w-2/12"
     >
-      <h1 class="text-7xl font-bold w-full" v-text="stat.count" />
-      <label class="font-bold opacity-50 w-full z-8" v-text="stat.label" />
+      <h1 class="block text-7xl font-bold w-full text-center" v-text="stat.count" />
+      <label class="block font-bold opacity-50 w-full text-center" v-text="stat.label" />
     </div>
   </div>
   <span
@@ -25,14 +26,21 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   name: 'TicketStatisticsSection',
 
+  props: {
+    tickets: {
+      type: [Object, Array],
+      required: true,
+      default: () => []
+    }
+  },
+
   data() {
     return {
-      tickets: [],
       statistics: [
         {
           show: true,
           label: 'All',
-          count: 0
+          count: this.tickets.length
         },
         {
           show: true,

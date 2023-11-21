@@ -18,7 +18,7 @@
           <span class="text-base" v-text="requester" />
         </div>
 
-        <div class="flex items-center gap-x-1">
+        <div class="flex items-center gap-x-1 mt-2">
           <span class="font-semibold" v-text="'Tags:'" />
           <span v-text="tags" />
         </div>
@@ -61,7 +61,7 @@ export default defineComponent({
       return this.theTicket?.type ?? 'Ticket'
     },
     requester() {
-      return this.theTicket?.requester_id ?? 'Not set'
+      return this.theTicket?.requester.name?? 'Not set'
     },
     tags() {
       if (this.theTicket?.tags.length) {

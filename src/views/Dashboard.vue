@@ -1,19 +1,33 @@
 <template>
+  <!-- :class="{ 'animate-pulse': isLoading }" -->
   <the-layout :key="updateToken">
     <div class="flex items-center justify-between p-5 mb-3 bg-transparent">
       <h1 class="text-4xl w-auto font-semibold opacity-70" v-text="'Freshdesk Ticket Dashboard'" />
       <dashboard-settings />
+      <div class="flex flex-col gap-y-5 w-full px-5">
+        <ticket-filter-section />
+      </div>
     </div>
 
     <div class="flex flex-col gap-y-5 w-full h-screen overflow-y-scroll px-5 scrollbar-hide">
-      <ticket-count-section v-if="layout.ticket_counts" />
+      <ticket-filter-section />
+
+      <ticket-count-section v-if="layout.ticket_counts" :tickets="allTickets" />
 
       <div class="flex flex-col md:flex-row items-start gap-4">
+        <ticket-custom-field-section
+          :tickets="allTickets"
+          custom-field="'type'"
+          title="Ticket types"
+        />
         <ticket-tags-section v-if="layout.tags" :tags="allTicketTags" />
         <ticket-groups-section v-if="layout.groups" :groups="groups" />
       </div>
 
-      <ticket-filter-section />
+      <div class="flex flex-col md:flex-row items-start gap-4">
+        <top-requesters-section :tickets="allTickets" />
+      </div>
+
       <ticket-list-section v-if="layout.ticket_list" :tickets-list="allTickets" />
     </div>
   </the-layout>
@@ -29,6 +43,8 @@ import TicketListSection from '@/components/TicketListSection.vue'
 import TicketCountSection from '@/components/TicketCountSection.vue'
 import TicketGroupsSection from '@/components/TicketGroupsSection.vue'
 import TicketFilterSection from '@/components/TicketFilterSection.vue'
+import TopRequestersSection from '@/components/TopRequestersSection.vue'
+import TicketCustomFieldSection from '@/components/TicketCustomFieldSection.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
@@ -40,7 +56,9 @@ export default defineComponent({
     DashboardSettings,
     TicketCountSection,
     TicketGroupsSection,
-    TicketFilterSection
+    TicketFilterSection,
+    TopRequestersSection,
+    TicketCustomFieldSection
   },
 
   data() {
@@ -49,6 +67,7 @@ export default defineComponent({
       groups: [],
       tickets: [],
       updateToken: 0,
+      isLoading: false,
       keepFetching: true,
       startYear: new Date(import.meta.env.VITE_FRESHDESK_START_YEAR).toISOString()
     }
@@ -80,19 +99,25 @@ export default defineComponent({
 
   async mounted() {
     //for (let i = 1; this.keepFetching; i++) {
+    //  await this.fetchTickets(i)
     await this.fetchTickets(1)
+    //  setTimeout(() => {}, 3000)
     //}
 
-    this.getTicketGroups()
+    //this.getTicketGroups()
+
+    if (!this.keepFetching) {
+      this.isLoading = false
+    }
   },
 
   methods: {
     async fetchTickets(i) {
-      await ApiCall.get('tickets?updated_since=' + this.startYear + '&per_page=100&page=' + i).then(
-        (response) => {
-          this.tickets[i] = Object.values(response)
-        }
-      )
+      await ApiCall.get(
+        'tickets?updated_since=' + this.startYear + '&per_page=100&page=' + i + '&include=requester'
+      ).then((response) => {
+        this.tickets[i] = Object.values(response)
+      })
 
       if (!this.tickets[i]?.length) {
         this.keepFetching = false

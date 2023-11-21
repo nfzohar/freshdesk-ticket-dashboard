@@ -3,6 +3,7 @@
     <h1 class="text-xl font-bold opacity-40" v-text="'Tickets'" />
     <div
       class="flex flex-col gap-y-4 w-full overflow-y-scroll scrollbar-hide rounded-md shadow-md shadow-primary-600 p-3 mb-5"
+      style="max-height: 55vh"
     >
       <a-ticket v-for="(ticket, t) in ticketsList" :key="t" :the-ticket="ticket" />
     </div>
