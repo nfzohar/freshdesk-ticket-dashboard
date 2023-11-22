@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <h1 class="text-xl font-bold opacity-40 mb-1" v-text="'Tags'" />
+    <h1 class="text-xl font-bold mb-1" v-text="'Tags'" />
 
     <div
       class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 border-primary-800 bg-secondary-500 border rounded-md shadow-md shadow-primary-600"

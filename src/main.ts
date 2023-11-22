@@ -16,7 +16,7 @@ app.use(pinia).use(piniaPlugin)
 //Register router
 app.use(router)
 
-//Register tippyY
+//Register tippy
 app.use(Tippy, {
   defaultProps: {
     trigger: 'click',

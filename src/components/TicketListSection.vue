@@ -1,11 +1,24 @@
 <template>
   <div class="w-full">
-    <h1 class="text-xl font-bold opacity-40" v-text="'Tickets'" />
+    <div class="flex items-center justify-between">
+      <h1 class="text-xl font-bold" v-text="'Tickets'" />
+      <h1
+        class="conf-semibold"
+        :title="'Showing: ' + ticketsList.length + ' tickets'"
+        v-text="'Showing: ' + ticketsList.length"
+      />
+    </div>
+
     <div
       class="flex flex-col gap-y-4 w-full overflow-y-scroll scrollbar-hide rounded-md shadow-md shadow-primary-600 p-3 mb-5"
       style="max-height: 55vh"
     >
-      <a-ticket v-for="(ticket, t) in ticketsList" :key="t" :the-ticket="ticket" />
+      <a-ticket
+        v-for="(ticket, t) in ticketsList"
+        :key="t"
+        :the-ticket="ticket"
+        :statuses="statuses"
+      />
     </div>
   </div>
 </template>
@@ -24,29 +37,11 @@ export default defineComponent({
       type: [Array, Object],
       required: false,
       default: () => []
-    }
-  },
-
-  data() {
-    return {
-      filters: [
-        'Agents',
-        'Groups',
-        'Created at',
-        'Status',
-        'Priority',
-        'Type',
-        'Source',
-        'Tags',
-        'Companies',
-        'Contacts'
-      ]
-    }
-  },
-
-  computed: {
-    activeFilters() {
-      return !this.filters.length > 0
+    },
+    statuses: {
+      type: [Array, Object],
+      required: false,
+      default: () => []
     }
   }
 })

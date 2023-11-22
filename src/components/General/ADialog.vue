@@ -5,13 +5,13 @@
 
   <div v-if="open">
     <dialog
-      class="bg-opacity-50 bg-secondary-500 w-screen h-screen -mt-10"
+      class="bg-opacity-50 bg-secondary-500 w-screen h-screen -mt-14"
       :open="open"
       @close="closeDialog"
       @keydown.esc="closeDialog"
     >
-      <div class="absolute right-0 top-10 cursor-pointer" @click="closeDialog">
-        <div class="mx-5 -mt-5 bg-secondary-500 border border-primary-500 rounded-md">
+      <div class="absolute right-2 top-10 cursor-pointer" @click="closeDialog">
+        <div class="mx-5 bg-secondary-500 border border-primary-500 rounded-md">
           <cross-icon />
         </div>
       </div>

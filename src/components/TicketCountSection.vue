@@ -1,23 +1,19 @@
 <template>
   <div
     :key="visibleStatistics?.length"
-    class="grid grid-cols-2 md:flex items-center flex-col md:flex-row gap-2 justify-between w-full rounded-md px-10"
-    style="max-height: 40%"
+    class="grid gap-5 w-full rounded-md px-10"
+    :class="'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-' + visibleStatistics.length"
   >
     <div
-      v-for="(stat, s) in visibleStatistics"
+      v-for="(stat, s) in statistics"
       :key="s"
-      class="block rounded-md border border-primary-500 shadow-md shadow-primary-600 bg-primary-500 px-10 py-5 w-full md:w-2/12"
+      class="block rounded-md border border-primary-500 shadow-md shadow-primary-600 bg-primary-500 py-5 w-full text-center font-bold"
     >
-      <h1 class="block text-7xl font-bold w-full text-center" v-text="stat.count" />
-      <label class="block font-bold opacity-50 w-full text-center" v-text="stat.label" />
+      <span class="block text-7xl w-full" v-text="stat.ticket_count" />
+      {{ stat.label }}
     </div>
   </div>
-  <span
-    v-if="!visibleStatistics.length"
-    class="opacity-50"
-    v-text="'No statistic data selected.'"
-  />
+  <span v-if="!visibleStatistics.length" v-text="'No statistic data selected.'" />
 </template>
 
 <script lang="ts">
@@ -31,6 +27,11 @@ export default defineComponent({
       type: [Object, Array],
       required: true,
       default: () => []
+    },
+    statusOptions: {
+      type: [Object, Array],
+      required: true,
+      default: () => []
     }
   },
 
@@ -40,27 +41,7 @@ export default defineComponent({
         {
           show: true,
           label: 'All',
-          count: this.tickets.length
-        },
-        {
-          show: true,
-          label: 'Open',
-          count: 0
-        },
-        {
-          show: false,
-          label: 'Resolved',
-          count: 0
-        },
-        {
-          show: true,
-          label: 'Closed',
-          count: 0
-        },
-        {
-          show: false,
-          label: 'Unassigned',
-          count: 0
+          ticket_count: this.tickets.length
         }
       ]
     }
@@ -73,11 +54,15 @@ export default defineComponent({
   },
 
   mounted() {
-    this.getTicketCounts()
-  },
+    if (this.statusOptions) {
+      this.statusOptions?.forEach((option) => {
+        let anOption = option
 
-  methods: {
-    getTicketCounts() {}
+        anOption['ticket_count'] = this.tickets.filter(ticket.status == option.id)
+
+        this.statistics.push(anOption)
+      })
+    }
   }
 })
 </script>

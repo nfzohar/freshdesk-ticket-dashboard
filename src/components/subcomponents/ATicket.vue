@@ -27,7 +27,7 @@
       <div class="w-2/12">
         <span
           class="block w-max m-auto font-bold bg-primary-600 border-secondary-400 rounded-md px-2 py-1"
-          v-text="status"
+          v-text="statusName(status)"
         />
       </div>
     </div>
@@ -43,6 +43,11 @@ export default defineComponent({
   props: {
     theTicket: {
       type: String,
+      required: false,
+      default: () => {}
+    },
+    statuses: {
+      type: [Array, Object],
       required: false,
       default: () => {}
     }
@@ -61,7 +66,7 @@ export default defineComponent({
       return this.theTicket?.type ?? 'Ticket'
     },
     requester() {
-      return this.theTicket?.requester.name?? 'Not set'
+      return this.theTicket?.requester.name ?? 'Not set'
     },
     tags() {
       if (this.theTicket?.tags.length) {
@@ -71,6 +76,16 @@ export default defineComponent({
     },
     status() {
       return this.theTicket?.status
+    }
+  },
+
+  methods: {
+    statusName(id) {
+      this.statuses?.forEach((status) => {
+        if (status.id == id) {
+          return status?.label
+        }
+      })
     }
   }
 })

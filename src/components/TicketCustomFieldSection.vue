@@ -1,9 +1,8 @@
 <template>
-  <div class="w-full">
-    <h1 class="text-xl font-bold opacity-40 mb-1 z-7" v-text="title" />
+  <div class="w-full" :key="tickets.length">
+    <h1 class="text-xl font-bold mb-1 z-7" v-text="title" />
 
     <div
-      :key="uniqueFields.length"
       class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 overflow-y-scroll scrollbar-hide"
       :class="'border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600'"
       style="max-height: 50vh"
@@ -47,7 +46,8 @@ export default defineComponent({
 
   data() {
     return {
-      uniqueFields: Array()
+      uniqueFields: Array(),
+      isLoading: true
     }
   },
 
@@ -63,25 +63,33 @@ export default defineComponent({
 
   methods: {
     generateCustomFieldStatistics() {
+      this.uniqueFields = []
+
       let customFields = this.tickets.map((ticket) => ticket[this.customField])
       let uniqueFieldsList = uniq(customFields)
 
-      console.log(uniqueFieldsList)
-
       if (uniqueFieldsList.length == 1) {
         this.uniqueFields.push({
-          name: uniqueFieldsList[0],
-          ticket_count: this.customFields.length
+          name: uniqueFieldsList[0] ?? 'Undefined',
+          ticket_count: this.customFields?.length
         })
-        return
+      } else {
+        uniqueFieldsList.forEach((uniqueCustomField) => {
+          if (uniqueCustomField) {
+            this.uniqueFields.push({
+              name: uniqueCustomField,
+              ticket_count: customFields.filter((field) => field == uniqueCustomField).length
+            })
+          }
+        })
+
+        this.uniqueFields.push({
+          name: 'Undefined',
+          ticket_count: customFields.filter((customField) => !customField).length
+        })
       }
 
-      uniqueFieldsList.forEach((uniqueCustomFIeld) => {
-        this.uniqueFields.push({
-          name: uniqueCustomFIeld,
-          ticket_count: this.customFields.filter((field) => field == uniqueCustomFIeld)
-        })
-      })
+      this.isLoading = false
     }
   }
 })

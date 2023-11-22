@@ -1,14 +1,12 @@
 <template>
   <a-dialog>
     <template #trigger>
-      <span class="absolute right-5 top-5 text-2xl cursor-pointer">
-        <settings-icon />
-      </span>
+      <settings-icon class="cursor-pointer" />
     </template>
 
     <template #content>
       <div
-        class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
+        class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5 mt-10"
         :class="'text-white'"
       >
         <div class="bg-secondary-500 z-100 w-full p-4">

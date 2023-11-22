@@ -9,7 +9,7 @@ body {
 }
 
 .primary-button {
-  @apply border rounded-md bg-primary-500 text-secondary-500;
+  @apply border rounded-md bg-primary-500;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -37,7 +37,6 @@ body {
 }
 
 .is-loading:before {
-  @apply bg-gray-50;
   position: absolute;
   content: '';
   top: 0;
@@ -47,23 +46,29 @@ body {
   border-radius: 0.28571429rem;
   z-index: 100;
   opacity: 0.8;
+  @apply bg-secondary-500;
 }
 
 .is-loading:after {
   content: '';
-  box-sizing: border-box;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 26px;
-  height: 26px;
-  margin-top: -13px;
-  margin-left: -13px;
+  top: 1%;
+  left: 1%;
+  right: 1%;
+  bottom: 1%;
+  margin: auto;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
-  border-top: 2px solid #767676;
-  border-right: 2px solid transparent;
+  border-top: 30px solid #767676;
+  border-bottom: 30px solid #767676;
+
+  border-right: 30px solid transparent;
+  border-left: 30px solid transparent;
   animation: spinner 0.6s linear infinite;
   z-index: 101;
+
+  @apply border-y-primary-500;
 }
 
 @keyframes spinner {

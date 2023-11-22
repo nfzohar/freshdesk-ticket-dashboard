@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <h1 class="text-xl font-bold opacity-40 mb-1" v-text="'Top requesters'" />
+    <h1 class="text-xl font-bold mb-1" v-text="'Top ' + topListCount + ' requesters'" />
 
     <div
       :key="tickets.length"
@@ -8,24 +8,25 @@
       :class="'overflow-y-scroll scrollbar-hide'"
       style="max-height: 50vh"
     >
-      <a-custom-field
-        v-for="(customField, c) in topRequesters"
-        :key="c"
-        :custom-field="customField"
+      <a-top-requester
+        v-for="(topRequester, t) in topRequesters"
+        :key="t"
+        :position="t"
+        :requester="topRequester"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
-import ACustomField from '@/components/subcomponents/ACustomField.vue'
+import { groupBy, uniqBy } from 'lodash'
+import ATopRequester from '@/components/subcomponents/ATopRequester.vue'
 
 export default defineComponent({
   name: 'TopRequestersSection',
 
-  components: { ACustomField },
+  components: { ATopRequester },
 
   props: {
     tickets: {
@@ -70,7 +71,8 @@ export default defineComponent({
       this.topRequesters = this.topRequesters.sort(
         (tr1, tr2) => tr2?.ticket_count - tr1?.ticket_count
       )
-      this.topRequesters = this.topRequesters.slice(0, this.topListCount)
+
+      this.topRequesters = uniqBy(this.topRequesters, 'name').slice(0, this.topListCount)
     }
   }
 })

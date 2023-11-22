@@ -1,6 +1,7 @@
 <template>
   <div class="border border-primary-500 bg-secondary-500">
     <svg
+      class="fill-primary-500"
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
       :width="ptWidth + 'pt'"
@@ -9,11 +10,7 @@
       preserveAspectRatio="xMidYMid meet"
     >
       <metadata>FTD, Created at 9-11-2023</metadata>
-      <g
-        transform="translate(0.000000,1097.000000) scale(0.100000,-0.100000)"
-        :fill="themePrimaryColor"
-        stroke="none"
-      >
+      <g transform="translate(0.000000,1097.000000) scale(0.100000,-0.100000)" stroke="none">
         <path
           d="M5190 10727 c-3 -3 -54 -8 -115 -11 -210 -14 -524 -62 -778 -121
 -586 -135 -1169 -384 -1672 -712 -71 -47 -131 -89 -133 -94 -2 -5 -8 -9 -13
@@ -72,12 +69,6 @@ export default defineComponent({
       type: String,
       required: false,
       default: '100'
-    }
-  },
-
-  computed: {
-    themePrimaryColor() {
-      return import.meta.env.VITE_THEME_PRIMARY_COLOR ?? 'gray'
     }
   }
 })

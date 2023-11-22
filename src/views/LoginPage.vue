@@ -60,7 +60,7 @@
         </template>
 
         <button
-          class="primary-button mt-5 w-full bg-primary-500 text-secondary-500 border-secondary-500 py-2 px-10"
+          class="primary-button mt-5 w-full bg-primary-500 hover:bg-primary-600 text-secondary-500 border-secondary-500 py-2 px-10"
           v-text="'Login'"
           @click.stop="authenticate()"
         />

@@ -1,8 +1,7 @@
 <template>
   <svg
-    class="cursor-pointer"
+    class="fill-primary-500 cursor-pointer"
     style="vertical-align: middle"
-    :fill="themePrimaryColor"
     :height="ptWidth"
     :width="ptHeight"
     viewBox="0 0 1024 1024"
@@ -31,12 +30,6 @@ export default defineComponent({
       type: String,
       required: false,
       default: '20pt'
-    }
-  },
-
-  computed: {
-    themePrimaryColor() {
-      return import.meta.env.VITE_THEME_PRIMARY_COLOR
     }
   }
 })
