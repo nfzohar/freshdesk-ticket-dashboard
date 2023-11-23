@@ -1,8 +1,14 @@
 <template>
   <div class="w-full">
-    <h1 class="text-xl font-bold mb-1" v-text="'Tags'" />
+    <h1
+      class="text-xl font-bold mb-1 cursor-pointer"
+      :class="{'border-l-4 pl-2 border-primary-400' : !showSection}"
+      v-text="'Tags'"
+      @click.stop="showSection = !showSection"
+    />
 
     <div
+      v-if="showSection"
       class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 border-primary-800 bg-secondary-500 border rounded-md shadow-md shadow-primary-600"
       :class="'overflow-y-scroll scrollbar-hide'"
       style="max-height: 50vh"
@@ -23,7 +29,7 @@ export default defineComponent({
   components: { ATag },
 
   props: {
-    tags: {
+    tickets: {
       type: [Array, Object],
       required: false,
       default: () => {}
@@ -32,7 +38,14 @@ export default defineComponent({
 
   data() {
     return {
+      showSection: true,
       uniqueTags: []
+    }
+  },
+
+  computed: {
+    tags() {
+      return this.tickets.map((ticket) => ticket.tags)
     }
   },
 

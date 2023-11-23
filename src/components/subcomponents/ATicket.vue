@@ -27,7 +27,7 @@
       <div class="w-2/12">
         <span
           class="block w-max m-auto font-bold bg-primary-600 border-secondary-400 rounded-md px-2 py-1"
-          v-text="statusName(status)"
+          v-text="status"
         />
       </div>
     </div>
@@ -75,7 +75,7 @@ export default defineComponent({
       return 'None'
     },
     status() {
-      return this.theTicket?.status
+      return this.statusName(this.theTicket?.status)
     }
   },
 

@@ -55,28 +55,48 @@ export default defineComponent({
 
   data() {
     return {
-      sections: [
-        {
-          state: 'ticket_counts',
-          label: 'Count of tickets Statistics'
-        },
-        {
-          state: 'tags',
-          label: 'Tags section'
-        },
-        {
-          state: 'groups',
-          label: 'Groups section'
-        },
-        {
-          state: 'top_requesters',
-          label: 'Top requesters section'
-        },
-        {
-          state: 'ticket_list',
-          label: 'List of tickets'
+      customFields: [],
+      sections: {
+        layout: {
+          ticket_counts: {
+            label: 'Ticket count',
+            show: true,
+            settings: {}
+          },
+          types: {
+            label: 'Ticket types',
+            show: true
+          },
+          tags: {
+            label: 'Tags',
+            show: true
+          },
+          groups: {
+            label: 'Groups',
+            show: true
+          },
+          top_requesters: {
+            label: 'Top requesters',
+            show: true,
+            settings: {}
+          },
+          top_agents: {
+            label: 'Top agents',
+            show: true,
+            settings: {}
+          },
+          ticket_list: {
+            label: 'Ticket list',
+            show: true
+          }
         }
-      ]
+      }
+    }
+  },
+
+  computed: {
+    layout() {
+      return this.$dashboard?.state.layout
     }
   }
 })

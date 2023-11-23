@@ -1,8 +1,14 @@
 <template>
-  <div class="w-full" :key="tickets.length">
-    <h1 class="text-xl font-bold mb-1 z-7" v-text="title" />
+  <div v-if="customFieldIsDefined" class="w-full" :key="tickets.length">
+    <h1
+      class="text-xl font-bold mb-1 cursor-pointer"
+      :class="{'border-l-4 pl-2 border-primary-400' : !showSection}"
+      v-text="title"
+      @click.stop="showSection = !showSection"
+    />
 
     <div
+      v-if="showSection"
       class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 overflow-y-scroll scrollbar-hide"
       :class="'border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600'"
       style="max-height: 50vh"
@@ -35,7 +41,7 @@ export default defineComponent({
     customField: {
       type: String,
       required: true,
-      default: 'id'
+      default: ''
     },
     title: {
       type: String,
@@ -47,12 +53,22 @@ export default defineComponent({
   data() {
     return {
       uniqueFields: Array(),
+      showSection: true,
       isLoading: true
     }
   },
 
+  computed: {
+    customFieldIsDefined() {
+      return this.title && this.customField
+    },
+    customCustomField() {
+      return this.customField.substring(0, 3) == 'cf_'
+    }
+  },
+
   watch: {
-    tickets() {
+    'tickets.length'() {
       this.generateCustomFieldStatistics()
     }
   },
@@ -65,7 +81,10 @@ export default defineComponent({
     generateCustomFieldStatistics() {
       this.uniqueFields = []
 
-      let customFields = this.tickets.map((ticket) => ticket[this.customField])
+      let customFields = this.customCustomField
+        ? this.tickets.map((ticket) => ticket.custom_fields[this.customField])
+        : this.tickets.map((ticket) => ticket[this.customField])
+
       let uniqueFieldsList = uniq(customFields)
 
       if (uniqueFieldsList.length == 1) {

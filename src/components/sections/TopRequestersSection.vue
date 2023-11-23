@@ -1,15 +1,21 @@
 <template>
   <div class="w-full">
-    <h1 class="text-xl font-bold mb-1" v-text="'Top ' + topListCount + ' requesters'" />
+    <h1
+      class="text-xl font-bold mb-1 cursor-pointer"
+      :class="{ 'border-l-4 pl-2 border-primary-400': !showSection }"
+      v-text="'Top ' + topListCount + ' requesters'"
+      @click.stop="showSection = !showSection"
+    />
 
     <div
+      v-if="showSection"
       :key="tickets.length"
       class="grid grid-cols-1 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
       :class="'overflow-y-scroll scrollbar-hide'"
       style="max-height: 50vh"
     >
       <a-top-requester
-        v-for="(topRequester, t) in topRequesters"
+        v-for="(topRequester, t) in topCountedRequestser"
         :key="t"
         :position="t"
         :requester="topRequester"
@@ -43,6 +49,7 @@ export default defineComponent({
 
   data() {
     return {
+      showSection: true,
       topRequesters: Array()
     }
   },
@@ -50,6 +57,12 @@ export default defineComponent({
   watch: {
     tickets() {
       this.findTopRequesters()
+    }
+  },
+
+  computed: {
+    topCountedRequestser() {
+      return this.topRequesters.slice(0, this.topListCount)
     }
   },
 
@@ -72,7 +85,7 @@ export default defineComponent({
         (tr1, tr2) => tr2?.ticket_count - tr1?.ticket_count
       )
 
-      this.topRequesters = uniqBy(this.topRequesters, 'name').slice(0, this.topListCount)
+      this.topRequesters = uniqBy(this.topRequesters, 'name')
     }
   }
 })

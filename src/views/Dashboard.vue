@@ -1,11 +1,15 @@
 <template>
-  <the-layout :key="updateToken" :class="{ 'is-loading': isLoading }">
+  <the-layout :class="{ 'is-loading': isLoading }">
     <div
       class="flex flex-col md:flex-row items-center justify-between p-5 gap-y-5 mb-3 bg-transparent"
     >
       <div class="w-full">
-        <h1 class="text-4xl font-semibold" v-text="'Freshdesk Ticket Dashboard'" />
-        <h1 class="font-semibold" v-text="'Ticket statistics since: ' + oldestTicketDate" />
+        <h1 class="text-4xl font-semibold" v-text="appTitle" />
+        <h1
+          :key="updateToken"
+          class="font-semibold"
+          v-text="'Ticket statistics since: ' + oldestTicketDate"
+        />
       </div>
 
       <div class="flex items-center gap-x-5 justify-between w-full md:w-auto">
@@ -16,49 +20,58 @@
             :title="'Refresh page'"
             @click.stop="loadTickets()"
           />
-          <ticket-filter-section :filters-list="filters" />
+          <ticket-filter-modal />
         </div>
+
         <dashboard-settings />
       </div>
     </div>
 
     <div
+      :key="updateToken"
       class="flex flex-col gap-y-5 w-full h-screen overflow-y-scroll px-5 scrollbar-hide"
-      v-if="allTickets.length"
     >
-      <ticket-count-section
-        v-if="layout.ticket_counts"
-        :tickets="allTickets"
-        :status-options="statuses"
-      />
+      <ticket-count-section v-if="layout.ticket_counts?.show" :tickets="allTickets" />
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 items-start gap-4">
+      <div
+        v-if="typesTagsGroupsVisible"
+        class="grid gap-5 grid-cols-1"
+        :class="typesTagsGroupsClass"
+      >
         <ticket-custom-field-section
+          v-if="layout.types?.show"
           :tickets="allTickets"
           :custom-field="'type'"
           title="Ticket types"
         />
-        <ticket-tags-section v-if="layout.tags" :tags="allTicketTags" />
-        <ticket-groups-section v-if="layout.groups" :groups="groups" />
+        <ticket-tags-section v-if="layout.tags?.show" :tickets="allTickets" />
+        <ticket-groups-section v-if="layout.groups?.show" :tickets="allTickets" />
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <top-requesters-section :tickets="allTickets" />
-        <top-agents-section :tickets="allTickets" />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <top-requesters-section v-if="layout.top_requesters?.show" :tickets="allTickets" />
+        <top-agents-section v-if="layout.top_agents?.show" :tickets="allTickets" />
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 items-center gap-5">
+        <!-- <ticket-statistics-chart />
+        <ticket-statistics-chart />
+        <ticket-statistics-chart /> -->
+      </div>
+
+      <div v-if="customFields?.length" class="grid gap-5 grid-cols-1" :class="customFieldsClass">
         <ticket-custom-field-section
+          v-for="(customField, cf) in customFields"
+          :key="cf"
           :tickets="allTickets"
-          :custom-field="'type'"
-          title="Ticket types"
+          :title="customField?.title"
+          :custom-field="customField?.field"
         />
       </div>
 
       <ticket-list-section
-        v-if="layout.ticket_list"
+        v-if="allTickets?.length && layout?.ticket_list?.show"
         :tickets-list="allTickets"
-        :statuses="statuses"
       />
     </div>
   </the-layout>
@@ -69,15 +82,16 @@ import { format } from 'date-fns'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import TheLayout from '@/views/TheLayout.vue'
-import TopAgentsSection from '@/components/TopAgentsSection.vue'
 import DashboardSettings from '@/components/DashboardSettings.vue'
-import TicketTagsSection from '@/components/TicketTagsSection.vue'
-import TicketListSection from '@/components/TicketListSection.vue'
-import TicketCountSection from '@/components/TicketCountSection.vue'
-import TicketGroupsSection from '@/components/TicketGroupsSection.vue'
-import TicketFilterSection from '@/components/TicketFilterSection.vue'
-import TopRequestersSection from '@/components/TopRequestersSection.vue'
-import TicketCustomFieldSection from '@/components/TicketCustomFieldSection.vue'
+import TicketFilterModal from '@/components/TicketFilterModal.vue'
+import TopAgentsSection from '@/components/sections/TopAgentsSection.vue'
+import TicketTagsSection from '@/components/sections/TicketTagsSection.vue'
+import TicketListSection from '@/components/sections/TicketListSection.vue'
+import TicketCountSection from '@/components/sections/TicketCountSection.vue'
+import TicketGroupsSection from '@/components/sections/TicketGroupsSection.vue'
+import TopRequestersSection from '@/components/sections/TopRequestersSection.vue'
+import TicketStatisticsChart from '@/components/subcomponents/TicketStatisticsChart.vue'
+import TicketCustomFieldSection from '@/components/sections/TicketCustomFieldSection.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
@@ -87,18 +101,17 @@ export default defineComponent({
     TopAgentsSection,
     TicketTagsSection,
     TicketListSection,
+    TicketFilterModal,
     DashboardSettings,
     TicketCountSection,
     TicketGroupsSection,
-    TicketFilterSection,
     TopRequestersSection,
+    TicketStatisticsChart,
     TicketCustomFieldSection
   },
 
   data() {
     return {
-      tags: [],
-      groups: [],
       filters: [],
       tickets: [],
       updateToken: 0,
@@ -110,17 +123,36 @@ export default defineComponent({
   },
 
   computed: {
-    layout() {
-      return this.$dashboard.$state.layout
-    },
-    allTickets() {
+    allTickets(): Object {
       return this.tickets.flat()
     },
-    allTicketTags() {
-      return this.allTickets.map((ticket) => ticket.tags)
+    layout(): Object {
+      return this.$dashboard.$state.layout
     },
-    statuses() {
-      return this.filters.filter((filter) => filter.name == 'status').choices
+    customFields(): Object {
+      return this.$dashboard.$state.customFields
+    },
+    appTitle(): String {
+      return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
+    },
+    typesTagsGroupsVisible(): Number {
+      return [this.layout?.types?.show, this.layout?.tags?.show, this.layout?.groups?.show].filter(
+        (t) => t
+      ).length
+    },
+    typesTagsGroupsClass(): String {
+      return this.typesTagsGroupsVisible == 2
+        ? 'sm:grid-cols-2'
+        : this.typesTagsGroupsVisible == 3
+        ? 'sm:grid-cols-2 md:grid-cols-3'
+        : 'flex'
+    },
+    customFieldsClass(): String {
+      return this.customFields?.length == 2
+        ? 'sm:grid-cols-2'
+        : this.customFields?.length == 3
+        ? 'sm:grid-cols-2 md:grid-cols-3'
+        : ''
     }
   },
 
@@ -143,7 +175,6 @@ export default defineComponent({
 
   methods: {
     async loadTickets() {
-      this.fetchAllTicketFields()
       await this.fetchTickets(1)
       this.isLoading = false
 
@@ -153,7 +184,6 @@ export default defineComponent({
       this.fetchAllTicketFields()
       await this.fetchTicketsByPage()
 
-      this.getTicketGroups()
       this.findOldestTicketDate()
 
       if (!this.keepFetching) {
@@ -184,30 +214,6 @@ export default defineComponent({
       }
     },
 
-    async getTicketGroups() {
-      let groupsList = []
-
-      await ApiCall.get('groups?per_page=100')
-        .then((response) => {
-          if (response) {
-            Object.values(response).forEach((group) => {
-              if (group) {
-                let aGroup = group
-
-                aGroup['ticket_count'] = this.allTickets.filter(
-                  (ticket) => ticket.group_id == group.id
-                ).length
-
-                groupsList.push(aGroup)
-              }
-            })
-          }
-        })
-        .then(() => {
-          this.groups = groupsList
-        })
-    },
-
     findOldestTicketDate() {
       let ticketCreationDates = this.allTickets
         .map((ticket) => ticket.created_at)
@@ -218,28 +224,6 @@ export default defineComponent({
       if (dateFromArray) {
         this.oldestTicketDate = format(dateFromArray, "eeee',' do MMMM y")
       }
-    },
-
-    async fetchAllTicketFields() {
-      await ApiCall.get('admin/ticket_fields').then((response) => {
-        if (response) {
-          let filterIDs = Object.values(response).map((filter) => filter.id)
-
-          filterIDs.forEach((id) => {
-            this.fetchTicketFIeldOptions(id)
-          })
-        }
-      })
-    },
-
-    async fetchTicketFIeldOptions(filterId) {
-      await ApiCall.get('admin/ticket_fields/' + filterId + '?include=section').then((response) => {
-        if (response) {
-          if (response) {
-            this.filters.push(response)
-          }
-        }
-      })
     }
   }
 })

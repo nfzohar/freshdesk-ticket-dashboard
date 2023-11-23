@@ -17,6 +17,7 @@
 </template>
 
 <script lang="ts">
+import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
@@ -27,40 +28,50 @@ export default defineComponent({
       type: [Object, Array],
       required: true,
       default: () => []
-    },
-    statusOptions: {
-      type: [Object, Array],
-      required: true,
-      default: () => []
     }
   },
 
   data() {
     return {
-      statistics: [
-        {
-          show: true,
-          label: 'All',
-          ticket_count: this.tickets.length
-        }
-      ]
+      statistics: Array()
     }
   },
 
   computed: {
     visibleStatistics() {
       return this.statistics.filter((stat) => stat.show)
+    },
+    statusOptions() {
+      return this.$dashboard?.$state?.statuses ?? []
+    }
+  },
+
+  watch: {
+    'tickets.length'() {
+      this.calculateTicketCounts()
     }
   },
 
   mounted() {
-    if (this.statusOptions) {
+    this.calculateTicketCounts()
+  },
+
+  methods: {
+    calculateTicketCounts() {
+      let ticketsByStatus = groupBy(this.tickets, 'status')
+
+      this.statistics.push({
+        show: true,
+        label: 'All',
+        ticket_count: this.tickets?.length
+      })
+
       this.statusOptions?.forEach((option) => {
-        let anOption = option
-
-        anOption['ticket_count'] = this.tickets.filter(ticket.status == option.id)
-
-        this.statistics.push(anOption)
+        this.statistics.push({
+          show: true,
+          label: option.name,
+          ticket_count: ticketsByStatus[option.id].length
+        })
       })
     }
   }

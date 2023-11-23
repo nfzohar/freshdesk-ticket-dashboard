@@ -16,6 +16,8 @@ export default defineComponent({
   components: { LogoIcon },
 
   created() {
+    document.title = import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
+
     setTimeout(() => {
       this.$router.push('/login')
     }, 500)

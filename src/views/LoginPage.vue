@@ -4,7 +4,7 @@
       class="flex flex-col m-auto text-center w-9/12 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12 shadow-lg rounded-lg p-5 mt-16 bg-none border border-primary-500"
     >
       <logo-icon pt-width="190" pt-height="190" class="m-auto shadow-lg rounded-full" />
-      <p class="py-3 opacity-50 w-full" v-text="'Freshdesk Ticket Dashboard'" />
+      <p class="py-3 opacity-50 w-full" v-text="appTitle" />
       <hr class="w-full my-2 border-primary-500" />
 
       <div class="block w-full bg-none">
@@ -100,6 +100,9 @@ export default defineComponent({
       return (
         import.meta.env.VITE_ACCESS_CONTROL_USERNAME && import.meta.env.VITE_ACCESS_CONTROL_PASSWORD
       )
+    },
+    appTitle() {
+      return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
     }
   },
 
