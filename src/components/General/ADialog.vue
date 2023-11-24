@@ -5,7 +5,7 @@
 
   <div v-if="open">
     <dialog
-      class="bg-opacity-50 bg-secondary-500 w-screen h-screen -mt-14"
+      class="bg-opacity-50 bg-secondary-500 w-screen h-screen -mt-28 md:-mt-14"
       :open="open"
       @close="closeDialog"
       @keydown.esc="closeDialog"
@@ -32,9 +32,23 @@ export default defineComponent({
 
   components: { CrossIcon },
 
+  props: {
+    manualOpen: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
+
   data() {
     return {
       open: false
+    }
+  },
+
+  watch: {
+    manualOpen() {
+      this.open = this.manualOpen
     }
   },
 

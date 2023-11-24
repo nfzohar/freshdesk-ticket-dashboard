@@ -15,7 +15,7 @@
       style="max-height: 50vh"
     >
       <a-top-requester
-        v-for="(topRequester, t) in topCountedRequestser"
+        v-for="(topRequester, t) in topCountedRequesters"
         :key="t"
         :position="t"
         :requester="topRequester"
@@ -39,11 +39,6 @@ export default defineComponent({
       type: [Array, Object],
       required: false,
       default: () => []
-    },
-    topListCount: {
-      type: Number,
-      required: false,
-      default: 5
     }
   },
 
@@ -61,7 +56,11 @@ export default defineComponent({
   },
 
   computed: {
-    topCountedRequestser() {
+    topListCount(): number {
+      let count = this.$dashboard?.$state?.layout?.top_requesters?.settings?.listLentgh
+      return count > 0 ? count : 5
+    },
+    topCountedRequesters(): Object {
       return this.topRequesters.slice(0, this.topListCount)
     }
   },

@@ -35,11 +35,6 @@ export default defineComponent({
       type: [Array, Object],
       required: false,
       default: () => []
-    },
-    topListCount: {
-      type: Number,
-      required: false,
-      default: 5
     }
   },
 
@@ -58,7 +53,11 @@ export default defineComponent({
   },
 
   computed: {
-    topCountedAgents() {
+    topListCount(): number {
+      let count = this.$dashboard?.$state?.layout?.top_agents?.settings?.listLentgh
+      return count > 0 ? count : 5
+    },
+    topCountedAgents(): Object {
       return this.sortedAgents.slice(0, this.topListCount)
     }
   },

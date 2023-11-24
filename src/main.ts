@@ -1,20 +1,40 @@
+import { useToast } from 'vue-toastification'
+import Toast from 'vue-toastification'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import Tippy from 'vue-tippy'
 import router from './router'
 import App from './App.vue'
 
+// Import the CSS or use your own!
 import './index.css'
+import 'vue-toastification/dist/index.css'
 import piniaPlugin from './stores/piniaPlugin'
 
 const app = createApp(App)
 const pinia = createPinia()
 
 //Register store
-app.use(pinia).use(piniaPlugin)
+app.use(pinia)
+app.use(piniaPlugin)
 
 //Register router
 app.use(router)
+
+//Register Toast in app
+app.use(Toast, {
+  position: 'top-center',
+  timeout: false,
+  closeOnClick: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  closeButton: 'button',
+  icon: true,
+  rtl: false
+})
+// Register Toast globally
+app.config.globalProperties.$toast = useToast()
 
 //Register tippy
 app.use(Tippy, {

@@ -5,7 +5,6 @@
         class="primary-button w-32 text-center bg-primary-500 hover:bg-primary-600 border-none py-2 px-10 shadow-md shadow-primary-600"
         v-text="'Filter'"
         :title="'open filters modal'"
-        @click.stop=""
       />
     </template>
 
@@ -19,7 +18,7 @@
           v-text="'Filters'"
           @click.stop="showFilterSection = !showFilterSection"
         />
-        <hr class="mb-3 border-t-primary-500" />¸¸
+        <hr class="mb-3 border-t-primary-500" />
 
         <div v-if="showFilterSection" class="flex flex-col gap-5 p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 w-full gap-y-2 gap-x-5">
@@ -77,9 +76,14 @@ export default defineComponent({
     }
   },
 
-  created() {
-    this.fetchAllTicketFields()
-    this.setGlobalFilterVariables()
+  watch: {
+    'filters.length'() {
+      this.$dashboard.statuses = this.filters.filter((f) => f.name == 'status')
+    }
+  },
+
+  async created() {
+    await this.fetchAllTicketFields()
   },
 
   methods: {
@@ -103,10 +107,6 @@ export default defineComponent({
           }
         }
       })
-    },
-
-    setGlobalFilterVariables() {
-      this.$dashboard.$state.statuses = this.filters.filter((f) => (f.slug = 'status')).choices
     }
   }
 })

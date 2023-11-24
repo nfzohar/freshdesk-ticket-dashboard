@@ -1,8 +1,8 @@
 <template>
   <div
     :key="visibleStatistics?.length"
-    class="grid gap-5 w-full rounded-md px-10"
-    :class="'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-' + visibleStatistics.length"
+    class="grid gap-5 w-full rounded-md px-10 grid-cols-1 sm:grid-cols-2"
+    :class="gridClass"
   >
     <div
       v-for="(stat, s) in statistics"
@@ -41,8 +41,16 @@ export default defineComponent({
     visibleStatistics() {
       return this.statistics.filter((stat) => stat.show)
     },
-    statusOptions() {
-      return this.$dashboard?.$state?.statuses ?? []
+    statuses(): Object {
+      return Object.values(this.$dashboard?.$state?.statuses)[0] ?? []
+    },
+    gridClass() {
+      let count = this.visibleStatistics?.length
+
+      if (count < 3) {
+        return 'sm:grid-cols-2'
+      }
+      //return (count == 3) ? 'md:grid-cols-3' : (count == 4) ? 'md:grid-cols-4' : 'md:grid-cols-3 lg:grid-cols-5'
     }
   },
 
@@ -66,11 +74,11 @@ export default defineComponent({
         ticket_count: this.tickets?.length
       })
 
-      this.statusOptions?.forEach((option) => {
+      this.statuses.choices?.forEach((choice) => {
         this.statistics.push({
-          show: true,
-          label: option.name,
-          ticket_count: ticketsByStatus[option.id].length
+          show: this.$dashboard.statuses[],
+          label: choice.label,
+          ticket_count: ticketsByStatus[choice.id]?.length || 0
         })
       })
     }

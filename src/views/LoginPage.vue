@@ -127,10 +127,17 @@ export default defineComponent({
     if (this.freshdeskApiKey) {
       this.apiKey = this.freshdeskApiKey
     }
+
+    if (!this.freshdeskDomainUrl && this.$store.domainURL) {
+      this.domainUrl = this.$store.domainURL
+    }
+    if (!this.freshdeskApiKey && this.$store.apiKey) {
+      this.apiKey = this.$store.apiKey
+    }
   },
 
   mounted() {
-    if (this.$store.authenticated) {
+    if (this.$store.auth) {
       this.$router.push('/dashboard')
     }
   },

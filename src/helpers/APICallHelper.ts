@@ -1,5 +1,8 @@
 import axios from 'axios'
 import { Store } from '@/stores'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 export default class ApiCall {
   protected freshdeskDomainUrl = Store().domain
@@ -46,6 +49,7 @@ export default class ApiCall {
           return response.data
         })
         .catch((error) => {
+          toast.error('Data could not be loaded. Please try again.')
           console.error(error)
         })
 

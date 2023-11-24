@@ -4,7 +4,7 @@
       class="flex flex-col md:flex-row items-center justify-between p-5 gap-y-5 mb-3 bg-transparent"
     >
       <div class="w-full">
-        <h1 class="text-4xl font-semibold" v-text="appTitle" />
+        <h1 class="text-xl md:text-4xl font-semibold" v-text="appTitle" />
         <h1
           :key="updateToken"
           class="font-semibold"
@@ -54,9 +54,7 @@
       </div>
 
       <div class="grid grid-cols-1 items-center gap-5">
-        <!-- <ticket-statistics-chart />
-        <ticket-statistics-chart />
-        <ticket-statistics-chart /> -->
+        <!-- <ticket-statistics-chart /> -->
       </div>
 
       <div v-if="customFields?.length" class="grid gap-5 grid-cols-1" :class="customFieldsClass">
@@ -90,7 +88,7 @@ import TicketListSection from '@/components/sections/TicketListSection.vue'
 import TicketCountSection from '@/components/sections/TicketCountSection.vue'
 import TicketGroupsSection from '@/components/sections/TicketGroupsSection.vue'
 import TopRequestersSection from '@/components/sections/TopRequestersSection.vue'
-import TicketStatisticsChart from '@/components/subcomponents/TicketStatisticsChart.vue'
+// import TicketStatisticsChart from '@/components/subcomponents/TicketStatisticsChart.vue'
 import TicketCustomFieldSection from '@/components/sections/TicketCustomFieldSection.vue'
 
 export default defineComponent({
@@ -106,7 +104,7 @@ export default defineComponent({
     TicketCountSection,
     TicketGroupsSection,
     TopRequestersSection,
-    TicketStatisticsChart,
+    // TicketStatisticsChart,
     TicketCustomFieldSection
   },
 
@@ -127,10 +125,10 @@ export default defineComponent({
       return this.tickets.flat()
     },
     layout(): Object {
-      return this.$dashboard.$state.layout
+      return this.$dashboard?.dashboardLayout ?? []
     },
     customFields(): Object {
-      return this.$dashboard.$state.customFields
+      return this.$dashboard?.getCustomFields
     },
     appTitle(): String {
       return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
@@ -175,6 +173,7 @@ export default defineComponent({
 
   methods: {
     async loadTickets() {
+      this.isLoading = true
       await this.fetchTickets(1)
       this.isLoading = false
 

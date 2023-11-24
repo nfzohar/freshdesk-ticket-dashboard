@@ -3,6 +3,7 @@
     <input
       v-model="inputValue"
       type="checkbox"
+      :checked="inputValue"
       class="rounded-md w-5 h-5 mr-2"
       :class="inputClass"
     />

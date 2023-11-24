@@ -1,7 +1,14 @@
 import { Store } from '@/stores'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 export function checkAuthCredentials(username: String, password: String) {
   let authenticationSuccess = false
+
+  if (Store().$state.auth) {
+    return
+  }
 
   const envUsername = import.meta.env.VITE_ACCESS_CONTROL_USERNAME
   const envPassword = import.meta.env.VITE_ACCESS_CONTROL_PASSWORD
@@ -12,14 +19,20 @@ export function checkAuthCredentials(username: String, password: String) {
   }
 
   if (!username || !password) {
-    console.error('Incorrect credentials. Please, try again.')
+    let theError = 'Incorrect credentials. Please, try again.'
+
+    toast.error(theError)
+    console.error(theError)
     return
   }
 
   authenticationSuccess = username == envUsername && password == envPassword
 
   if (!authenticationSuccess) {
-    console.error('Incorrect credentials. Please, try again.')
+    let theError = 'Incorrect credentials. Please, try again.'
+
+    toast.error(theError)
+    console.error(theError)
     return
   }
 

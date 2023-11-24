@@ -12,7 +12,7 @@
       </span>
     </div>
 
-    <trophy-icon pt-height="30pt" pt-width="30pt" :spot="Number(position + 1)" />
+    <trophy-icon v-if="showTrophy" pt-height="30pt" pt-width="30pt" :spot="Number(position + 1)" />
   </div>
 </template>
 
@@ -39,11 +39,14 @@ export default defineComponent({
   },
 
   computed: {
-    name() {
+    name(): String {
       return this.requester?.name ?? 'Requester'
     },
-    ticketCount() {
+    ticketCount(): Number {
       return this.requester?.ticket_count ?? 0
+    },
+    showTrophy(): Boolean {
+      return this.$dashboard?.$state?.layout?.top_requesters?.settings?.showTrophies ?? true
     }
   }
 })

@@ -13,7 +13,7 @@
       </span>
     </div>
 
-    <trophy-icon pt-height="30pt" pt-width="30pt" :spot="Number(position + 1)" />
+    <trophy-icon v-if="showTrophy" pt-height="30pt" pt-width="30pt" :spot="Number(position + 1)" />
   </div>
 </template>
 
@@ -51,6 +51,9 @@ export default defineComponent({
     },
     ticketCount() {
       return this.agent?.ticket_count ?? 0
+    },
+    showTrophy(): Boolean {
+      return this.$dashboard?.$state?.layout?.top_agents?.settings?.showTrophies ?? true
     }
   }
 })
