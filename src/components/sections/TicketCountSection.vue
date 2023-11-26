@@ -4,14 +4,15 @@
     class="grid gap-5 w-full rounded-md px-10 grid-cols-1 sm:grid-cols-2"
     :class="gridClass"
   >
-    <div
-      v-for="(stat, s) in statistics"
-      :key="s"
-      class="block rounded-md border border-primary-500 shadow-md shadow-primary-600 bg-primary-500 py-5 w-full text-center font-bold"
-    >
-      <span class="block text-7xl w-full" v-text="stat.ticket_count" />
-      {{ stat.label }}
-    </div>
+    <template v-for="(stat, s) in statistics" :key="s">
+      <div
+        v-if="stat.show"
+        class="block rounded-md border border-primary-500 shadow-md shadow-primary-600 bg-primary-500 py-5 w-full text-center font-bold"
+      >
+        <span class="block text-7xl w-full" v-text="stat.ticket_count" />
+        {{ stat.label }}
+      </div>
+    </template>
   </div>
   <span v-if="!visibleStatistics.length" v-text="'No statistic data selected.'" />
 </template>
@@ -50,7 +51,12 @@ export default defineComponent({
       if (count < 3) {
         return 'sm:grid-cols-2'
       }
-      //return (count == 3) ? 'md:grid-cols-3' : (count == 4) ? 'md:grid-cols-4' : 'md:grid-cols-3 lg:grid-cols-5'
+
+      return count == 3
+        ? 'md:grid-cols-3'
+        : count == 4
+        ? 'md:grid-cols-4'
+        : 'md:grid-cols-3 lg:grid-cols-5'
     }
   },
 
@@ -58,6 +64,14 @@ export default defineComponent({
     'tickets.length'() {
       this.calculateTicketCounts()
     }
+  },
+
+  created() {
+    this.statistics.push({
+      show: this.$dashboard.layout.ticket_counts.settings['all'],
+      label: 'All',
+      ticket_count: this.tickets?.length
+    })
   },
 
   mounted() {
@@ -68,17 +82,11 @@ export default defineComponent({
     calculateTicketCounts() {
       let ticketsByStatus = groupBy(this.tickets, 'status')
 
-      this.statistics.push({
-        show: true,
-        label: 'All',
-        ticket_count: this.tickets?.length
-      })
-
-      this.statuses.choices?.forEach((choice) => {
+      this.statuses?.choices?.forEach((choice) => {
         this.statistics.push({
-          show: this.$dashboard.statuses[],
+          show: this.$dashboard.statuses[choice.name],
           label: choice.label,
-          ticket_count: ticketsByStatus[choice.id]?.length || 0
+          ticket_count: ticketsByStatus[choice.id]?.length ?? 0
         })
       })
     }

@@ -76,14 +76,10 @@ export default defineComponent({
     }
   },
 
-  watch: {
-    'filters.length'() {
-      this.$dashboard.statuses = this.filters.filter((f) => f.name == 'status')
-    }
-  },
-
   async created() {
-    await this.fetchAllTicketFields()
+    await this.fetchAllTicketFields().then(()=>{
+      this.$dashboard.statuses = this.filters.filter((f) => f.name == 'status')
+    })
   },
 
   methods: {

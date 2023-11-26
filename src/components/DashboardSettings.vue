@@ -111,20 +111,24 @@ export default defineComponent({
       return this.$dashboard?.getCustomFields ?? []
     },
     statuses(): Object {
-      return Object.values(this.$dashboard?.statuses) ?? []
+      return this.$dashboard?.statuses ?? []
+    }
+  },
+
+  watch: {
+    open() {
+      if (this.open) {
+        this.layout = this.buildLayoutFromStore()
+      }
     }
   },
 
   mounted() {
-    this.setLayoutFromState()
+    this.layout = this.buildLayoutFromStore()
     this.customFields = this.stateCustomFields
   },
 
   methods: {
-    setLayoutFromState() {
-      this.layout = this.buildLayoutFromStore()
-    },
-
     ticketCountsFromStatuses() {
       let options = []
 
@@ -143,7 +147,9 @@ export default defineComponent({
         ticket_counts: {
           label: 'Ticket count',
           show: this.stateLayout?.ticket_counts?.show,
-          settings: this.stateLayout?.ticket_counts?.settings || this.ticketCountsFromStatuses()
+          settings: this.stateLayout?.ticket_counts?.settings.length
+            ? this.stateLayout?.ticket_counts?.settings
+            : this.ticketCountsFromStatuses()
         },
         types: {
           label: 'Ticket types',
