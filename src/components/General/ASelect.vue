@@ -6,13 +6,13 @@
       class="rounded-md w-full bg-primary-500 border-primary-700 shadow-primary-700 shadow-md p-1 cursor-pointer"
       :class="inputClass"
     >
-      <option :value="''" v-text="'All'" />
+      <option v-if="showNullValue" :value="''" v-text="'All'" />
       <option
         v-for="(option, o) in options"
         :key="o"
         class="bg-secondary-500 border-primary-500 hover:bg-primary-500 hover:text-secondary-500"
-        :value="option[valueField]"
-        v-text="option[labelField]"
+        :value="valueField ? option[valueField] : option"
+        v-text="labelField ? option[labelField] : option"
       />
     </select>
   </div>
@@ -59,6 +59,11 @@ export default defineComponent({
       type: String,
       required: false,
       default: ''
+    },
+    showNullValue: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
 

@@ -53,8 +53,15 @@
         <top-agents-section v-if="layout.top_agents?.show" :tickets="allTickets" />
       </div>
 
-      <div class="grid grid-cols-1 items-center gap-5">
-        <!-- <ticket-statistics-chart /> -->
+      <div
+        v-if="layout.ticket_open_closed_graph?.show"
+        :key="updateToken"
+        class="grid grid-cols-1 items-center gap-5"
+      >
+        <ticket-statistics-open-closed-graph
+          :tickets="allTickets"
+          :oldest-ticket="oldestTicketDate"
+        />
       </div>
 
       <div v-if="customFields?.length" class="grid gap-5 grid-cols-1" :class="customFieldsClass">
@@ -88,8 +95,8 @@ import TicketListSection from '@/components/sections/TicketListSection.vue'
 import TicketCountSection from '@/components/sections/TicketCountSection.vue'
 import TicketGroupsSection from '@/components/sections/TicketGroupsSection.vue'
 import TopRequestersSection from '@/components/sections/TopRequestersSection.vue'
-// import TicketStatisticsChart from '@/components/subcomponents/TicketStatisticsChart.vue'
 import TicketCustomFieldSection from '@/components/sections/TicketCustomFieldSection.vue'
+import TicketStatisticsOpenClosedGraph from '@/components/sections/TicketStatisticsOpenClosedGraph.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
@@ -104,8 +111,8 @@ export default defineComponent({
     TicketCountSection,
     TicketGroupsSection,
     TopRequestersSection,
-    // TicketStatisticsChart,
-    TicketCustomFieldSection
+    TicketCustomFieldSection,
+    TicketStatisticsOpenClosedGraph
   },
 
   data() {
@@ -128,7 +135,7 @@ export default defineComponent({
       return this.$dashboard?.dashboardLayout ?? []
     },
     customFields(): Object {
-      return this.$dashboard?.getCustomFields
+      return this.$dashboard?.storedCustomFields
     },
     appTitle(): String {
       return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
@@ -173,21 +180,19 @@ export default defineComponent({
 
   methods: {
     async loadTickets() {
-      this.isLoading = true
-      await this.fetchTickets(1)
-      this.isLoading = false
+      //   this.isLoading = true
+      //   await this.fetchTickets(1)
+      //   this.isLoading = false
 
-      /*this.isLoading = true
+      this.isLoading = true
       this.keepFetching = true
 
-      this.fetchAllTicketFields()
       await this.fetchTicketsByPage()
-
       this.findOldestTicketDate()
 
       if (!this.keepFetching) {
         this.isLoading = false
-      }*/
+      }
     },
 
     async fetchTicketsByPage() {

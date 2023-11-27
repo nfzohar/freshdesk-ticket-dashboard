@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 
 export const dashboad_Settings = defineStore('dashboard_settings', {
   state: () => ({
+    agents: [],
+    groups: [],
     statuses: [],
     customFields: [],
     layout: {
@@ -32,6 +34,9 @@ export const dashboad_Settings = defineStore('dashboard_settings', {
           listLentgh: 5
         }
       },
+      ticket_open_closed_graph: {
+        show: true
+      },
       ticket_list: {
         show: true
       }
@@ -42,11 +47,17 @@ export const dashboad_Settings = defineStore('dashboard_settings', {
     dashboardLayout(): Object {
       return this.layout
     },
-    getCustomFields(): Object {
+    storedCustomFields(): Object {
       return this.customFields
     },
-    getStatuses(): Object {
+    storedStatuses(): Object {
       return this.statuses
+    },
+    storedAgents(): Object {
+      return this.agents
+    },
+    storedGroups(): Object {
+      return this.groups
     }
   },
 
@@ -87,6 +98,9 @@ export const dashboad_Settings = defineStore('dashboard_settings', {
     },
 
     deleteStoreData() {
+      this.agents = []
+      this.groups = []
+      this.statuses = []
       localStorage.removeItem('stored_layout')
       localStorage.removeItem('stored_custom_fields')
     }

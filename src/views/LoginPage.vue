@@ -96,11 +96,6 @@ export default defineComponent({
     freshdeskApiKey() {
       return import.meta.env.VITE_FRESHDESK_API_KEY ?? ''
     },
-    userCredentialsSet() {
-      return (
-        import.meta.env.VITE_ACCESS_CONTROL_USERNAME && import.meta.env.VITE_ACCESS_CONTROL_PASSWORD
-      )
-    },
     appTitle() {
       return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
     }
@@ -144,12 +139,11 @@ export default defineComponent({
 
   methods: {
     authenticate() {
-      if (this.userCredentialsSet) {
+      if (this.freshdeskDomainUrl && this.freshdeskApiKey) {
         checkAuthCredentials(this.username, this.password)
       } else {
-        if (this.$store.domain && this.$store.api_key) {
-          this.$router.push('/dashboard')
-        }
+        this.$store.canAuthenticate(this.$store?.domain && this.$store?.api_key)
+        this.$router.push('/dashboard')
       }
     }
   }

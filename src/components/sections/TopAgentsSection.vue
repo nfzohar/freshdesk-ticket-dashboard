@@ -64,6 +64,7 @@ export default defineComponent({
 
   mounted() {
     this.fetchAgents()
+    this.$dashboard.agents = this.allAgents
   },
 
   methods: {

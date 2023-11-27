@@ -108,7 +108,7 @@ export default defineComponent({
       return this.$dashboard?.dashboardLayout ?? []
     },
     stateCustomFields(): Object {
-      return this.$dashboard?.getCustomFields ?? []
+      return this.$dashboard?.storedCustomFields ?? []
     },
     statuses(): Object {
       return this.$dashboard?.statuses ?? []
@@ -147,9 +147,7 @@ export default defineComponent({
         ticket_counts: {
           label: 'Ticket count',
           show: this.stateLayout?.ticket_counts?.show,
-          settings: this.stateLayout?.ticket_counts?.settings.length
-            ? this.stateLayout?.ticket_counts?.settings
-            : this.ticketCountsFromStatuses()
+          settings: this.ticketCountsFromStatuses()
         },
         types: {
           label: 'Ticket types',
@@ -166,6 +164,10 @@ export default defineComponent({
         ticket_list: {
           label: 'Ticket list',
           show: this.stateLayout?.ticket_list?.show
+        },
+        ticket_open_closed_graph: {
+          label: 'Ticket open/closed graph',
+          show: this.stateLayout?.ticket_open_closed_graph?.show
         },
         top_requesters: {
           label: 'Top requesters',

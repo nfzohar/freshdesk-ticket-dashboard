@@ -43,7 +43,7 @@ export default defineComponent({
       return this.statistics.filter((stat) => stat.show)
     },
     statuses(): Object {
-      return Object.values(this.$dashboard?.$state?.statuses)[0] ?? []
+      return this.$dashboard?.statuses ?? []
     },
     gridClass() {
       let count = this.visibleStatistics?.length
@@ -82,9 +82,9 @@ export default defineComponent({
     calculateTicketCounts() {
       let ticketsByStatus = groupBy(this.tickets, 'status')
 
-      this.statuses?.choices?.forEach((choice) => {
+      this.statuses?.forEach((choice) => {
         this.statistics.push({
-          show: this.$dashboard.statuses[choice.name],
+          show: this.$dashboard.statuses[choice.label],
           label: choice.label,
           ticket_count: ticketsByStatus[choice.id]?.length ?? 0
         })

@@ -54,6 +54,7 @@ export default defineComponent({
 
   async mounted() {
     await this.fetchTicketGroups()
+    this.$dashboard.groups = this.groups
   },
 
   methods: {

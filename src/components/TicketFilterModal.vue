@@ -22,19 +22,17 @@
 
         <div v-if="showFilterSection" class="flex flex-col gap-5 p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 w-full gap-y-2 gap-x-5">
-            <template v-for="(filterSet, s) in [manualFilters, filters]" :key="s">
-              <template v-for="(filter, f) in filterSet" :key="f">
-                <a-select
-                  v-if="filter?.choices?.length"
-                  :the-value="''"
-                  :label="filter?.label"
-                  :options="filter?.choices"
-                  :label-field="'label'"
-                  :value-field="'value'"
-                  label-class="font-semibold mb-1"
-                  :input-class="['h-8 mb-2', { 'bg-primary-600': true }]"
-                />
-              </template>
+            <template v-for="(filter, f) in filters" :key="f">
+              <a-select
+                v-if="filter?.choices?.length"
+                :the-value="''"
+                :label="filter?.label"
+                :options="filter?.choices"
+                :label-field="'label'"
+                :value-field="'value'"
+                label-class="font-semibold mb-1"
+                :input-class="['h-8 mb-2', { 'bg-primary-600': true }]"
+              />
             </template>
           </div>
 
@@ -62,11 +60,7 @@ export default defineComponent({
   data() {
     return {
       filters: [],
-      showFilterSection: true,
-      manualFilters: [
-        { label: 'Agents', choices: [] },
-        { label: 'Groups', choices: [] }
-      ]
+      showFilterSection: true
     }
   },
 
@@ -77,9 +71,7 @@ export default defineComponent({
   },
 
   async created() {
-    await this.fetchAllTicketFields().then(()=>{
-      this.$dashboard.statuses = this.filters.filter((f) => f.name == 'status')
-    })
+    await this.fetchAllTicketFields()
   },
 
   methods: {
@@ -89,17 +81,28 @@ export default defineComponent({
           Object.values(response)
             .map((filter) => filter.id)
             .forEach((filterId) => {
-              this.fetchTicketFIeldOptions(filterId)
+              this.fetchTicketFieldOptions(filterId)
             })
         }
       })
     },
 
-    async fetchTicketFIeldOptions(filterId) {
+    async fetchTicketFieldOptions(filterId) {
       await ApiCall.get('admin/ticket_fields/' + filterId + '?include=section').then((response) => {
-        if (response) {
-          if (response) {
-            this.filters.push(response)
+        let filter = response
+
+        if (filter) {
+          if (filter.name == 'agent') {
+            filter['choices'] = this.$dashboard?.storedAgents
+          }
+          if (filter.name == 'group') {
+            filter['choices'] = this.$dashboard?.storedGroups
+          }
+
+          this.filters.push(filter)
+
+          if (filter.name == 'status') {
+            this.$dashboard.statuses = filter?.choices
           }
         }
       })
