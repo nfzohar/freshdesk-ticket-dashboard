@@ -2,7 +2,6 @@ import { useToast } from 'vue-toastification'
 import Toast from 'vue-toastification'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
-import Tippy from 'vue-tippy'
 import router from './router'
 import App from './App.vue'
 
@@ -30,20 +29,12 @@ app.use(Toast, {
   draggablePercent: 0.6,
   showCloseButtonOnHover: false,
   closeButton: 'button',
+  newestOnTop: true,
+  maxToasts: 5,
   icon: true,
   rtl: false
 })
 // Register Toast globally
 app.config.globalProperties.$toast = useToast()
-
-//Register tippy
-app.use(Tippy, {
-  defaultProps: {
-    trigger: 'click',
-    interactive: true,
-    arrrow: true,
-    duration: 0
-  }
-})
 
 app.mount('#app')

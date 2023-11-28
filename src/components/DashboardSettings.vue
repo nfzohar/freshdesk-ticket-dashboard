@@ -27,7 +27,7 @@
 
               <div
                 v-if="section?.show && section?.settings"
-                class="flex flex-col md:flex-row items-center gap-x-8 mb-5 bg-secondary-600 rounded-md px-5 py-3"
+                class="grid grid-cols-1 md:grid-cols-2 items-center gap-x-8 mb-5 bg-secondary-600 rounded-md px-5 py-3"
               >
                 <template v-for="(setting, p) in section?.settings" :key="p">
                   <a-checkbox
@@ -104,41 +104,49 @@ export default defineComponent({
   },
 
   computed: {
+    statuses(): Object {
+      return this.$dashboard?.statuses ?? []
+    },
     stateLayout(): Object {
       return this.$dashboard?.dashboardLayout ?? []
     },
     stateCustomFields(): Object {
       return this.$dashboard?.storedCustomFields ?? []
-    },
-    statuses(): Object {
-      return this.$dashboard?.statuses ?? []
     }
   },
 
-  watch: {
-    open() {
-      if (this.open) {
-        this.layout = this.buildLayoutFromStore()
-      }
-    }
-  },
-
-  mounted() {
-    this.layout = this.buildLayoutFromStore()
+  async mounted() {
     this.customFields = this.stateCustomFields
+    this.layout = this.buildLayoutFromStore()
+
+    if (!this.layout.ticket_counts.settings.length) {
+      this.layout.ticket_counts.settings = this.ticketCountsFromStatuses()
+    }
   },
 
   methods: {
     ticketCountsFromStatuses() {
-      let options = []
+      let options = {
+        All: {
+          label: 'All',
+          type: 'boolean',
+          value: this.stateLayout?.ticket_counts.settings['All']
+        },
+        Unresolved: {
+          label: 'Unresolved',
+          type: 'boolean',
+          value: this.stateLayout?.ticket_counts.settings['Unresolved']
+        }
+      }
 
-      this.statuses?.forEach((status) => {
+      Object.values(this.statuses)?.forEach((status) => {
         options[status.label] = {
           label: status.label,
           type: 'boolean',
-          value: true
+          value: this.stateLayout?.ticket_counts.settings[status.label]
         }
       })
+
       return options
     },
 
@@ -147,7 +155,7 @@ export default defineComponent({
         ticket_counts: {
           label: 'Ticket count',
           show: this.stateLayout?.ticket_counts?.show,
-          settings: this.ticketCountsFromStatuses()
+          settings: this.stateLayout?.ticket_counts?.settings
         },
         types: {
           label: 'Ticket types',
@@ -215,19 +223,36 @@ export default defineComponent({
     },
 
     morphSectionSettingsForState() {
-      this.layout.ticket_counts.settings = this.layout.ticket_counts.settings
-
-      this.layout.top_requesters.settings = {
-        showTrophies: this.layout.top_requesters.settings.showTrophies.value,
-        listLentgh: this.layout.top_requesters.settings.listLentgh.value
-      }
-
-      this.layout.top_agents.settings = {
-        showTrophies: this.layout.top_agents.settings.showTrophies.value,
-        listLentgh: this.layout.top_agents.settings.listLentgh.value
-      }
-
+      this.morptTicketCounts()
+      this.morphTopRequesters()
+      this.morphTopAgents()
       return this.layout
+    },
+
+    morptTicketCounts() {
+      let ticketCountSettings = Array()
+      Object.values(this.layout.ticket_counts.settings).forEach((setting) => {
+        ticketCountSettings[setting.label] = setting.value
+      })
+      this.layout.ticket_counts.settings = ticketCountSettings
+    },
+
+    morphTopRequesters() {
+      let topRequesters = this.layout.top_requesters.settings
+      let fields = ['showTrophies', 'listLentgh']
+
+      fields.forEach((field) => {
+        this.layout.top_requesters.settings[field] = topRequesters[field]
+      })
+    },
+
+    morphTopAgents() {
+      let topAgents = this.layout.top_agents.settings
+      let fields = ['showTrophies', 'listLentgh']
+
+      fields.forEach((field) => {
+        this.layout.top_agents.settings[field] = topAgents[field]
+      })
     },
 
     clearAllDashboardData() {

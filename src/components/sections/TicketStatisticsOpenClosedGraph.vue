@@ -1,10 +1,15 @@
 <template>
   <div class="w-full">
     <div class="w-full flex items-center justify-between py-2">
-      <h1 class="w-full text-xl font-bold mb-1" v-text="'Ticket open/closed ratio'" />
+      <h1
+        class="w-full text-xl font-bold mb-1 cursor-pointer"
+        :class="{ 'border-l-4 pl-2 border-primary-400': !showSection }"
+        v-text="'Ticket open/closed ratio'"
+        @click.stop="showSection = !showSection"
+      />
 
       <a-select
-        class="w-40"
+        class="w-max"
         :options="displayForYear"
         :the-value="selectedYear"
         :show-null-value="false"
@@ -12,7 +17,7 @@
       />
     </div>
 
-    <div :key="selectedYear">
+    <div v-if="showSection" :key="selectedYear">
       <ticket-statistics-graph :type="'line'" :datasets="datasets" :dataset-labels="labels" />
     </div>
   </div>
@@ -45,6 +50,7 @@ export default defineComponent({
   data() {
     return {
       labels: [],
+      showSection: true,
       openedTickets: [],
       closedTickets: [],
       displayForYear: [],

@@ -1,5 +1,7 @@
 <template>
-  <div class="flex flex-col rounded-md w-full bg-primary-500 border-secondary-600 px-3 py-2">
+  <div
+    class="flex flex-col rounded-md w-full bg-primary-500 hover:bg-primary-600 border-secondary-600 px-3 py-2"
+  >
     <span class="font-bold" v-text="name" />
 
     <span class="text-sm">

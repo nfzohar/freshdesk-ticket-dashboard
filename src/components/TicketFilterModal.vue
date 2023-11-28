@@ -21,7 +21,7 @@
         <hr class="mb-3 border-t-primary-500" />
 
         <div v-if="showFilterSection" class="flex flex-col gap-5 p-3">
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 w-full gap-y-2 gap-x-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 w-full gap-y-2 gap-x-5">
             <template v-for="(filter, f) in filters" :key="f">
               <a-select
                 v-if="filter?.choices?.length"
@@ -103,9 +103,22 @@ export default defineComponent({
 
           if (filter.name == 'status') {
             this.$dashboard.statuses = filter?.choices
+            this.setTicketCountSettings(filter?.choices)
           }
         }
       })
+    },
+
+    setTicketCountSettings(statuses) {
+      let newTicketCountSettings = Array()
+      newTicketCountSettings['All'] = true
+      newTicketCountSettings['Unresolved'] = true
+
+      statuses.forEach((status) => {
+        newTicketCountSettings[status?.label] = true
+      })
+
+      this.$dashboard.layout.ticket_counts.settings = newTicketCountSettings
     }
   }
 })

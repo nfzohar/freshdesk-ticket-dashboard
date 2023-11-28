@@ -26,7 +26,7 @@ export default defineComponent({
 
   props: {
     theValue: {
-      type: String,
+      type: [String, Number],
       required: false,
       default: ''
     },

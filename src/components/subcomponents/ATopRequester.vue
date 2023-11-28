@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-row justify-between items-center rounded-md w-full bg-primary-500 border-secondary-600 px-3 py-2"
+    class="flex flex-row justify-between items-center rounded-md w-full bg-primary-500 hover:bg-primary-600 border-secondary-600 px-3 py-2"
     :key="ticketCount"
   >
     <div class="flex flex-col">

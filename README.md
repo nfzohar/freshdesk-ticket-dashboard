@@ -1,46 +1,42 @@
 # Freshdesk Ticket Dashboard
 
-This template should help get you started developing with Vue 3 in Vite.
+A simple customizable ticket statistics dashboard for Freshdesk V2 API.
+Designed to work with the "Growth" freshdesk plan.
 
-## Recommended IDE Setup
+## What it includes
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+- [Vue 3](https://vuejs.org/guide/introduction.html)
+- [Typescript](https://www.typescriptlang.org/docs/)
+- [Vite](https://vitejs.dev/guide/)
+- [Pinia](https://pinia.vuejs.org/introduction.html)
+- [Axios](https://axios-http.com/docs/intro)
+- [Lodash](https://lodash.com/docs/4.17.15)
+- [Date-fns](https://date-fns.org/docs/Getting-Started)
+- [Chart.js](https://www.chartjs.org/)
+- [Vue Chartjs](https://vue-chartjs.org/)
+- [Tailwindcss](https://tailwindcss.com/docs/installation)
+- [Dotenv](https://www.npmjs.com/package/dotenv)
+- [Postcss](https://postcss.org/)
+- [Postcss-cli](https://www.npmjs.com/package/postcss-cli?activeTab=versions)
+- [Postcss-env-function](https://www.npmjs.com/package/postcss-env-function)
+- [Vue Router](https://router.vuejs.org/guide/)
+- [Vue Api Query](https://robsontenorio.github.io/vue-api-query/)
+- [Vue Toastification](https://vue-toastification.maronato.dev/)
 
 ## Project Setup
 
 ```sh
-npm install
+yarn / npm install
 ```
 
 ### Compile and Hot-Reload for Development
 
 ```sh
-npm run dev
+yarn dev / npm run dev
 ```
 
 ### Type-Check, Compile and Minify for Production
 
 ```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+yarn build / npm run build
 ```

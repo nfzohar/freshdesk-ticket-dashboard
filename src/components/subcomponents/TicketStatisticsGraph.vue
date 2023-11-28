@@ -5,7 +5,7 @@
     <component
       :is="chartType"
       class="w-full p-2 border-primary-700 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
-      style="height: 60vh"
+      style="height: 50vh"
       :data="chartData"
       :options="chartOptions"
     />

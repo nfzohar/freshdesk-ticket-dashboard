@@ -65,3 +65,13 @@ export function colorIsDark(color: String) {
 
   return !(hsp > 127.5)
 }
+
+// Check, if the number is even.
+export function isEven(number: number) {
+  return number % 2 === 0
+}
+
+// Check, if the number is odd.
+export function isOdd(number: number) {
+  return number % 2 !== 0
+}

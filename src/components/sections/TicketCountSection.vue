@@ -1,13 +1,17 @@
 <template>
   <div
     :key="visibleStatistics?.length"
-    class="grid gap-5 w-full rounded-md px-10 grid-cols-1 sm:grid-cols-2"
-    :class="gridClass"
+    class="gap-5 w-full rounded-md px-10 items-center justify-between"
+    :class="[
+      visibleStatistics.length > 10
+        ? 'flex items-center justify-between'
+        : 'grid grid-cols-1 sm:grid-cols-2 ' + getConditionalGridStyle()
+    ]"
   >
     <template v-for="(stat, s) in statistics" :key="s">
       <div
-        v-if="stat.show"
-        class="block rounded-md border border-primary-500 shadow-md shadow-primary-600 bg-primary-500 py-5 w-full text-center font-bold"
+        v-if="layout.ticket_counts.settings[stat.label]"
+        class="block mb-3 md:mb-0 rounded-md border border-primary-500 shadow-md shadow-primary-600 bg-primary-500 hover:bg-primary-600 py-5 w-full text-center font-bold"
       >
         <span class="block text-7xl w-full" v-text="stat.ticket_count" />
         {{ stat.label }}
@@ -39,56 +43,70 @@ export default defineComponent({
   },
 
   computed: {
-    visibleStatistics() {
-      return this.statistics.filter((stat) => stat.show)
+    layout(): Object {
+      return this.$dashboard?.layout ?? []
     },
     statuses(): Object {
-      return this.$dashboard?.statuses ?? []
+      return Object.values(this.$dashboard?.statuses) ?? []
     },
-    gridClass() {
-      let count = this.visibleStatistics?.length
-
-      if (count < 3) {
-        return 'sm:grid-cols-2'
-      }
-
-      return count == 3
-        ? 'md:grid-cols-3'
-        : count == 4
-        ? 'md:grid-cols-4'
-        : 'md:grid-cols-3 lg:grid-cols-5'
+    visibleStatistics() {
+      return Object.values(this.layout.ticket_counts.settings).filter((stat) => stat)
+    },
+    closedStatus(): Object {
+      return this.statuses.filter((status) => status.label == 'Closed')[0].id
+    },
+    resolvedStatus(): Object {
+      return this.statuses.filter((status) => status.label == 'Resolved')[0].id
     }
   },
 
   watch: {
     'tickets.length'() {
-      this.calculateTicketCounts()
+      this.buildTicketCountArray()
     }
   },
 
   created() {
-    this.statistics.push({
-      show: this.$dashboard.layout.ticket_counts.settings['all'],
-      label: 'All',
-      ticket_count: this.tickets?.length
-    })
-  },
-
-  mounted() {
-    this.calculateTicketCounts()
+    this.buildTicketCountArray()
   },
 
   methods: {
-    calculateTicketCounts() {
+    async buildTicketCountArray() {
       let ticketsByStatus = groupBy(this.tickets, 'status')
 
-      this.statuses?.forEach((choice) => {
-        this.statistics.push({
-          show: this.$dashboard.statuses[choice.label],
-          label: choice.label,
-          ticket_count: ticketsByStatus[choice.id]?.length ?? 0
-        })
+      this.statistics = {
+        all: {
+          label: 'All',
+          ticket_count: this.tickets?.length
+        },
+        unresolved: {
+          label: 'Unresolved',
+          ticket_count: this.tickets?.filter(
+            (ticket) => ![this.closedStatus, this.resolvedStatus].includes(ticket.status)
+          ).length
+        }
+      }
+
+      Object.values(this.statuses).forEach((status) => {
+        this.statistics[status?.label] = {
+          label: status.label,
+          ticket_count: ticketsByStatus[status.id]?.length ?? 0
+        }
       })
+    },
+
+    getConditionalGridStyle() {
+      let count = Number(this.visibleStatistics?.length)
+
+      if (count % 3 == 0) {
+        return 'md:grid-cols-3'
+      }
+      if (count % 4 == 0) {
+        return 'md:grid-cols-4'
+      }
+      if (count % 5 == 0) {
+        return 'md:grid-cols-5'
+      }
     }
   }
 })

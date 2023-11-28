@@ -138,7 +138,7 @@ export default defineComponent({
       return this.$dashboard?.storedCustomFields
     },
     appTitle(): String {
-      return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
+      return import.meta.env.VITE_APP_TITLE ?? 'Freshdesk Ticket Dashboard'
     },
     typesTagsGroupsVisible(): Number {
       return [this.layout?.types?.show, this.layout?.tags?.show, this.layout?.groups?.show].filter(
@@ -165,7 +165,8 @@ export default defineComponent({
     if (!this.$store.authenticated) {
       this.$router.push('/')
     }
-    this.startYear = new Date(import.meta.env.VITE_FRESHDESK_START_YEAR ?? '').toISOString()
+
+    this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '').toISOString()
   },
 
   watch: {
@@ -180,18 +181,21 @@ export default defineComponent({
 
   methods: {
     async loadTickets() {
-      //   this.isLoading = true
-      //   await this.fetchTickets(1)
-      //   this.isLoading = false
+      /*
+      this.isLoading = true
+      await this.fetchTickets(1)
+      this.isLoading = false
+      this.findOldestTicketDate()
+*/
 
       this.isLoading = true
       this.keepFetching = true
 
       await this.fetchTicketsByPage()
-      this.findOldestTicketDate()
 
       if (!this.keepFetching) {
         this.isLoading = false
+        this.findOldestTicketDate()
       }
     },
 
@@ -219,11 +223,13 @@ export default defineComponent({
     },
 
     findOldestTicketDate() {
-      let ticketCreationDates = this.allTickets
-        .map((ticket) => ticket.created_at)
-        .sort((date1, date2) => new Date(date1) > new Date(date2))
+      let ticketCreationDates = this.allTickets.map((ticket) => ticket.created_at)
 
-      let dateFromArray = new Date(ticketCreationDates[0])
+      ticketCreationDates = ticketCreationDates.sort(
+        (date1, date2) => new Date(date1) - new Date(date2)
+      )
+
+      let dateFromArray = new Date(ticketCreationDates[0] ?? '')
 
       if (dateFromArray) {
         this.oldestTicketDate = format(dateFromArray, "eeee',' do MMMM y")

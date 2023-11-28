@@ -45,11 +45,6 @@ export default defineComponent({
       type: String,
       required: false,
       default: () => {}
-    },
-    statuses: {
-      type: [Array, Object],
-      required: false,
-      default: () => {}
     }
   },
 
@@ -74,18 +69,18 @@ export default defineComponent({
       }
       return 'None'
     },
+    statuses(): Object {
+      return this.$dashboard?.statuses ?? []
+    },
     status() {
-      return this.statusName(this.theTicket?.status)
-    }
-  },
+      let label = 'Undefined'
 
-  methods: {
-    statusName(id) {
-      this.statuses?.forEach((status) => {
-        if (status.id == id) {
-          return status?.label
+      Object.values(this.statuses)?.forEach((status) => {
+        if (status.id == this.theTicket?.status) {
+          label = status?.label
         }
       })
+      return label
     }
   }
 })
