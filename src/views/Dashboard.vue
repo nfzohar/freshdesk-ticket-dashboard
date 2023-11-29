@@ -181,13 +181,6 @@ export default defineComponent({
 
   methods: {
     async loadTickets() {
-      /*
-      this.isLoading = true
-      await this.fetchTickets(1)
-      this.isLoading = false
-      this.findOldestTicketDate()
-*/
-
       this.isLoading = true
       this.keepFetching = true
 
@@ -202,10 +195,12 @@ export default defineComponent({
     async fetchTicketsByPage() {
       this.tickets = []
 
-      for (let i = 1; this.keepFetching; i++) {
+      //for (let i = 1; this.keepFetching; i++) {
+      for (let i = 1; i < 2; i++) {
         await this.fetchTickets(i)
         setTimeout(() => {}, 3000)
       }
+      this.keepFetching = false
     },
 
     async fetchTickets(i) {

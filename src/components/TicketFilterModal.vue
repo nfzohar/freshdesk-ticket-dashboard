@@ -110,15 +110,19 @@ export default defineComponent({
     },
 
     setTicketCountSettings(statuses) {
-      let newTicketCountSettings = Array()
-      newTicketCountSettings['All'] = true
-      newTicketCountSettings['Unresolved'] = true
+      if (!this.$dashboard?.ticket_counts?.settings.length) {
+        let newTicketCountSettings = Array()
+        let storedTicketCounts = this.$dashboard?.ticket_counts?.settings
 
-      statuses.forEach((status) => {
-        newTicketCountSettings[status?.label] = true
-      })
+        newTicketCountSettings['All'] = storedTicketCounts?.All
+        newTicketCountSettings['Unresolved'] = storedTicketCounts?.Unresolved
 
-      this.$dashboard.layout.ticket_counts.settings = newTicketCountSettings
+        statuses.forEach((status) => {
+          newTicketCountSettings[status?.label] = storedTicketCounts[status?.label]
+        })
+
+        this.$dashboard.layout.ticket_counts.settings = newTicketCountSettings
+      }
     }
   }
 })

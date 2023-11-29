@@ -115,47 +115,26 @@ export default defineComponent({
     }
   },
 
-  async mounted() {
-    this.customFields = this.stateCustomFields
-    this.layout = this.buildLayoutFromStore()
+  watch: {
+    open() {
+      this.layout = this.buildLayoutFromStore()
 
-    if (!this.layout.ticket_counts.settings.length) {
-      this.layout.ticket_counts.settings = this.ticketCountsFromStatuses()
+      console.log(this.$dashboard.layout)
     }
   },
 
+  async mounted() {
+    this.customFields = this.stateCustomFields
+    this.layout = this.buildLayoutFromStore()
+  },
+
   methods: {
-    ticketCountsFromStatuses() {
-      let options = {
-        All: {
-          label: 'All',
-          type: 'boolean',
-          value: this.stateLayout?.ticket_counts.settings['All']
-        },
-        Unresolved: {
-          label: 'Unresolved',
-          type: 'boolean',
-          value: this.stateLayout?.ticket_counts.settings['Unresolved']
-        }
-      }
-
-      Object.values(this.statuses)?.forEach((status) => {
-        options[status.label] = {
-          label: status.label,
-          type: 'boolean',
-          value: this.stateLayout?.ticket_counts.settings[status.label]
-        }
-      })
-
-      return options
-    },
-
     buildLayoutFromStore() {
       return {
         ticket_counts: {
           label: 'Ticket count',
           show: this.stateLayout?.ticket_counts?.show,
-          settings: this.stateLayout?.ticket_counts?.settings
+          settings: this.ticketCountsFromStatuses()
         },
         types: {
           label: 'Ticket types',
@@ -189,7 +168,7 @@ export default defineComponent({
             listLentgh: {
               label: 'Top list length',
               type: 'number',
-              value: this.stateLayout?.top_requesters?.settings.listLentgh
+              value: this.stateLayout?.top_requesters?.settings.listLentgh || 5
             }
           }
         },
@@ -205,54 +184,74 @@ export default defineComponent({
             listLentgh: {
               label: 'Top list length',
               type: 'number',
-              value: this.stateLayout?.top_agents?.settings.listLentgh
+              value: this.stateLayout?.top_agents?.settings.listLentgh || 5
             }
           }
         }
       }
     },
 
+    ticketCountsFromStatuses() {
+      let options = {
+        All: {
+          label: 'All',
+          type: 'boolean',
+          value: this.stateLayout?.ticket_counts.settings['All']
+        },
+        Unresolved: {
+          label: 'Unresolved',
+          type: 'boolean',
+          value: this.stateLayout?.ticket_counts.settings['Unresolved']
+        }
+      }
+
+      Object.values(this.statuses)?.forEach((status) => {
+        options[status.label] = {
+          label: status.label,
+          type: 'boolean',
+          value: this.stateLayout?.ticket_counts?.settings[status.label]
+        }
+      })
+
+      return options
+    },
+
     savePreferencesToState() {
       this.$dashboard?.saveCustomFieldsToStore(this.customFields)
-
-      let layoutForStore = this.morphSectionSettingsForState()
-      this.$dashboard?.saveLayoutToStore(layoutForStore)
+      this.morphSectionSettingsForState()
 
       this.open = false
       this.layout = this.buildLayoutFromStore()
     },
 
-    morphSectionSettingsForState() {
-      this.morptTicketCounts()
+    async morphSectionSettingsForState() {
       this.morphTopRequesters()
       this.morphTopAgents()
-      return this.layout
+      this.morphTicketCounts()
+
+      this.$dashboard?.saveLayoutToStore(this.layout)
     },
 
-    morptTicketCounts() {
+    morphTicketCounts() {
       let ticketCountSettings = Array()
+
       Object.values(this.layout.ticket_counts.settings).forEach((setting) => {
-        ticketCountSettings[setting.label] = setting.value
+        ticketCountSettings[setting.label] = setting.value ? true : false
       })
+
       this.layout.ticket_counts.settings = ticketCountSettings
     },
 
     morphTopRequesters() {
       let topRequesters = this.layout.top_requesters.settings
-      let fields = ['showTrophies', 'listLentgh']
-
-      fields.forEach((field) => {
-        this.layout.top_requesters.settings[field] = topRequesters[field]
-      })
+      this.layout.top_requesters.settings.showTrophies = topRequesters.showTrophies.value
+      this.layout.top_requesters.settings.listLentgh = topRequesters.listLentgh.value
     },
 
     morphTopAgents() {
       let topAgents = this.layout.top_agents.settings
-      let fields = ['showTrophies', 'listLentgh']
-
-      fields.forEach((field) => {
-        this.layout.top_agents.settings[field] = topAgents[field]
-      })
+      this.layout.top_agents.settings.showTrophies = topAgents.showTrophies.value
+      this.layout.top_agents.settings.listLentgh = topAgents.listLentgh.value
     },
 
     clearAllDashboardData() {
