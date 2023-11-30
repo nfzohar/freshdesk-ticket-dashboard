@@ -28,7 +28,7 @@
           />
           <ticket-filter-modal />
         </div>
-        <dashboard-settings />
+        <dashboard-settings @refreshDashboard="loadTickets()" />
       </div>
     </div>
 

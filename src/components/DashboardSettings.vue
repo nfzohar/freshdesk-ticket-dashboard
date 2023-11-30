@@ -16,6 +16,22 @@
               v-text="'Manage Dashboard Layout'"
             />
 
+            <a-checkbox
+              class="w-max font-bold pr-2 mb-2"
+              :the-value="refreshSwitch"
+              :label="'Refresh'"
+              :title="'Toggle section visibility.'"
+              @changed="(value) => (refreshSwitch = value)"
+            />
+            <div class="flex items-center gap-x-8 mb-5 bg-secondary-600 rounded-md px-5 py-3">
+              <label class="w-full" v-text="'Refresh per minutes'" />
+              <input
+                v-model="refreshMinRate"
+                type="number"
+                class="w-full rounded-md text-black px-1"
+              />
+            </div>
+
             <div v-for="(section, s) in layout" :key="s" class="w-full flex flex-col">
               <a-checkbox
                 class="w-max font-bold pr-2 mb-2"
@@ -95,8 +111,13 @@ export default defineComponent({
 
   components: { ACheckbox, ADialog, SettingsIcon, CustomFieldsManager },
 
+  emits: ['refreshDashboard'],
+
   data() {
     return {
+      refreshSwitch: false,
+      refreshMinRate: 5,
+      timeoutId: null,
       customFields: {},
       open: false,
       layout: {}
@@ -118,6 +139,17 @@ export default defineComponent({
   watch: {
     open() {
       this.layout = this.buildLayoutFromStore()
+    },
+    refreshSwitch() {
+      if (!this.refreshSwitch) {
+        this.timeoutId.unset()
+      }
+
+      while (this.refreshSwitch) {
+        setTimeout(() => {
+          console.log('Delayed for 1 second.')
+        }, 1000)
+      }
     }
   },
 
