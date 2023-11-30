@@ -1,5 +1,5 @@
 <template>
-  <a-dialog>
+  <a-dialog custom-class="-mt-28 md:-mt-14">
     <template #trigger>
       <button
         class="primary-button w-32 text-center bg-primary-500 hover:bg-primary-600 border-none py-2 px-10 shadow-md shadow-primary-600"
@@ -10,7 +10,7 @@
 
     <template #content>
       <div
-        class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5 mt-10"
+        class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
         :class="'text-white'"
       >
         <h1
@@ -64,12 +64,6 @@ export default defineComponent({
     }
   },
 
-  computed: {
-    activeFilters() {
-      return !this.filters
-    }
-  },
-
   async created() {
     await this.fetchAllTicketFields()
   },
@@ -118,7 +112,9 @@ export default defineComponent({
         newTicketCountSettings['Unresolved'] = storedTicketCounts?.Unresolved
 
         statuses.forEach((status) => {
-          newTicketCountSettings[status?.label] = storedTicketCounts[status?.label]
+          if (!newTicketCountSettings[status?.label]) {
+            newTicketCountSettings[status?.label] = storedTicketCounts[status?.label]
+          }
         })
 
         this.$dashboard.layout.ticket_counts.settings = newTicketCountSettings

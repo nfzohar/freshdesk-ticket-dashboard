@@ -18,6 +18,7 @@
         :key="t"
         :the-ticket="ticket"
         :statuses="statuses"
+        @click="$emit('showTicketDetails', ticket.id)"
       />
     </div>
   </div>
@@ -26,11 +27,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ATicket from '@/components/subcomponents/ATicket.vue'
+import { emit } from 'process'
 
 export default defineComponent({
   name: 'TicketListSection',
 
   components: { ATicket },
+
+  emits: ['showTicketDetails'],
 
   props: {
     ticketsList: {

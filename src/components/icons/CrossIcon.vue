@@ -1,6 +1,6 @@
 <template>
   <svg
-    class="fill-primary-500 cursor-pointer"
+    class="fill-primary-500 hover:fill-primary-400 cursor-pointer"
     style="vertical-align: middle"
     :height="ptWidth"
     :width="ptHeight"

@@ -1,12 +1,12 @@
 <template>
-  <a-dialog :manual-open="open">
+  <a-dialog :manual-open="open" custom-class="-mt-28 md:-mt-14">
     <template #trigger>
       <settings-icon class="cursor-pointer" @click="open = true" />
     </template>
 
     <template #content>
       <div
-        class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5 mt-10"
+        class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
         :class="'text-white'"
       >
         <div class="grid grid-cols-1 md:grid-cols-2">
@@ -118,8 +118,6 @@ export default defineComponent({
   watch: {
     open() {
       this.layout = this.buildLayoutFromStore()
-
-      console.log(this.$dashboard.layout)
     }
   },
 

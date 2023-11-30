@@ -1,7 +1,13 @@
 <template>
+  <ticket-details-modal
+    :key="detailsTicketId"
+    :ticket-id="Number(detailsTicketId)"
+    @modalClosed="detailsTicketId = null"
+  />
+
   <the-layout :class="{ 'is-loading': isLoading }">
     <div
-      class="flex flex-col md:flex-row items-center justify-between p-5 gap-y-5 mb-3 bg-transparent"
+      class="flex flex-col md:flex-row items-center justify-between p-5 gap-y-5 mb-3 bg-transparent mr-"
     >
       <div class="w-full">
         <h1 class="text-xl md:text-4xl font-semibold" v-text="appTitle" />
@@ -22,7 +28,6 @@
           />
           <ticket-filter-modal />
         </div>
-
         <dashboard-settings />
       </div>
     </div>
@@ -77,6 +82,7 @@
       <ticket-list-section
         v-if="allTickets?.length && layout?.ticket_list?.show"
         :tickets-list="allTickets"
+        @showTicketDetails="(value) => (detailsTicketId = value)"
       />
     </div>
   </the-layout>
@@ -95,6 +101,7 @@ import TicketListSection from '@/components/sections/TicketListSection.vue'
 import TicketCountSection from '@/components/sections/TicketCountSection.vue'
 import TicketGroupsSection from '@/components/sections/TicketGroupsSection.vue'
 import TopRequestersSection from '@/components/sections/TopRequestersSection.vue'
+import TicketDetailsModal from '@/components/subcomponents/TicketDetailsModal.vue'
 import TicketCustomFieldSection from '@/components/sections/TicketCustomFieldSection.vue'
 import TicketStatisticsOpenClosedGraph from '@/components/sections/TicketStatisticsOpenClosedGraph.vue'
 
@@ -109,6 +116,7 @@ export default defineComponent({
     TicketFilterModal,
     DashboardSettings,
     TicketCountSection,
+    TicketDetailsModal,
     TicketGroupsSection,
     TopRequestersSection,
     TicketCustomFieldSection,
@@ -123,6 +131,7 @@ export default defineComponent({
       startYear: null,
       isLoading: true,
       keepFetching: true,
+      detailsTicketId: null,
       oldestTicketDate: new Date().toDateString()
     }
   },
@@ -166,7 +175,7 @@ export default defineComponent({
       this.$router.push('/')
     }
 
-    this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '').toISOString()
+    this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '2023').toISOString()
   },
 
   watch: {
@@ -224,7 +233,7 @@ export default defineComponent({
         (date1, date2) => new Date(date1) - new Date(date2)
       )
 
-      let dateFromArray = new Date(ticketCreationDates[0] ?? '')
+      let dateFromArray = new Date(ticketCreationDates[0] ?? null)
 
       if (dateFromArray) {
         this.oldestTicketDate = format(dateFromArray, "eeee',' do MMMM y")
