@@ -47,8 +47,9 @@ export default defineComponent({
   },
 
   watch: {
-    tickets() {
-      this.fetchAgents()
+    'tickets.length'() {
+      this.sortedAgents = []
+      this.calculateAgentStatistics()
     }
   },
 
@@ -62,9 +63,8 @@ export default defineComponent({
     }
   },
 
-  mounted() {
+  created() {
     this.fetchAgents()
-    this.$dashboard.agents = this.allAgents
   },
 
   methods: {
@@ -78,6 +78,9 @@ export default defineComponent({
         .then(() => {
           this.sortedAgents = []
           this.calculateAgentStatistics()
+        })
+        .then(() => {
+          this.$dashboard.agents = this.allAgents
         })
     },
 

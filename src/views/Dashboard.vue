@@ -32,10 +32,7 @@
       </div>
     </div>
 
-    <div
-      :key="updateToken"
-      class="flex flex-col gap-y-5 w-full h-screen overflow-y-scroll px-5 scrollbar-hide"
-    >
+    <div class="flex flex-col gap-y-5 w-full h-screen overflow-y-scroll px-5 scrollbar-hide">
       <ticket-count-section v-if="layout.ticket_counts?.show" :tickets="allTickets" />
 
       <div
@@ -59,7 +56,7 @@
       </div>
 
       <div
-        v-if="layout.ticket_open_closed_graph?.show"
+        v-if="!layout.ticket_open_closed_graph?.show"
         :key="updateToken"
         class="grid grid-cols-1 items-center gap-5"
       >
@@ -81,6 +78,7 @@
 
       <ticket-list-section
         v-if="allTickets?.length && layout?.ticket_list?.show"
+        :key="updateToken"
         :tickets-list="allTickets"
         @showTicketDetails="(value) => (detailsTicketId = value)"
       />

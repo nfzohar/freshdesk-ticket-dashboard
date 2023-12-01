@@ -16,19 +16,20 @@
               v-text="'Manage Dashboard Layout'"
             />
 
-            <a-checkbox
-              class="w-max font-bold pr-2 mb-2"
-              :the-value="refreshSwitch"
-              :label="'Refresh'"
-              :title="'Toggle section visibility.'"
-              @changed="(value) => (refreshSwitch = value)"
-            />
-            <div class="flex items-center gap-x-8 mb-5 bg-secondary-600 rounded-md px-5 py-3">
-              <label class="w-full" v-text="'Refresh per minutes'" />
+            <div class="flex items-center mb-5 bg-secondary-600 rounded-md px-5 py-3">
+              <a-checkbox
+                :key="refreshMinRate"
+                class="w-9/12 font-bold pr-2 mb-2"
+                :the-value="refreshSwitch"
+                :label="'Refresh per minutes'"
+                :title="'Toggle automatic refresh.'"
+                @changed="(value) => (refreshSwitch = value)"
+              />
               <input
                 v-model="refreshMinRate"
                 type="number"
-                class="w-full rounded-md text-black px-1"
+                :title="'Count of minutes in a refresh interval.'"
+                class="w-3/12 rounded-md text-black px-1"
               />
             </div>
 
@@ -115,9 +116,9 @@ export default defineComponent({
 
   data() {
     return {
+      clearInterval: null,
       refreshSwitch: false,
       refreshMinRate: 5,
-      timeoutId: null,
       customFields: {},
       open: false,
       layout: {}
@@ -140,15 +141,21 @@ export default defineComponent({
     open() {
       this.layout = this.buildLayoutFromStore()
     },
+    refreshMinRate() {
+      this.refreshSwitch = false
+    },
     refreshSwitch() {
-      if (!this.refreshSwitch) {
-        this.timeoutId.unset()
-      }
-
-      while (this.refreshSwitch) {
-        setTimeout(() => {
-          console.log('Delayed for 1 second.')
-        }, 1000)
+      if (this.refreshSwitch) {
+        if (this.refreshMinRate) {
+          this.intervalId = setInterval(
+            () => {
+              this.$emit('refreshDashboard')
+            },
+            1000 * 60 * this.refreshMinRate
+          )
+        }
+      } else {
+        clearInterval(this.intervalId)
       }
     }
   },

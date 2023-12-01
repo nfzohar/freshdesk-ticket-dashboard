@@ -52,9 +52,8 @@ export default defineComponent({
     }
   },
 
-  async mounted() {
+  async created() {
     await this.fetchTicketGroups()
-    this.$dashboard.groups = this.groups
   },
 
   methods: {
@@ -69,6 +68,9 @@ export default defineComponent({
         })
         .then(() => {
           this.getGroupTicketCounts()
+        })
+        .then(() => {
+          this.$dashboard.groups = this.groups
         })
     },
 

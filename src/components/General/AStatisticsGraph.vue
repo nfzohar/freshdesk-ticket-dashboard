@@ -1,11 +1,11 @@
 <template>
-  <div class="w-full">
+  <div :key="type" class="w-full">
     <h1 v-if="title" class="block text-xl font-bold mb-1" v-text="title" />
 
     <component
       :is="chartType"
-      class="w-full p-2 border-primary-700 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
-      style="height: 50vh"
+      :class="customClass"
+      style="max-height: 50vh"
       :data="chartData"
       :options="chartOptions"
     />
@@ -59,7 +59,7 @@ export default defineComponent({
     type: {
       type: String,
       required: false,
-      default: 'bar'
+      default: 'v-bar'
     },
     datasets: {
       type: [Object, Array],
@@ -71,30 +71,43 @@ export default defineComponent({
       required: false,
       default: () => []
     },
-    mainAxis: {
+    customClass: {
       type: String,
       required: false,
-      default: 'x'
+      default:
+        'w-full p-2 border-primary-700 border bg-secondary-500 rounded-md shadow-md shadow-primary-600'
     }
   },
 
   computed: {
     chartData() {
       return {
-        datasets: this.datasets,
-        labels: this.datasetLabels
+        labels: this.datasetLabels,
+        datasets: [
+          {
+            label: '',
+            backgroundColor: this.datasetBackground,
+            data: this.datasets
+          }
+        ]
       }
     },
-
     chartOptions() {
       return {
-        responsive: true
+        responsive: true,¸¸
+        elements: {
+          arc: {
+            borderwidth: 5,
+            bordercolor: 'none'
+          }
+        }
       }
     },
-
     chartType(): String {
       switch (this.type) {
-        case 'bar':
+        case 'v-bar':
+          return 'BarChart'
+        case 'h-bar':
           return 'BarChart'
         case 'line':
           return 'LineChart'
@@ -105,6 +118,10 @@ export default defineComponent({
         default:
           return 'BarChart'
       }
+    },
+    datasetBackground() {
+      let colors = ['gray', 'purple', 'green', 'red', 'yellow', , 'brown']
+      return colors.slice(0, this.datasets?.length)
     }
   }
 })

@@ -1,23 +1,46 @@
 <template>
   <div v-if="customFieldIsDefined" class="w-full" :key="tickets.length">
-    <h1
-      class="text-xl font-bold mb-1 cursor-pointer"
-      :class="{'border-l-4 pl-2 border-primary-400' : !showSection}"
-      v-text="title"
-      @click.stop="showSection = !showSection"
-    />
+    <div class="flex items-center justify-between">
+      <h1
+        class="text-xl font-bold mb-1 cursor-pointer"
+        :class="{ 'border-l-4 pl-2 border-primary-400': !showSection }"
+        v-text="title"
+        @click.stop="showSection = !showSection"
+      />
+
+      <button
+        class="hover:bg-primary-500 hover:shadow-md hover:shadow-primary-600 rounded-full"
+        :title="'Switch view'"
+        @click="nextView()"
+      >
+        <switch-icon />
+      </button>
+    </div>
 
     <div
       v-if="showSection"
-      class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 overflow-y-scroll scrollbar-hide"
-      :class="'border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600'"
-      style="max-height: 50vh"
+      class="border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
     >
-      <a-custom-field
-        v-for="(customField, c) in uniqueFields"
-        :key="c"
-        :custom-field="customField"
-      />
+      <div
+        v-if="selectedView == 'default'"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 overflow-y-scroll scrollbar-hide"
+        style="max-height: 50vh"
+      >
+        <a-custom-field
+          v-for="(customField, c) in uniqueFields"
+          :key="c"
+          :custom-field="customField"
+        />
+      </div>
+
+      <div v-else :key="selectedView">
+        <a-statistics-graph
+          :type="selectedView"
+          :custom-class="'p-5 border-primary-700 border'"
+          :datasets="customDatasets"
+          :dataset-labels="customDatasetLabels"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -25,12 +48,14 @@
 <script lang="ts">
 import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
+import SwitchIcon from '@/components//icons/SwitchIcon.vue'
 import ACustomField from '@/components/subcomponents/ACustomField.vue'
+import AStatisticsGraph from '@/components/General/AStatisticsGraph.vue'
 
 export default defineComponent({
   name: 'TicketCustomFieldSection',
 
-  components: { ACustomField },
+  components: { ACustomField, AStatisticsGraph, SwitchIcon },
 
   props: {
     tickets: {
@@ -54,7 +79,8 @@ export default defineComponent({
     return {
       uniqueFields: Array(),
       showSection: true,
-      isLoading: true
+      isLoading: true,
+      selectedView: 'default'
     }
   },
 
@@ -64,6 +90,12 @@ export default defineComponent({
     },
     customCustomField() {
       return this.customField.substring(0, 3) == 'cf_'
+    },
+    customDatasets() {
+      return Object.values(this.uniqueFields.map((field) => field.ticket_count))
+    },
+    customDatasetLabels() {
+      return Object.values(this.uniqueFields.map((field) => field.name))
     }
   },
 
@@ -109,6 +141,12 @@ export default defineComponent({
       }
 
       this.isLoading = false
+    },
+
+    nextView() {
+      let validViews = ['default', 'v-bar', 'h-bar', 'pie', 'doughnut']
+      let currentIndex = validViews.indexOf(this.selectedView)
+      this.selectedView = validViews[currentIndex + 1]
     }
   }
 })

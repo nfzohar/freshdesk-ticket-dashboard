@@ -18,7 +18,7 @@
     </div>
 
     <div v-if="showSection" :key="selectedYear">
-      <ticket-statistics-graph :type="'line'" :datasets="datasets" :dataset-labels="labels" />
+      <a-statistics-graph :type="'line'" :datasets="datasets" :dataset-labels="labels" />
     </div>
   </div>
 </template>
@@ -27,12 +27,12 @@
 import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
 import ASelect from '@/components/General/ASelect.vue'
-import TicketStatisticsGraph from '@/components/subcomponents/TicketStatisticsGraph.vue'
+import AStatisticsGraph from '@/components/General/AStatisticsGraph.vue'
 
 export default defineComponent({
   name: 'TicketStatisticsOpenClosedGraph',
 
-  components: { TicketStatisticsGraph, ASelect },
+  components: { AStatisticsGraph, ASelect },
 
   props: {
     tickets: {
@@ -55,6 +55,13 @@ export default defineComponent({
       closedTickets: [],
       displayForYear: [],
       selectedYear: new Date().getFullYear()
+    }
+  },
+
+  watch: {
+    'tickets.length'() {
+      this.calculateYears()
+      this.ticketStatisticsForYear()
     }
   },
 
@@ -101,15 +108,15 @@ export default defineComponent({
 
   created() {
     this.labels = this.months
-    this.calculateYears()
-  },
 
-  mounted() {
+    this.calculateYears()
     this.ticketStatisticsForYear()
   },
 
   methods: {
     ticketStatisticsForYear() {
+      this.selectedYear = new Date().getFullYear()
+
       let ticketsOfYear = this.tickets.filter(
         (ticket) => new Date(ticket.created_at).getFullYear() == this.selectedYear
       )
