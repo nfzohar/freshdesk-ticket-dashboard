@@ -56,6 +56,11 @@ export default defineComponent({
       required: false,
       default: ''
     },
+    datasetTitle: {
+      type: String,
+      required: false,
+      default: null
+    },
     type: {
       type: String,
       required: false,
@@ -85,7 +90,7 @@ export default defineComponent({
         labels: this.datasetLabels,
         datasets: [
           {
-            label: 'Info',
+            label: this.datasetTitle ?? 'Info',
             backgroundColor: this.datasetBackground,
             data: this.datasets
           }
@@ -95,13 +100,7 @@ export default defineComponent({
     chartOptions() {
       return {
         responsive: true,
-        indexAxis: this.type == 'h-bar' ? 'y' : 'x',
-        elements: {
-          arc: {
-            borderwidth: 5,
-            bordercolor: 'none'
-          }
-        }
+        indexAxis: this.type == 'h-bar' ? 'y' : 'x'
       }
     },
     chartType(): String {

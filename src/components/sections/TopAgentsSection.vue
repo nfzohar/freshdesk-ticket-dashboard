@@ -1,34 +1,34 @@
 <template>
-  <div class="w-full">
-    <h1
-      class="text-xl font-bold mb-1 cursor-pointer"
-      :class="{ 'border-l-4 pl-2 border-primary-400': !showSection }"
-      v-text="'Top ' + topListCount + ' agents'"
-      @click.stop="showSection = !showSection"
-    />
-
-    <div
-      v-if="showSection"
-      :key="tickets.length"
-      class="grid grid-cols-1 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
-      :class="'overflow-y-scroll scrollbar-hide'"
-      style="max-height: 50vh"
-    >
-      <a-top-agent v-for="(agent, t) in topCountedAgents" :key="t" :position="t" :agent="agent" />
-    </div>
-  </div>
+  <a-section
+    :datasets="dataset"
+    :dataset-labels="datasetLabels"
+    :title="'Top ' + topListCount + ' agents'"
+  >
+    <template #defaultView>
+      <div
+        :key="tickets.length"
+        class="grid grid-cols-1 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
+        :class="'overflow-y-scroll scrollbar-hide'"
+        style="max-height: 50vh"
+      >
+        <a-top-agent v-for="(agent, t) in topCountedAgents" :key="t" :position="t" :agent="agent" />
+      </div>
+    </template>
+  </a-section>
 </template>
 
 <script lang="ts">
 import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
+import ASection from '@/components/General/ASection.vue'
 import ATopAgent from '@/components/subcomponents/ATopAgent.vue'
+import { TWO_THIRDS_PI } from 'chart.js/helpers'
 
 export default defineComponent({
   name: 'TopAgentsSection',
 
-  components: { ATopAgent },
+  components: { ATopAgent, ASection },
 
   props: {
     tickets: {
@@ -40,7 +40,7 @@ export default defineComponent({
 
   data() {
     return {
-      showSection: true,
+      topCountedAgents: [],
       sortedAgents: [],
       allAgents: []
     }
@@ -50,6 +50,9 @@ export default defineComponent({
     'tickets.length'() {
       this.sortedAgents = []
       this.calculateAgentStatistics()
+    },
+    'sortedAgents.length'() {
+      this.topCountedAgents = this.sortedAgents.slice(0, this.topListCount)
     }
   },
 
@@ -58,8 +61,11 @@ export default defineComponent({
       let count = this.$dashboard?.$state?.layout?.top_agents?.settings?.listLentgh
       return count > 0 ? count : 5
     },
-    topCountedAgents(): Object {
-      return this.sortedAgents.slice(0, this.topListCount)
+    dataset() {
+      return Object.values(this.topCountedAgents?.map((agent) => agent?.ticket_count))
+    },
+    datasetLabels() {
+      return Object.values(this.topCountedAgents?.map((agent) => agent?.name))
     }
   },
 

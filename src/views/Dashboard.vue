@@ -56,7 +56,7 @@
       </div>
 
       <div
-        v-if="!layout.ticket_open_closed_graph?.show"
+        v-if="layout.ticket_open_closed_graph?.show"
         :key="updateToken"
         class="grid grid-cols-1 items-center gap-5"
       >
