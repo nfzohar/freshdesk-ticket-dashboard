@@ -145,8 +145,8 @@ export default defineComponent({
 
     nextView() {
       let validViews = ['default', 'v-bar', 'h-bar', 'pie', 'doughnut']
-      let currentIndex = validViews.indexOf(this.selectedView)
-      this.selectedView = validViews[currentIndex + 1]
+      let currentIndex = validViews.indexOf(this.selectedView) + 1
+      this.selectedView = validViews[currentIndex] ?? 'default'
     }
   }
 })

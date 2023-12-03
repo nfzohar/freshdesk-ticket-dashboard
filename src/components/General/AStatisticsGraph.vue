@@ -85,7 +85,7 @@ export default defineComponent({
         labels: this.datasetLabels,
         datasets: [
           {
-            label: '',
+            label: 'Info',
             backgroundColor: this.datasetBackground,
             data: this.datasets
           }
@@ -94,7 +94,8 @@ export default defineComponent({
     },
     chartOptions() {
       return {
-        responsive: true,¸¸
+        responsive: true,
+        indexAxis: this.type == 'h-bar' ? 'y' : 'x',
         elements: {
           arc: {
             borderwidth: 5,
@@ -120,8 +121,18 @@ export default defineComponent({
       }
     },
     datasetBackground() {
-      let colors = ['gray', 'purple', 'green', 'red', 'yellow', , 'brown']
-      return colors.slice(0, this.datasets?.length)
+      let colors = []
+
+      for (let i = 0; i < this.datasets?.length; i++) {
+        colors.push(
+          '#' +
+            Math.floor(Math.random() * 0xfffff * 1000000)
+              .toString(16)
+              .slice(0, 3)
+        )
+      }
+
+      return colors
     }
   }
 })
