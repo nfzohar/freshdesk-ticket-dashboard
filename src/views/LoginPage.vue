@@ -33,7 +33,7 @@
           <span
             v-if="!userCredentialsSet"
             class="block font-semibold my-3"
-            v-text="'Credentials not set in environment file!'"
+            v-text="'Credentials not set in env file!'"
           />
 
           <section v-else @keydown.enter="authenticate()">
@@ -95,6 +95,12 @@ export default defineComponent({
     },
     freshdeskApiKey() {
       return import.meta.env.VITE_FRESHDESK_API_KEY ?? ''
+    },
+    userCredentialsSet() {
+      return (
+        import.meta.env.VITE_ACCESS_CONTROL_USERNAME != '' &&
+        import.meta.env.VITE_ACCESS_CONTROL_PASSWORD != ''
+      )
     },
     appTitle() {
       return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'

@@ -4,7 +4,7 @@
       <button
         class="primary-button w-32 text-center bg-primary-500 hover:bg-primary-600 border-none py-2 px-10 shadow-md shadow-primary-600"
         v-text="'Filter'"
-        :title="'open filters modal'"
+        :title="'Open filters modal'"
       />
     </template>
 
@@ -31,7 +31,8 @@
                 :label-field="'label'"
                 :value-field="'value'"
                 label-class="font-semibold mb-1"
-                :input-class="['h-8 mb-2', { 'bg-primary-600': true }]"
+                :input-class="['h-10 mb-2 p-2', { 'bg-primary-600': true }]"
+                @changed="(value) => test(value, filter?.name)"
               />
             </template>
           </div>
@@ -39,6 +40,7 @@
           <button
             class="bg-primary-500 hover:bg-primary-400 border border-primary-700 w-full py-2 px-5 rounded-md shadow-primary-600 font-semibold"
             v-text="'Apply'"
+            @click="applyTicketFilters()"
           />
         </div>
       </div>
@@ -59,6 +61,7 @@ export default defineComponent({
 
   data() {
     return {
+      values: [],
       filters: [],
       showFilterSection: true
     }
@@ -69,6 +72,19 @@ export default defineComponent({
   },
 
   methods: {
+    test(value, index) {
+      this.values[index] = value
+      console.log(this.values)
+    },
+
+    applyTicketFilters() {
+      let valueKeys = Object.keys(this.values)
+
+      console.log(valueKeys)
+
+      // run through all entries, add non null entries to route as variables
+    },
+
     async fetchAllTicketFields() {
       await ApiCall.get('admin/ticket_fields').then((response) => {
         if (response) {

@@ -17,7 +17,7 @@
       />
     </div>
 
-    <div v-if="showSection" :key="selectedYear">
+    <div v-if="showSection" :key="ticketsByYear.length">
       <a-statistics-graph :type="'line'" :datasets="datasets" :dataset-labels="labels" />
     </div>
   </div>
@@ -39,11 +39,6 @@ export default defineComponent({
       type: [Object, Array],
       required: false,
       default: () => []
-    },
-    oldestTicket: {
-      type: Date,
-      required: false,
-      default: () => new Date()
     }
   },
 
@@ -51,6 +46,7 @@ export default defineComponent({
     return {
       labels: [],
       showSection: true,
+      ticketsByYear: [],
       openedTickets: [],
       closedTickets: [],
       displayForYear: [],
@@ -60,7 +56,12 @@ export default defineComponent({
 
   watch: {
     'tickets.length'() {
-      this.calculateYears()
+      this.ticketsByYear = []
+      this.splitTicketsByYear()
+      this.ticketStatisticsForYear()
+    },
+    selectedYear() {
+      this.ticketsByYear = []
       this.ticketStatisticsForYear()
     }
   },
@@ -109,52 +110,70 @@ export default defineComponent({
   created() {
     this.labels = this.months
 
-    this.calculateYears()
+    this.splitTicketsByYear()
     this.ticketStatisticsForYear()
   },
 
   methods: {
-    ticketStatisticsForYear() {
-      this.selectedYear = new Date().getFullYear()
-
-      let ticketsOfYear = this.tickets.filter(
-        (ticket) => new Date(ticket.created_at).getFullYear() == this.selectedYear
+    splitTicketsByYear() {
+      this.ticketsByYear = groupBy(this.tickets, (ticket) =>
+        new Date(ticket.created_at).getFullYear()
       )
 
-      this.openedTickets = this.buildTicketsArrayByStatus(
-        ticketsOfYear,
-        this.openStatusId,
-        'created_month',
-        'created_at'
-      )
-
-      this.closedTickets = this.buildTicketsArrayByStatus(
-        ticketsOfYear,
-        this.closedStatusId,
-        'closed_month',
-        'updated_at'
-      )
+      this.displayForYear = Object.keys(this.ticketsByYear)
     },
 
-    buildTicketsArrayByStatus(ticketsOfYear, statusId, monthFieldName, sortingField) {
-      let ticketsOfStatus = ticketsOfYear.filter((yearsTicket) => yearsTicket.status == statusId)
+    ticketStatisticsForYear() {
+      let ticketsOfYear = this.ticketsByYear[this.selectedYear] ?? []
+
+      this.openedTickets = this.buildOpenTicketsArray(ticketsOfYear)
+      this.closedTickets = this.buildClosedTicketsArray(ticketsOfYear)
+
+      // console.log('opened:')
+      // console.log(this.openedTickets)
+
+      // console.log('closed:')
+      // console.log(this.closedTickets)
+    },
+
+    buildOpenTicketsArray(ticketsOfYear) {
+      let ticketsOfStatus = ticketsOfYear.filter(
+        (yearsTicket) => yearsTicket.status == this.openStatusId
+      )
 
       ticketsOfStatus.forEach((ticket) => {
-        ticket[monthFieldName] = new Date(ticket[sortingField]).getMonth()
+        ticket['created_month'] = Number(new Date(ticket['created_at']).getMonth()) + 1
       })
 
-      ticketsOfStatus = groupBy(ticketsOfStatus, monthFieldName)
+      ticketsOfStatus = groupBy(ticketsOfStatus, 'created_month')
+
+      for (let month = 1; month <= 12; month++) {
+        if (!ticketsOfStatus[month]) {
+          ticketsOfStatus[month] = []
+        }
+      }
+
       return Object.values(ticketsOfStatus).map((month) => month?.length)
     },
 
-    calculateYears() {
-      let oldestTicketDate = new Date(this.oldestTicket).getFullYear()
-      let currentYear = new Date().getFullYear()
+    buildClosedTicketsArray(ticketsOfYear) {
+      let ticketsOfStatus = ticketsOfYear.filter(
+        (yearsTicket) => yearsTicket.status == this.closedStatusId
+      )
 
-      for (let i = oldestTicketDate; i <= currentYear; i++) {
-        this.displayForYear.push(i)
+      ticketsOfStatus.forEach((ticket) => {
+        ticket['closed_month'] = Number(new Date(ticket['updated_at']).getMonth()) + 1
+      })
+
+      ticketsOfStatus = groupBy(ticketsOfStatus, 'closed_month')
+
+      for (let month = 1; month <= 12; month++) {
+        if (!ticketsOfStatus[month]) {
+          ticketsOfStatus[month] = []
+        }
       }
-      this.selectedYear = this.displayForYear[0]
+      
+      return Object.values(ticketsOfStatus).map((month) => month?.length)
     }
   }
 })

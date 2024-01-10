@@ -23,7 +23,6 @@ import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import ASection from '@/components/General/ASection.vue'
 import ATopAgent from '@/components/subcomponents/ATopAgent.vue'
-import { TWO_THIRDS_PI } from 'chart.js/helpers'
 
 export default defineComponent({
   name: 'TopAgentsSection',

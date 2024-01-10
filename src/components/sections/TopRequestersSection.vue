@@ -2,7 +2,7 @@
   <a-section
     :datasets="dataset"
     :dataset-labels="datasetLabels"
-    :title="'Top ' + topListCount + ' agents'"
+    :title="'Top ' + topListCount + ' requesters'"
   >
     <template #defaultView>
       <div

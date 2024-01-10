@@ -3,83 +3,74 @@
     <template #content>
       <div
         :key="details?.id"
-        class="w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5 m-auto"
-        :class="[darkBackground ? 'text-white' : 'text-black', { 'is-loading': isLoading }]"
+        class="w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-7 m-auto"
+        :class="[{ 'is-loading': isLoading }, darkBackground ? 'text-white' : 'text-black']"
       >
         <div class="flex items-center justify-between w-full border-primary-500 border-b pb-2">
-          <h1 class="text-3xl" v-text="title" />
-          <span class="font-bold" v-text="details?.type" />
+          <h1 class="text-3xl font-semibold" v-text="title" />
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 my-5 gap-5">
-          <div class="flex flex-col">
-            <span class="font-bold" v-text="'Opened by:'" />
-            <a
-              :href="requesterPageUrl"
-              target="_blank"
-              :title="'Requester'"
-              class="bg-secondary-600 rounded-md py-1 px-2 h-full"
-            >
-              <span class="block w-full" v-text="requester?.name" />
-              <span class="block text-sm italic" v-text="requester?.email" />
-            </a>
-          </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 my-3 gap-5">
+          <div>
+            <span class="block w-full font-bold" v-text="'Opened by'" />
 
-          <div class="flex flex-col">
-            <span class="font-bold" v-text="'Status:'" />
-            <span
-              class="bg-secondary-600 rounded-md text-center font-bold text-xl p-3 h-full"
-              v-text="status"
-            />
-          </div>
-
-          <div class="flex flex-col">
-            <span class="font-bold" v-text="'Tags:'" />
-            <span class="bg-secondary-600 rounded-md p-2 text-center h-full" v-text="ticketTags" />
-          </div>
-
-          <div class="flex flex-col">
-            <span class="font-bold" v-text="'Stats:'" />
-
-            <div class="grid grid-cols-2 bg-secondary-600 rounded-md py-1 px-2 h-full">
-              <span class="text-left" v-text="'Created:'" />
-              <span class="text-right" v-text="fdate(details?.created_at)" />
-              <span class="text-left" v-text="'Last update:'" />
-              <span class="text-right" v-text="fdate(details?.updated_at)" />
-
-              <template v-if="details.stats?.reopened_at">
-                <span class="text-left" v-text="'Reopened at:'" />
-                <span class="text-right" v-text="fdate(details?.stats?.reopened_at)" />
-              </template>
-
-              <template v-if="details.stats?.resolved_at">
-                <span class="text-left" v-text="'Resolved at:'" />
-                <span class="text-right" v-text="fdate(details?.stats?.resolved_at)" />
-              </template>
-
-              <template v-if="details.stats?.closed_at">
-                <span class="text-left" v-text="'Closed at:'" />
-                <span class="text-right" v-text="fdate(details?.stats?.closed_at)" />
-              </template>
+            <div class="bg-secondary-600 rounded-md p-3 text-left">
+              <a :href="requesterPageUrl" target="_blank">
+                <span class="block w-full font-semibold" v-text="requester?.name" />
+                <span class="block text-sm italic" v-text="requester?.email" />
+              </a>
             </div>
           </div>
 
-          <br />
+          <div>
+            <span class="block w-full font-bold" v-text="'Type'" />
 
-          <div class="flex items-end">
-            <a
-              class="border-primary-600 bg-primary-500 rounded-md text-center border-none p-3 w-full mb-1"
-              href="#"
-              target="_blank"
-              v-text="'Open in Freshdesk'"
-            />
+            <div class="bg-secondary-600 rounded-md p-3 text-center">
+              <span class="w-auto text-center font-semibold" v-text="details?.type" />
+            </div>
+          </div>
+
+          <div>
+            <span class="block w-full font-bold" v-text="'Status'" />
+
+            <div class="bg-secondary-600 rounded-md p-3 text-center">
+              <span class="w-auto text-center font-semibold" v-text="status" />
+            </div>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="font-bold" v-text="'Tags'" />
+            <span class="bg-secondary-600 rounded-md p-3 text-center" v-text="ticketTags" />
+          </div>
+
+          <a
+            class="border-primary-600 bg-primary-500 rounded-md text-center m-auto border-none p-3 w-full h-12"
+            :href="ticketUrl"
+            target="_blank"
+            v-text="'Open in Freshdesk'"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 my-3 gap-5">
+          <!--  -->
+          <div class="flex flex-col">
+            <span class="font-bold" v-text="'Stats:'" />
+
+            <div class="grid grid-cols-2 bg-secondary-600 rounded-md p-3 h-full gap-x-10">
+              <template v-for="(stat, s) in stats" :key="s">
+                <div v-if="stat?.show" class="grid grid-cols-2">
+                  <span class="text-left font-semibold" v-text="stat?.label" />
+                  <span class="text-right" v-text="stat?.date" />
+                </div>
+              </template>
+            </div>
           </div>
         </div>
 
-        <span class="text-base my-1 font-bold" v-text="'Description:'" />
+        <span class="text-base mb-2 font-bold" v-text="'Description:'" />
         <div
           class="bg-white text-black p-5 rounded-lg overflow-y-scroll scrollbar-hide shadow-md shadow-primary-500"
-          style="max-height: 50vh"
+          style="max-height: 60vh"
           v-html="details?.description"
         />
       </div>
@@ -154,8 +145,40 @@ export default defineComponent({
     darkBackground(): Boolean {
       return colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR)
     },
-    requesterPageUrl(): String {
+    requesterPageUrl(): string {
       return String(this.$store.domain).replace('api/v2/', 'a/contacts/' + this.requester?.id)
+    },
+    ticketUrl(): string {
+      return String(this.$store.domain).replace('api/v2/', 'a/tickets/' + this.details?.id)
+    },
+    stats() {
+      return [
+        {
+          show: true,
+          label: 'Created',
+          date: this.fdate(this.details?.created_at)
+        },
+        {
+          show: true,
+          label: 'Last update',
+          date: this.fdate(this.details?.updated_at)
+        },
+        {
+          show: this.details.stats?.reopened_at ? true : false,
+          label: 'Reopened at',
+          date: this.fdate(this.details?.stats?.reopened_at)
+        },
+        {
+          show: this.details.stats?.resolved_at ? true : false,
+          label: 'Resolved at',
+          date: this.fdate(this.details?.stats?.resolved_at)
+        },
+        {
+          show: this.details.stats?.closed_at ? true : false,
+          label: 'Closed at',
+          date: this.fdate(this.details?.stats?.closed_at)
+        }
+      ]
     }
   },
 
@@ -177,9 +200,7 @@ export default defineComponent({
     },
 
     fdate(date) {
-      if (date) {
-        return format(new Date(date), 'd. d. y')
-      }
+      return date ? format(new Date(date), 'd. d. y') : '-'
     },
 
     reset() {

@@ -212,7 +212,7 @@ export default defineComponent({
 
     async fetchTickets(i) {
       await ApiCall.get(
-        'tickets?updated_since=' + this.startYear + '&per_page=100&page=' + i + '&include=requester'
+        'tickets?updated_since=' + this.startYear + '&per_page=100&page=' + i + '&include=requester,stats'
       ).then((response) => {
         if (response) {
           this.tickets[i] = Object.values(response)
