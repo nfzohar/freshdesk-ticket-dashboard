@@ -3,7 +3,7 @@
     <template #content>
       <div
         :key="details?.id"
-        class="w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-7 m-auto"
+        class="w-11/12 md:w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-7 m-auto"
         :class="[{ 'is-loading': isLoading }, darkBackground ? 'text-white' : 'text-black']"
       >
         <div class="flex items-center justify-between w-full border-primary-500 border-b pb-2">
@@ -12,7 +12,7 @@
 
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 my-3 gap-5">
           <div>
-            <span class="block w-full font-bold" v-text="'Opened by'" />
+            <span class="block w-full font-bold capitalize" v-text="'Opened by'" />
 
             <div class="bg-secondary-600 rounded-md p-3 text-left">
               <a :href="requesterPageUrl" target="_blank">
@@ -23,23 +23,21 @@
           </div>
 
           <div>
-            <span class="block w-full font-bold" v-text="'Type'" />
-
+            <span class="block w-full font-bold capitalize" v-text="'Type'" />
             <div class="bg-secondary-600 rounded-md p-3 text-center">
               <span class="w-auto text-center font-semibold" v-text="details?.type" />
             </div>
           </div>
 
           <div>
-            <span class="block w-full font-bold" v-text="'Status'" />
-
+            <span class="block w-full font-bold capitalize" v-text="'Status'" />
             <div class="bg-secondary-600 rounded-md p-3 text-center">
               <span class="w-auto text-center font-semibold" v-text="status" />
             </div>
           </div>
 
           <div class="flex flex-col">
-            <span class="font-bold" v-text="'Tags'" />
+            <span class="font-bold capitalize" v-text="'Tags'" />
             <span class="bg-secondary-600 rounded-md p-3 text-center" v-text="ticketTags" />
           </div>
 
@@ -52,15 +50,27 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 my-3 gap-5">
-          <!--  -->
           <div class="flex flex-col">
             <span class="font-bold" v-text="'Stats:'" />
-
-            <div class="grid grid-cols-2 bg-secondary-600 rounded-md p-3 h-full gap-x-10">
+            <div
+              class="grid grid-cols-2 md:grid-cols-1 xl:grid-cols-2 bg-secondary-600 rounded-md p-3 h-full gap-x-10"
+            >
               <template v-for="(stat, s) in stats" :key="s">
                 <div v-if="stat?.show" class="grid grid-cols-2">
-                  <span class="text-left font-semibold" v-text="stat?.label" />
+                  <span class="text-left font-semibold capitalize" v-text="stat?.label" />
                   <span class="text-right" v-text="stat?.date" />
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <div v-if="hasCustomFields" class="flex flex-col xl:px-16">
+            <span class="font-bold" v-text="'Custom Fields:'" />
+            <div class="flex flex-col bg-secondary-600 rounded-md p-3 h-full gap-y-1">
+              <template v-for="(customField, s) in customFields" :key="s">
+                <div v-if="customField?.value" class="grid grid-cols-2">
+                  <span class="text-left font-semibold capitalize" v-text="customField?.label" />
+                  <span class="text-right" v-text="customField?.value" />
                 </div>
               </template>
             </div>
@@ -145,11 +155,31 @@ export default defineComponent({
     darkBackground(): Boolean {
       return colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR)
     },
+    freshdeskWebUrl() {
+      return String(this.$store.domain).replace('api/v2/', 'a/')
+    },
     requesterPageUrl(): string {
-      return String(this.$store.domain).replace('api/v2/', 'a/contacts/' + this.requester?.id)
+      return this.freshdeskWebUrl + 'contacts/' + this.requester?.id
     },
     ticketUrl(): string {
-      return String(this.$store.domain).replace('api/v2/', 'a/tickets/' + this.details?.id)
+      return this.freshdeskWebUrl + 'tickets/' + this.details?.id
+    },
+    hasCustomFields() {
+      return Object.values(this.details.custom_fields).length
+    },
+    customFields() {
+      let ticketCustomFields = []
+
+      Object.keys(this.details.custom_fields).forEach((customField) => {
+        let aCustomField = {
+          label: customField.replace('cf_', '').replace('_', ' '),
+          value: this.details?.custom_fields[customField]
+        }
+
+        ticketCustomFields.push(aCustomField)
+      })
+
+      return ticketCustomFields
     },
     stats() {
       return [

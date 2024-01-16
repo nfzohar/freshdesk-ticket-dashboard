@@ -21,6 +21,11 @@
         <hr class="mb-3 border-t-primary-500" />
 
         <div v-if="showFilterSection" class="flex flex-col gap-5 p-3">
+          <div class="grid grid-cols-1 lg:grid-cols-2 w-full gap-y-2 gap-x-5">
+            <a-date-select :label="'Created at:'" @changed="(value) => (createdAt = value)" />
+            <a-date-select :label="'Updated at:'" @changed="(value) => (updatedAt = value)" />
+          </div>
+
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 w-full gap-y-2 gap-x-5">
             <template v-for="(filter, f) in filters" :key="f">
               <a-select
@@ -32,7 +37,7 @@
                 :value-field="'value'"
                 label-class="font-semibold mb-1"
                 :input-class="['h-10 mb-2 p-2', { 'bg-primary-600': true }]"
-                @changed="(value) => test(value, filter?.name)"
+                @changed="(value) => (values[filter?.name] = value)"
               />
             </template>
           </div>
@@ -53,16 +58,19 @@ import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import ADialog from '@/components/General/ADialog.vue'
 import ASelect from '@/components/General/ASelect.vue'
+import ADateSelect from '@/components/General/ADateSelect.vue'
 
 export default defineComponent({
   name: 'TicketFilterSection',
 
-  components: { ASelect, ADialog },
+  components: { ASelect, ADialog, ADateSelect },
 
   data() {
     return {
       values: [],
       filters: [],
+      createdAt: {},
+      updatedAt: {},
       showFilterSection: true
     }
   },
@@ -72,15 +80,15 @@ export default defineComponent({
   },
 
   methods: {
-    test(value, index) {
-      this.values[index] = value
-      console.log(this.values)
-    },
-
     applyTicketFilters() {
       let valueKeys = Object.keys(this.values)
 
-      console.log(valueKeys)
+      if (this.createdAt?.from) this.values['created_at_from'] = this.createdAt.from
+      if (this.createdAt?.to) this.values['created_at_to'] = this.createdAt.to
+      if (this.updatedAt?.from) this.values['updated_at_from'] = this.updatedAt.from
+      if (this.updatedAt?.to) this.values['updated_at_to'] = this.updatedAt.to
+
+      console.log(this.values)
 
       // run through all entries, add non null entries to route as variables
     },
@@ -113,29 +121,29 @@ export default defineComponent({
 
           if (filter.name == 'status') {
             this.$dashboard.statuses = filter?.choices
-            this.setTicketCountSettings(filter?.choices)
+            //this.setTicketCountSettings(filter?.choices)
           }
         }
       })
-    },
-
-    setTicketCountSettings(statuses) {
-      if (!this.$dashboard?.ticket_counts?.settings.length) {
-        let newTicketCountSettings = Array()
-        let storedTicketCounts = this.$dashboard?.ticket_counts?.settings
-
-        newTicketCountSettings['All'] = storedTicketCounts?.All
-        newTicketCountSettings['Unresolved'] = storedTicketCounts?.Unresolved
-
-        statuses.forEach((status) => {
-          if (!newTicketCountSettings[status?.label]) {
-            newTicketCountSettings[status?.label] = storedTicketCounts[status?.label]
-          }
-        })
-
-        this.$dashboard.layout.ticket_counts.settings = newTicketCountSettings
-      }
     }
+
+    // setTicketCountSettings(statuses) {
+    //   if (!this.$dashboard?.ticket_counts?.settings.length) {
+    //     let newTicketCountSettings = Array()
+    //     let storedTicketCounts = this.$dashboard?.ticket_counts?.settings
+
+    //     newTicketCountSettings['All'] = storedTicketCounts?.All
+    //     newTicketCountSettings['Unresolved'] = storedTicketCounts?.Unresolved
+
+    //     statuses.forEach((status) => {
+    //       if (!newTicketCountSettings[status?.label]) {
+    //         newTicketCountSettings[status?.label] = storedTicketCounts[status?.label]
+    //       }
+    //     })
+
+    //     this.$dashboard.layout.ticket_counts.settings = newTicketCountSettings
+    //   }
+    // }
   }
 })
 </script>
