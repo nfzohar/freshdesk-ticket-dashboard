@@ -165,6 +165,11 @@ export default defineComponent({
         : this.customFields?.length == 3
         ? 'sm:grid-cols-2 md:grid-cols-3'
         : ''
+    },
+    apiCallUrl() {
+      return this.$route.query.filters?.length
+        ? 'tickets?query=' + this.$route.query.filters
+        : 'tickets?updated_since=' + this.startYear
     }
   },
 
@@ -212,7 +217,7 @@ export default defineComponent({
 
     async fetchTickets(i) {
       await ApiCall.get(
-        'tickets?updated_since=' + this.startYear + '&per_page=100&page=' + i + '&include=requester,stats'
+        this.apiCallUrl + '&per_page=100&page=' + i + '&include=requester,stats'
       ).then((response) => {
         if (response) {
           this.tickets[i] = Object.values(response)

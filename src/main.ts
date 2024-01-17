@@ -32,8 +32,23 @@ app.use(Toast, {
   newestOnTop: true,
   maxToasts: 5,
   icon: true,
-  rtl: false
+  rtl: false,
+  filterToasts: (toasts) => {
+    const types = {}
+
+    if (typeof toasts == 'object') {
+      return toasts?.reduce((aggToasts, toast) => {
+        return types[toast.type]
+          ? aggToasts
+          : () => {
+              aggToasts.push(toast)
+              types[toast.type] = true
+            }
+      }, [])
+    }
+  }
 })
+
 // Register Toast globally
 app.config.globalProperties.$toast = useToast()
 

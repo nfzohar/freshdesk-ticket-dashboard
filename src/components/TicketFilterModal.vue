@@ -1,10 +1,11 @@
 <template>
-  <a-dialog custom-class="-mt-28 md:-mt-14">
+  <a-dialog custom-class="-mt-28 md:-mt-14" :manual-open="showFilterSection">
     <template #trigger>
       <button
         class="primary-button w-32 text-center bg-primary-500 hover:bg-primary-600 border-none py-2 px-10 shadow-md shadow-primary-600"
         v-text="'Filter'"
         :title="'Open filters modal'"
+        @click="showFilterSection = true"
       />
     </template>
 
@@ -13,17 +14,15 @@
         class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
         :class="'text-white'"
       >
-        <h1
-          class="text-xl font-bold cursor-pointer"
-          v-text="'Filters'"
-          @click.stop="showFilterSection = !showFilterSection"
-        />
+        <h1 class="text-xl font-bold cursor-pointer" v-text="'Filters'" />
         <hr class="mb-3 border-t-primary-500" />
 
         <div v-if="showFilterSection" class="flex flex-col gap-5 p-3">
-          <div class="grid grid-cols-1 lg:grid-cols-2 w-full gap-y-2 gap-x-5">
+          <div class="grid grid-cols-1 lg:grid-cols-2 w-full gap-y-3 gap-x-5">
             <a-date-select :label="'Created at:'" @changed="(value) => (createdAt = value)" />
             <a-date-select :label="'Updated at:'" @changed="(value) => (updatedAt = value)" />
+            <a-date-select :label="'Closed at:'" @changed="(value) => (createdAt = value)" />
+            <a-date-select :label="'Resolved at:'" @changed="(value) => (updatedAt = value)" />
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 w-full gap-y-2 gap-x-5">
@@ -65,6 +64,8 @@ export default defineComponent({
 
   components: { ASelect, ADialog, ADateSelect },
 
+  emits: ['filtersSet'],
+
   data() {
     return {
       values: [],
@@ -81,16 +82,37 @@ export default defineComponent({
 
   methods: {
     applyTicketFilters() {
-      let valueKeys = Object.keys(this.values)
+      let filterUrlString = ''
 
-      if (this.createdAt?.from) this.values['created_at_from'] = this.createdAt.from
-      if (this.createdAt?.to) this.values['created_at_to'] = this.createdAt.to
-      if (this.updatedAt?.from) this.values['updated_at_from'] = this.updatedAt.from
-      if (this.updatedAt?.to) this.values['updated_at_to'] = this.updatedAt.to
+      if (this.createdAt?.from) {
+        //filterUrlString += 'created_at:>2017-10-01 AND due_by:<2017-10-07'
+        filterUrlString += 'created_at:>2017-10-01 AND due_by:<2017-10-07'
+        this.values['created_at_from'] = this.createdAt.from
+      }
+      if (this.createdAt?.to) {
+        this.values['created_at_to'] = this.createdAt.to
+      }
+      if (this.updatedAt?.from) {
+        this.values['updated_at_from'] = this.updatedAt.from
+      }
+      if (this.updatedAt?.to) {
+        this.values['updated_at_to'] = this.updatedAt.to
+      }
 
-      console.log(this.values)
+      Object.keys(this.values).forEach((value) => {
+        if (this.values[value]) {
+          filterUrlString += value + ':' + this.values[value]
 
-      // run through all entries, add non null entries to route as variables
+          if (this.values[this.values.length - 1] != value) {
+            filterUrlString += ' AND '
+          }
+        }
+      })
+
+      this.$router.push({ query: filterUrlString?.length ? { filters: filterUrlString } : {} })
+
+      this.$emit('filtersSet')
+      this.showFilterSection = false
     },
 
     async fetchAllTicketFields() {
