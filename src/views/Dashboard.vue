@@ -28,7 +28,7 @@
           />
           <ticket-filter-modal />
         </div>
-        <dashboard-settings @refreshDashboard="loadTickets()" />
+        <dashboard-settings @refreshDashboard="loadTickets()" :a-ticket="allTickets[0]" />
       </div>
     </div>
 
@@ -50,11 +50,6 @@
         <ticket-groups-section v-if="layout.groups?.show" :tickets="allTickets" />
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <top-requesters-section v-if="layout.top_requesters?.show" :tickets="allTickets" />
-        <top-agents-section v-if="layout.top_agents?.show" :tickets="allTickets" />
-      </div>
-
       <div
         v-if="layout.ticket_open_closed_graph?.show"
         :key="updateToken"
@@ -66,7 +61,10 @@
         />
       </div>
 
-      <div v-if="customFields?.length" class="grid gap-5 grid-cols-1" :class="customFieldsClass">
+      <div class="grid grid-cols-1 gap-5" :class="{ 'sm:grid-cols-2': customFields?.length }">
+        <top-requesters-section v-if="layout.top_requesters?.show" :tickets="allTickets" />
+        <top-agents-section v-if="layout.top_agents?.show" :tickets="allTickets" />
+
         <ticket-custom-field-section
           v-for="(customField, cf) in customFields"
           :key="cf"
@@ -77,7 +75,7 @@
       </div>
 
       <ticket-list-section
-        v-if="allTickets?.length && layout?.ticket_list?.show"
+        v-if="layout?.ticket_list?.show && allTickets?.length"
         :key="updateToken"
         :tickets-list="allTickets"
         @showTicketDetails="(value) => (detailsTicketId = value)"

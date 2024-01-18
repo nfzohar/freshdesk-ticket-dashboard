@@ -143,29 +143,29 @@ export default defineComponent({
 
           if (filter.name == 'status') {
             this.$dashboard.statuses = filter?.choices
-            //this.setTicketCountSettings(filter?.choices)
+            this.setTicketCountSettings(filter?.choices)
           }
         }
       })
+    },
+
+    setTicketCountSettings(statuses) {
+      if (!this.$dashboard?.ticket_counts?.settings.length) {
+        let newTicketCountSettings = Array()
+        let storedTicketCounts = this.$dashboard?.ticket_counts?.settings
+
+        newTicketCountSettings['All'] = storedTicketCounts?.All
+        newTicketCountSettings['Unresolved'] = storedTicketCounts?.Unresolved
+
+        statuses.forEach((status) => {
+          if (!newTicketCountSettings[status?.label]) {
+            newTicketCountSettings[status?.label] = storedTicketCounts[status?.label]
+          }
+        })
+
+        this.$dashboard.layout.ticket_counts.settings = newTicketCountSettings
+      }
     }
-
-    // setTicketCountSettings(statuses) {
-    //   if (!this.$dashboard?.ticket_counts?.settings.length) {
-    //     let newTicketCountSettings = Array()
-    //     let storedTicketCounts = this.$dashboard?.ticket_counts?.settings
-
-    //     newTicketCountSettings['All'] = storedTicketCounts?.All
-    //     newTicketCountSettings['Unresolved'] = storedTicketCounts?.Unresolved
-
-    //     statuses.forEach((status) => {
-    //       if (!newTicketCountSettings[status?.label]) {
-    //         newTicketCountSettings[status?.label] = storedTicketCounts[status?.label]
-    //       }
-    //     })
-
-    //     this.$dashboard.layout.ticket_counts.settings = newTicketCountSettings
-    //   }
-    // }
   }
 })
 </script>

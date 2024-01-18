@@ -68,6 +68,7 @@
           </div>
 
           <custom-fields-manager
+            :a-ticket="aTicket"
             :custom-fields="customFields"
             @newCustomFields="(value) => (customFields = value)"
           />
@@ -113,6 +114,14 @@ export default defineComponent({
   components: { ACheckbox, ADialog, SettingsIcon, CustomFieldsManager },
 
   emits: ['refreshDashboard'],
+
+  props: {
+    aTicket: {
+      type: Object,
+      required: false,
+      default: () => {}
+    }
+  },
 
   data() {
     return {

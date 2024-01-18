@@ -17,11 +17,18 @@
         </div>
         <div>
           <label class="block" v-text="'Field'" />
-          <input
+          <select
             v-model="newCustomFieldField"
-            type="text"
             class="w-full rounded-md border border-primary-700 px-1 text-black"
-          />
+            :placeholder="'Select a field...'"
+          >
+            <option
+              v-for="(option, o) in avaliableFields"
+              :key="o"
+              v-text="option"
+              :value="option"
+            />
+          </select>
         </div>
       </div>
       <button
@@ -59,6 +66,11 @@ export default defineComponent({
       type: [Object, Array],
       required: false,
       default: () => []
+    },
+    aTicket: {
+      type: Object,
+      required: false,
+      default: () => {}
     }
   },
 
@@ -75,6 +87,12 @@ export default defineComponent({
   watch: {
     'allCustomFields.length'() {
       this.$emit('newCustomFields', this.allCustomFields)
+    }
+  },
+
+  computed: {
+    avaliableFields() {
+      return [Object.keys(this.aTicket), Object.keys(this.aTicket.custom_fields)].flat().sort()
     }
   },
 
