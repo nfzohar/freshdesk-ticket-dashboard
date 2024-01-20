@@ -20,8 +20,8 @@
           <select
             v-model="newCustomFieldField"
             class="w-full rounded-md border border-primary-700 px-1 text-black"
-            :placeholder="'Select a field...'"
           >
+            <option value="" v-text="'Select a field...'" />
             <option
               v-for="(option, o) in avaliableFields"
               :key="o"
@@ -80,7 +80,23 @@ export default defineComponent({
     return {
       newCustomFieldTitle: '',
       newCustomFieldField: '',
-      allCustomFields: Array()
+      allCustomFields: Array(),
+      ignoredFields: [
+        'id',
+        'tags',
+        'type',
+        'stats',
+        'status',
+        'due_by',
+        'subject',
+        'fr_due_by',
+        'requester',
+        'updated_at',
+        'created_at',
+        'responder_id',
+        'requester_id',
+        'custom_fields'
+      ]
     }
   },
 
@@ -92,7 +108,10 @@ export default defineComponent({
 
   computed: {
     avaliableFields() {
-      return [Object.keys(this.aTicket), Object.keys(this.aTicket.custom_fields)].flat().sort()
+      return [Object.keys(this.aTicket), Object.keys(this.aTicket.custom_fields)]
+        .flat()
+        .filter((field) => !this.ignoredFields.includes(field))
+        .sort()
     }
   },
 
