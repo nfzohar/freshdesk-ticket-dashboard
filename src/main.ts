@@ -1,3 +1,4 @@
+import AToast from '@/components/General/AToast.vue'
 import { useToast } from 'vue-toastification'
 import Toast from 'vue-toastification'
 import { createPinia } from 'pinia'
@@ -22,31 +23,18 @@ app.use(router)
 
 //Register Toast in app
 app.use(Toast, {
+  AToast,
   position: 'top-center',
   timeout: false,
   closeOnClick: true,
   draggable: true,
   draggablePercent: 0.6,
   showCloseButtonOnHover: false,
-  closeButton: 'button',
+  closeButton: AToast,
   newestOnTop: true,
   maxToasts: 5,
   icon: true,
-  rtl: false,
-  filterToasts: (toasts) => {
-    const types = {}
-
-    if (typeof toasts == 'object') {
-      return toasts?.reduce((aggToasts, toast) => {
-        return types[toast.type]
-          ? aggToasts
-          : () => {
-              aggToasts.push(toast)
-              types[toast.type] = true
-            }
-      }, [])
-    }
-  }
+  rtl: false
 })
 
 // Register Toast globally

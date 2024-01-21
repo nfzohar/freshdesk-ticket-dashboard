@@ -53,6 +53,7 @@
 </template>
 
 <script lang="ts">
+import format from 'date-fns/format'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import ADialog from '@/components/General/ADialog.vue'
@@ -64,7 +65,7 @@ export default defineComponent({
 
   components: { ASelect, ADialog, ADateSelect },
 
-  emits: ['filtersSet'],
+  emits: ['filtersApply'],
 
   data() {
     return {
@@ -81,45 +82,11 @@ export default defineComponent({
   },
 
   methods: {
-    applyTicketFilters() {
-      let filterUrlString = ''
-
-      if (this.createdAt?.from) {
-        //filterUrlString += 'created_at:>2017-10-01 AND due_by:<2017-10-07'
-        filterUrlString += 'created_at:>2017-10-01 AND due_by:<2017-10-07'
-        this.values['created_at_from'] = this.createdAt.from
-      }
-      if (this.createdAt?.to) {
-        this.values['created_at_to'] = this.createdAt.to
-      }
-      if (this.updatedAt?.from) {
-        this.values['updated_at_from'] = this.updatedAt.from
-      }
-      if (this.updatedAt?.to) {
-        this.values['updated_at_to'] = this.updatedAt.to
-      }
-
-      Object.keys(this.values).forEach((value) => {
-        if (this.values[value]) {
-          filterUrlString += value + ':' + this.values[value]
-
-          if (this.values[this.values.length - 1] != value) {
-            filterUrlString += ' AND '
-          }
-        }
-      })
-
-      this.$router.push({ query: filterUrlString?.length ? { filters: filterUrlString } : {} })
-
-      this.$emit('filtersSet')
-      this.showFilterSection = false
-    },
-
     async fetchAllTicketFields() {
       await ApiCall.get('admin/ticket_fields').then((response) => {
         if (response) {
           Object.values(response)
-            .map((filter) => filter.id)
+            .map((filter) => filter?.id)
             .forEach((filterId) => {
               this.fetchTicketFieldOptions(filterId)
             })
@@ -144,14 +111,18 @@ export default defineComponent({
           if (filter.name == 'status') {
             this.$dashboard.statuses = filter?.choices
             this.setTicketCountSettings(filter?.choices)
+
+            filter.choices = filter?.choices?.map((option) => {
+              return { label: option?.label, value: option?.id }
+            })
           }
         }
       })
     },
 
     setTicketCountSettings(statuses) {
-      if (!this.$dashboard?.ticket_counts?.settings.length) {
-        let newTicketCountSettings = Array()
+      if (!this.$dashboard?.ticket_counts?.visibleCounts?.length) {
+
         let storedTicketCounts = this.$dashboard?.ticket_counts?.settings
 
         newTicketCountSettings['All'] = storedTicketCounts?.All
@@ -165,6 +136,42 @@ export default defineComponent({
 
         this.$dashboard.layout.ticket_counts.settings = newTicketCountSettings
       }
+    },
+
+    applyTicketFilters() {
+      let urlFilters = Array()
+
+      if (this.createdAt?.from) {
+        urlFilters.push('created_at:>' + this.fdate(this.createdAt?.from))
+      }
+      if (this.createdAt?.to) {
+        urlFilters.push('created_at:<' + this.fdate(this.createdAt?.to))
+      }
+      if (this.updatedAt?.from) {
+        urlFilters.push('updated_at:>' + this.fdate(this.updatedAt?.from))
+      }
+      if (this.updatedAt?.to) {
+        urlFilters.push('updated_at:<' + this.fdate(this.updatedAt?.to))
+      }
+
+      Object.keys(this.values).forEach((value) => {
+        if (this.values[value]) {
+          if (typeof this.values[value] == 'string') {
+            urlFilters.push(value + ':"' + this.values[value] + '"')
+          } else {
+            urlFilters.push(value + ':' + this.values[value])
+          }
+        }
+      })
+
+      this.$store.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
+
+      this.$emit('filtersApply')
+      this.showFilterSection = false
+    },
+
+    fdate(dateString) {
+      return format(new Date(dateString), 'yyyy-mm-dd')
     }
   }
 })

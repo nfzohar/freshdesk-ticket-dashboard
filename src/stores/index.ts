@@ -4,7 +4,8 @@ export const Store = defineStore('main', {
   state: () => ({
     auth: false,
     domainURL: '',
-    apiKey: ''
+    apiKey: '',
+    apiFilters: ''
   }),
 
   getters: {
@@ -16,6 +17,9 @@ export const Store = defineStore('main', {
     },
     api_key(): String {
       return this.apiKey
+    },
+    filters(): String {
+      return this.apiFilters
     }
   },
 
@@ -35,6 +39,11 @@ export const Store = defineStore('main', {
         if (newValue != oldValue) {
           this.setAuthState(newValue)
         }
+      },
+      filters(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.setApiFilters(newValue)
+        }
       }
     },
 
@@ -45,6 +54,11 @@ export const Store = defineStore('main', {
     setAuthState(newAuthState) {
       this.auth = newAuthState
       localStorage.setItem('stored_auth_state', JSON.stringify(newAuthState))
+    },
+
+    setApiFilters(newFilters) {
+      this.apiFilters = newFilters
+      localStorage.setItem('stored_filters', JSON.stringify(newFilters))
     },
 
     setNewDomainUrl(newDomainUrl) {
@@ -71,6 +85,11 @@ export const Store = defineStore('main', {
       const apiKey = localStorage.getItem('stored_api_key')
       if (apiKey) {
         this.apiKey = JSON.parse(apiKey)
+      }
+
+      const apiFilters = localStorage.getItem('stored_filters')
+      if (apiFilters) {
+        this.apiFilters = JSON.parse(apiFilters)
       }
     },
 

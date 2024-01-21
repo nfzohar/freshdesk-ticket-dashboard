@@ -1,6 +1,6 @@
 <template>
   <ticket-details-modal
-    :key="detailsTicketId"
+    :key="String(detailsTicketId)"
     :ticket-id="Number(detailsTicketId)"
     @modalClosed="detailsTicketId = null"
   />
@@ -21,12 +21,13 @@
       <div class="flex items-center gap-x-5 justify-between w-full md:w-auto">
         <div class="flex items-center gap-x-5">
           <button
-            class="primary-button w-36 text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600"
-            v-text="'Refresh'"
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-3 shadow-md shadow-primary-600"
             :title="'Refresh page'"
             @click.stop="loadTickets()"
-          />
-          <ticket-filter-modal />
+          >
+            <reload-icon :pt-height="'20'" :pt-width="'20'" />
+          </button>
+          <ticket-filter-modal @filtersApply="loadFilteredTickets()" />
         </div>
         <dashboard-settings @refreshDashboard="loadTickets()" :a-ticket="allTickets[0]" />
       </div>
@@ -61,7 +62,13 @@
         />
       </div>
 
-      <div class="grid grid-cols-1 gap-5" :class="{ 'sm:grid-cols-2': customFields?.length }">
+      <div
+        class="grid grid-cols-1 gap-5"
+        :class="{
+          'sm:grid-cols-2':
+            (layout.top_requesters?.show || layout.top_agents?.show) && customFields?.length
+        }"
+      >
         <top-requesters-section v-if="layout.top_requesters?.show" :tickets="allTickets" />
         <top-agents-section v-if="layout.top_agents?.show" :tickets="allTickets" />
 
@@ -87,8 +94,10 @@
 <script lang="ts">
 import { format } from 'date-fns'
 import { defineComponent } from 'vue'
+import { useToast } from 'vue-toastification'
 import ApiCall from '@/helpers/APICallHelper'
 import TheLayout from '@/views/TheLayout.vue'
+import ReloadIcon from '@/components/icons/ReloadIcon.vue'
 import DashboardSettings from '@/components/DashboardSettings.vue'
 import TicketFilterModal from '@/components/TicketFilterModal.vue'
 import TopAgentsSection from '@/components/sections/TopAgentsSection.vue'
@@ -106,6 +115,7 @@ export default defineComponent({
 
   components: {
     TheLayout,
+    ReloadIcon,
     TopAgentsSection,
     TicketTagsSection,
     TicketListSection,
@@ -123,6 +133,7 @@ export default defineComponent({
     return {
       filters: [],
       tickets: [],
+      apiCallUrl: '',
       updateToken: 0,
       startYear: null,
       isLoading: true,
@@ -163,11 +174,12 @@ export default defineComponent({
         : this.customFields?.length == 3
         ? 'sm:grid-cols-2 md:grid-cols-3'
         : ''
-    },
-    apiCallUrl() {
-      return this.$route.query.filters?.length
-        ? 'tickets?query=' + this.$route.query.filters
-        : 'tickets?updated_since=' + this.startYear
+    }
+  },
+
+  watch: {
+    'allTickets.length'() {
+      this.updateToken++
     }
   },
 
@@ -179,12 +191,6 @@ export default defineComponent({
     this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '2023').toISOString()
   },
 
-  watch: {
-    'allTickets.length'() {
-      this.updateToken++
-    }
-  },
-
   async mounted() {
     await this.loadTickets()
   },
@@ -194,12 +200,28 @@ export default defineComponent({
       this.isLoading = true
       this.keepFetching = true
 
+      // Set default api call if not set
+      if (!this.apiCallUrl) {
+        this.apiCallUrl =
+          'tickets?updated_since=' + this.startYear + '&include=requester,stats&per_page=100'
+      }
+
       await this.fetchTicketsByPage()
 
       if (!this.keepFetching) {
         this.isLoading = false
-        this.findOldestTicketDate()
+
+        if (this.tickets?.length) {
+          this.findOldestTicketDate()
+        } else {
+          useToast().error('No ticket to display found.')
+        }
       }
+    },
+
+    loadFilteredTickets() {
+      this.apiCallUrl = 'search/tickets?query="' + this.$store.filters + '"'
+      this.loadTickets()
     },
 
     async fetchTicketsByPage() {
@@ -214,9 +236,7 @@ export default defineComponent({
     },
 
     async fetchTickets(i) {
-      await ApiCall.get(
-        this.apiCallUrl + '&per_page=100&page=' + i + '&include=requester,stats'
-      ).then((response) => {
+      await ApiCall.get(this.apiCallUrl + '&page=' + i).then((response) => {
         if (response) {
           this.tickets[i] = Object.values(response)
         }

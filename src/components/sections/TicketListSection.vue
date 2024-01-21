@@ -9,7 +9,7 @@
       />
 
       <h1
-        class="conf-semibold"
+        class="conf-semibold break-keep"
         :title="'Showing: ' + ticketsList.length + ' tickets'"
         v-text="'Showing: ' + ticketsList.length"
       />
