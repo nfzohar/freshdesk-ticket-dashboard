@@ -69,14 +69,23 @@ export default defineComponent({
   },
 
   watch: {
-    inputValue() {
-      this.$emit('changed', { to: this.inputValueTo ?? null, from: this.inputValueFrom ?? null })
+    inputValueTo() {
+      this.emitSelectedDateRange()
+    },
+    inputValueFrom() {
+      this.emitSelectedDateRange()
     }
   },
 
   mounted() {
     this.inputValueTo = this.theValue.to
     this.inputValueFrom = this.theValue.from
+  },
+
+  methods: {
+    emitSelectedDateRange() {
+      this.$emit('changed', { to: this.inputValueTo ?? null, from: this.inputValueFrom ?? null })
+    }
   }
 })
 </script>

@@ -1,7 +1,13 @@
 <template>
   <a-dialog :manual-open="open" custom-class="-mt-28 md:-mt-14">
     <template #trigger>
-      <settings-icon class="cursor-pointer" @click="open = true" />
+      <button
+        class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 px-3 shadow-md shadow-primary-600 h-10"
+        :title="'Settings'"
+        @click="open = true"
+      >
+        <settings-icon class="cursor-pointer" />
+      </button>
     </template>
 
     <template #content>
@@ -41,6 +47,20 @@
                 :title="'Toggle section visibility.'"
                 @changed="(value) => (section.show = value)"
               />
+
+              <div
+                v-if="section?.show && section?.label == 'Ticket count'"
+                class="grid grid-cols-1 md:grid-cols-2 items-center gap-x-8 mb-5 bg-secondary-600 rounded-md px-5 py-3"
+              >
+                <a-checkbox
+                  v-for="(count, p) in countOptions"
+                  :key="p"
+                  class="my-2 w-full"
+                  :label="count"
+                  :the-value="visibleCounts.includes(count)"
+                  @changed="(value) => updateVisibleTicketCounts(count, value)"
+                />
+              </div>
 
               <div
                 v-if="section?.show && section?.settings"
@@ -88,6 +108,12 @@
               :title="'Logout without deleting current configuration data.'"
               @click.stop="$router.push('/logout')"
             />
+            <button
+              class="primary-button w-auto text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600"
+              v-text="'Reload'"
+              :title="'Reload entire dashboard.'"
+              @click.stop="$emit('reloadDashboard')"
+            />
           </div>
           <button
             class="primary-button w-auto text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600"
@@ -102,6 +128,7 @@
 </template>
 
 <script lang="ts">
+import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
 import ADialog from '@/components/General/ADialog.vue'
 import ACheckbox from '@/components/General/ACheckbox.vue'
@@ -113,7 +140,7 @@ export default defineComponent({
 
   components: { ACheckbox, ADialog, SettingsIcon, CustomFieldsManager },
 
-  emits: ['refreshDashboard'],
+  emits: ['refreshDashboard', 'reloadDashboard'],
 
   props: {
     aTicket: {
@@ -125,9 +152,10 @@ export default defineComponent({
 
   data() {
     return {
-      clearInterval: null,
       refreshSwitch: false,
+      clearInterval: null,
       refreshMinRate: 5,
+      countOptions: [],
       customFields: {},
       open: false,
       layout: {}
@@ -143,6 +171,9 @@ export default defineComponent({
     },
     stateCustomFields(): Object {
       return this.$dashboard?.storedCustomFields ?? []
+    },
+    visibleCounts() {
+      return this.$dashboard?.layout.ticket_counts.visibleCounts
     }
   },
 
@@ -172,20 +203,12 @@ export default defineComponent({
   async mounted() {
     this.customFields = this.stateCustomFields
     this.layout = this.buildLayoutFromStore()
+    this.countOptions = this.layout.ticket_counts.visibleCounts
   },
 
   methods: {
     buildLayoutFromStore() {
       return {
-        ticket_counts: {
-          label: 'Ticket count',
-          show: this.stateLayout?.ticket_counts?.show,
-          settings: this.ticketCountsFromStatuses()
-        },
-        types: {
-          label: 'Ticket types',
-          show: this.stateLayout?.types?.show
-        },
         tags: {
           label: 'Tags',
           show: this.stateLayout?.tags?.show
@@ -197,6 +220,10 @@ export default defineComponent({
         ticket_list: {
           label: 'Ticket list',
           show: this.stateLayout?.ticket_list?.show
+        },
+        types: {
+          label: 'Ticket types',
+          show: this.stateLayout?.types?.show
         },
         ticket_open_closed_graph: {
           label: 'Ticket open/closed graph',
@@ -233,59 +260,59 @@ export default defineComponent({
               value: this.stateLayout?.top_agents?.settings.listLentgh || 5
             }
           }
+        },
+        ticket_counts: {
+          label: 'Ticket count',
+          show: this.stateLayout?.ticket_counts?.show,
+          visibleCounts: this.ticketCountsFromStatuses()
         }
       }
     },
 
     ticketCountsFromStatuses() {
-      let options = {
-        All: {
-          label: 'All',
-          type: 'boolean',
-          value: this.stateLayout?.ticket_counts.settings['All']
-        },
-        Unresolved: {
-          label: 'Unresolved',
-          type: 'boolean',
-          value: this.stateLayout?.ticket_counts.settings['Unresolved']
-        }
-      }
+      let currentTicketCounts = Object.values(this.stateLayout?.ticket_counts?.visibleCounts)
+      let visibleTicketCounts = Array()
 
-      Object.values(this.statuses)?.forEach((status) => {
-        options[status.label] = {
-          label: status.label,
-          type: 'boolean',
-          value: this.stateLayout?.ticket_counts?.settings[status.label]
+      let optionKeys = [
+        'All',
+        'Unresolved',
+        Object.values(this.statuses).map((status) => status.label)
+      ].flat()
+
+      optionKeys?.forEach((option) => {
+        if (currentTicketCounts.includes(option)) {
+          visibleTicketCounts.push(option)
         }
       })
 
-      return options
+      return uniq(visibleTicketCounts)
+    },
+
+    updateVisibleTicketCounts(statusLabel: String, show: false) {
+      if (show) {
+        this.layout.ticket_counts.visibleCounts.push(statusLabel)
+      } else {
+        this.layout.ticket_counts.visibleCounts = Object.values(
+          this.layout.ticket_counts.visibleCounts
+        ).filter((status) => status != statusLabel)
+      }
+
+      this.$dashboard.layout.ticket_counts.visibleCounts = this.layout.ticket_counts.visibleCounts
     },
 
     savePreferencesToState() {
       this.$dashboard?.saveCustomFieldsToStore(this.customFields)
       this.morphSectionSettingsForState()
 
-      this.open = false
       this.layout = this.buildLayoutFromStore()
+      this.open = false
     },
 
     async morphSectionSettingsForState() {
       this.morphTopRequesters()
       this.morphTopAgents()
-      this.morphTicketCounts()
 
       this.$dashboard?.saveLayoutToStore(this.layout)
-    },
-
-    morphTicketCounts() {
-      let ticketCountSettings = Array()
-
-      Object.values(this.layout.ticket_counts.settings).forEach((setting) => {
-        ticketCountSettings[setting.label] = setting.value ? true : false
-      })
-
-      this.layout.ticket_counts.settings = ticketCountSettings
     },
 
     morphTopRequesters() {

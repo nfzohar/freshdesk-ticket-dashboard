@@ -2,12 +2,15 @@
   <div class="flex items-center justify-between">
     <h1
       class="text-xl font-bold mb-1 cursor-pointer"
-      :class="{ 'border-l-4 pl-2 border-primary-400': !sectionVisible }"
+      :class="{
+        'border-l-4 pl-2 border-primary-400 bg-secondary-600 px-2 py-1 rounded-r-md':
+          !sectionVisible
+      }"
       v-text="theText"
       @click.stop="$emit('toggleVisibility')"
     />
 
-    <div class="flex items-center gap-x-2">
+    <div v-if="sectionVisible" class="flex items-center gap-x-2">
       <button
         v-if="showRecolorButton"
         class="hover:bg-primary-500 hover:shadow-md hover:shadow-primary-600 p-1 w-6 h-6 rounded-full"

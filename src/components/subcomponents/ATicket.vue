@@ -13,7 +13,7 @@
 
     <div class="flex items-center">
       <div class="flex flex-col w-10/12">
-        <div class="flex items-center gap-x-1">
+        <div v-if="!$store?.filters?.length" class="flex items-center gap-x-1">
           <span class="font-semibold" v-text="'Requested by:'" />
           <span class="text-base" v-text="requester" />
         </div>
@@ -61,11 +61,11 @@ export default defineComponent({
       return this.theTicket?.type ?? 'Ticket'
     },
     requester() {
-      return this.theTicket?.requester.name ?? 'Not set'
+      return this.theTicket?.requester?.name ?? 'Not set'
     },
     tags() {
-      if (this.theTicket?.tags.length) {
-        return this.theTicket?.tags.join(', ')
+      if (this.theTicket?.tags?.length) {
+        return this.theTicket?.tags?.join(', ')
       }
       return 'None'
     },

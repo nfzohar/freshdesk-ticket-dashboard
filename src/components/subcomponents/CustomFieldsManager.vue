@@ -13,6 +13,7 @@
             v-model="newCustomFieldTitle"
             type="text"
             class="w-full rounded-md border border-primary-700 px-1 text-black"
+            :placeholder="'Enter a title...'"
           />
         </div>
         <div>
@@ -108,10 +109,12 @@ export default defineComponent({
 
   computed: {
     avaliableFields() {
-      return [Object.keys(this.aTicket), Object.keys(this.aTicket.custom_fields)]
-        .flat()
-        .filter((field) => !this.ignoredFields.includes(field))
-        .sort()
+      return !this.aTicket?.custom_fields
+        ? []
+        : [Object.keys(this.aTicket), Object.keys(this.aTicket?.custom_fields)]
+            .flat()
+            .filter((field) => !this.ignoredFields.includes(field))
+            .sort()
     }
   },
 

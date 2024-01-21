@@ -165,7 +165,7 @@ export default defineComponent({
       return this.freshdeskWebUrl + 'tickets/' + this.details?.id
     },
     hasCustomFields() {
-      return Object.values(this.details.custom_fields).length
+      return Object.values(this.details?.custom_fields ?? []).length > 0
     },
     customFields() {
       let ticketCustomFields = []

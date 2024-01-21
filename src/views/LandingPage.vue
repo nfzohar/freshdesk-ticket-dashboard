@@ -18,9 +18,13 @@ export default defineComponent({
   created() {
     document.title = import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
 
-    setTimeout(() => {
-      this.$router.push('/login')
-    }, 500)
+    if (localStorage.getItem('stored_auth_state')) {
+      this.$router.push('/dashboard')
+    } else {
+      setTimeout(() => {
+        this.$router.push('/login')
+      }, 500)
+    }
   }
 })
 </script>

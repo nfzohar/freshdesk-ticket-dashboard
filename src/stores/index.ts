@@ -10,7 +10,7 @@ export const Store = defineStore('main', {
 
   getters: {
     authenticated(): Boolean {
-      return this.auth
+      return this.auth ? true : false
     },
     domain(): String {
       return this.domainURL

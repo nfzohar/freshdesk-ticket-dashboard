@@ -28,6 +28,8 @@ export function checkAuthCredentials(username: String, password: String) {
 
   authenticationSuccess = username == envUsername && password == envPassword
 
+  Store().canAuthenticate(authenticationSuccess)
+
   if (!authenticationSuccess) {
     let theError = 'Incorrect credentials. Please, try again.'
 
@@ -35,8 +37,6 @@ export function checkAuthCredentials(username: String, password: String) {
     console.error(theError)
     return
   }
-
-  Store().canAuthenticate(authenticationSuccess)
 }
 
 // src(modified): https://gist.github.com/krabs-github/ec56e4f1c12cddf86ae9c551aa9d9e04

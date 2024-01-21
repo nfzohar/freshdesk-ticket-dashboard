@@ -2,7 +2,7 @@
   <a-dialog custom-class="-mt-28 md:-mt-14" :manual-open="showFilterSection">
     <template #trigger>
       <button
-        class="primary-button w-32 text-center bg-primary-500 hover:bg-primary-600 border-none py-2 px-10 shadow-md shadow-primary-600"
+        class="primary-button w-20 h-10 text-center bg-primary-500 hover:bg-primary-600 border-none py-2 shadow-md shadow-primary-600"
         v-text="'Filter'"
         :title="'Open filters modal'"
         @click="showFilterSection = true"
@@ -41,11 +41,19 @@
             </template>
           </div>
 
-          <button
-            class="bg-primary-500 hover:bg-primary-400 border border-primary-700 w-full py-2 px-5 rounded-md shadow-primary-600 font-semibold"
-            v-text="'Apply'"
-            @click="applyTicketFilters()"
-          />
+          <div class="grid grid-cols-2 gap-16">
+            <button
+              class="bg-primary-500 hover:bg-primary-400 border border-primary-700 w-full py-2 px-5 rounded-md shadow-primary-600 font-semibold"
+              v-text="'Reset'"
+              @click="resetTicketFilters()"
+            />
+
+            <button
+              class="bg-primary-500 hover:bg-primary-400 border border-primary-700 w-full py-2 px-5 rounded-md shadow-primary-600 font-semibold"
+              v-text="'Apply'"
+              @click="applyTicketFilters()"
+            />
+          </div>
         </div>
       </div>
     </template>
@@ -53,6 +61,7 @@
 </template>
 
 <script lang="ts">
+import { uniq } from 'lodash'
 import format from 'date-fns/format'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
@@ -65,15 +74,15 @@ export default defineComponent({
 
   components: { ASelect, ADialog, ADateSelect },
 
-  emits: ['filtersApply'],
+  emits: ['filtersApply', 'filtersReset'],
 
   data() {
     return {
       values: [],
       filters: [],
-      createdAt: {},
-      updatedAt: {},
-      showFilterSection: true
+      showFilterSection: true,
+      createdAt: { to: '', from: '' },
+      updatedAt: { to: '', from: '' }
     }
   },
 
@@ -122,37 +131,28 @@ export default defineComponent({
 
     setTicketCountSettings(statuses) {
       if (!this.$dashboard?.ticket_counts?.visibleCounts?.length) {
+        let statusLabels = ['All', 'Unresolved']
+        statuses.map((status) => statusLabels.push(status?.label))
 
-        let storedTicketCounts = this.$dashboard?.ticket_counts?.settings
-
-        newTicketCountSettings['All'] = storedTicketCounts?.All
-        newTicketCountSettings['Unresolved'] = storedTicketCounts?.Unresolved
-
-        statuses.forEach((status) => {
-          if (!newTicketCountSettings[status?.label]) {
-            newTicketCountSettings[status?.label] = storedTicketCounts[status?.label]
-          }
-        })
-
-        this.$dashboard.layout.ticket_counts.settings = newTicketCountSettings
+        this.$dashboard.layout.ticket_counts.visibleCounts = uniq(statusLabels)
       }
     },
 
     applyTicketFilters() {
       let urlFilters = Array()
 
-      if (this.createdAt?.from) {
-        urlFilters.push('created_at:>' + this.fdate(this.createdAt?.from))
-      }
-      if (this.createdAt?.to) {
-        urlFilters.push('created_at:<' + this.fdate(this.createdAt?.to))
-      }
-      if (this.updatedAt?.from) {
-        urlFilters.push('updated_at:>' + this.fdate(this.updatedAt?.from))
-      }
-      if (this.updatedAt?.to) {
-        urlFilters.push('updated_at:<' + this.fdate(this.updatedAt?.to))
-      }
+      urlFilters.push(
+        this.createdAt?.from ? "created_at:>'" + this.fdate(this.createdAt?.from) + "'" : ''
+      )
+      urlFilters.push(
+        this.createdAt?.to ? "created_at:<'" + this.fdate(this.createdAt?.to) + "'" : ''
+      )
+      urlFilters.push(
+        this.updatedAt?.from ? "updated_at:>'" + this.fdate(this.updatedAt?.from) + "'" : ''
+      )
+      urlFilters.push(
+        this.updatedAt?.to ? "updated_at:<'" + this.fdate(this.updatedAt?.to) + "'" : ''
+      )
 
       Object.keys(this.values).forEach((value) => {
         if (this.values[value]) {
@@ -165,12 +165,18 @@ export default defineComponent({
       })
 
       this.$store.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
-
       this.$emit('filtersApply')
       this.showFilterSection = false
     },
 
+    resetTicketFilters() {
+      this.$store.setApiFilters('')
+      this.$emit('filtersReset')
+      this.showFilterSection = false
+    },
+
     fdate(dateString) {
+      console.log(dateString)
       return format(new Date(dateString), 'yyyy-mm-dd')
     }
   }

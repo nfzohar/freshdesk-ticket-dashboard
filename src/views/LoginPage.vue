@@ -138,7 +138,7 @@ export default defineComponent({
   },
 
   mounted() {
-    if (this.$store.auth) {
+    if (localStorage.getItem('stored_auth_state')) {
       this.$router.push('/dashboard')
     }
   },

@@ -5,7 +5,7 @@
     @modalClosed="detailsTicketId = null"
   />
 
-  <the-layout :class="{ 'is-loading': isLoading }">
+  <the-layout :key="reloadToken" :class="{ 'is-loading': isLoading }">
     <div
       class="flex flex-col md:flex-row items-center justify-between p-5 gap-y-5 mb-3 bg-transparent mr-"
     >
@@ -21,15 +21,23 @@
       <div class="flex items-center gap-x-5 justify-between w-full md:w-auto">
         <div class="flex items-center gap-x-5">
           <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-3 shadow-md shadow-primary-600"
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-3 shadow-md shadow-primary-600 h-10"
             :title="'Refresh page'"
             @click.stop="loadTickets()"
           >
             <reload-icon :pt-height="'20'" :pt-width="'20'" />
           </button>
-          <ticket-filter-modal @filtersApply="loadFilteredTickets()" />
+
+          <ticket-filter-modal
+            @filtersApply="loadFilteredTickets()"
+            @filtersReset="apiCallUrl = ''"
+          />
         </div>
-        <dashboard-settings @refreshDashboard="loadTickets()" :a-ticket="allTickets[0]" />
+        <dashboard-settings
+          @refreshDashboard="loadTickets()"
+          @reloadDashboard="reloadToken++"
+          :a-ticket="allTickets[0]"
+        />
       </div>
     </div>
 
@@ -51,22 +59,24 @@
         <ticket-groups-section v-if="layout.groups?.show" :tickets="allTickets" />
       </div>
 
-      <div
-        v-if="layout.ticket_open_closed_graph?.show"
-        :key="updateToken"
-        class="grid grid-cols-1 items-center gap-5"
-      >
-        <ticket-statistics-open-closed-graph
-          :tickets="allTickets"
-          :oldest-ticket="oldestTicketDate"
-        />
-      </div>
+      <!-- WORK IN PROGRESS
+        <div
+          v-if="layout.ticket_open_closed_graph?.show"
+          :key="updateToken"
+          class="grid grid-cols-1 items-center gap-5"
+        >
+          <ticket-statistics-open-closed-graph
+            :tickets="allTickets"
+            :oldest-ticket="oldestTicketDate"
+          />
+        </div> 
+      -->
 
       <div
         class="grid grid-cols-1 gap-5"
         :class="{
           'sm:grid-cols-2':
-            (layout.top_requesters?.show || layout.top_agents?.show) && customFields?.length
+            (layout.top_requesters?.show && layout.top_agents?.show) || customFields?.length > 1
         }"
       >
         <top-requesters-section v-if="layout.top_requesters?.show" :tickets="allTickets" />
@@ -108,7 +118,7 @@ import TicketGroupsSection from '@/components/sections/TicketGroupsSection.vue'
 import TopRequestersSection from '@/components/sections/TopRequestersSection.vue'
 import TicketDetailsModal from '@/components/subcomponents/TicketDetailsModal.vue'
 import TicketCustomFieldSection from '@/components/sections/TicketCustomFieldSection.vue'
-import TicketStatisticsOpenClosedGraph from '@/components/sections/TicketStatisticsOpenClosedGraph.vue'
+// import TicketStatisticsOpenClosedGraph from '@/components/sections/TicketStatisticsOpenClosedGraph.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
@@ -125,8 +135,8 @@ export default defineComponent({
     TicketDetailsModal,
     TicketGroupsSection,
     TopRequestersSection,
-    TicketCustomFieldSection,
-    TicketStatisticsOpenClosedGraph
+    TicketCustomFieldSection
+    // TicketStatisticsOpenClosedGraph
   },
 
   data() {
@@ -135,6 +145,7 @@ export default defineComponent({
       tickets: [],
       apiCallUrl: '',
       updateToken: 0,
+      reloadToken: 0,
       startYear: null,
       isLoading: true,
       keepFetching: true,
@@ -180,18 +191,21 @@ export default defineComponent({
   watch: {
     'allTickets.length'() {
       this.updateToken++
+    },
+    apiCallUrl() {
+      this.loadTickets()
     }
   },
 
   created() {
-    if (!this.$store.authenticated) {
-      this.$router.push('/')
-    }
-
     this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '2023').toISOString()
   },
 
   async mounted() {
+    if (!this.$store.authenticated) {
+      this.$router.push('/')
+    }
+
     await this.loadTickets()
   },
 
@@ -221,13 +235,12 @@ export default defineComponent({
 
     loadFilteredTickets() {
       this.apiCallUrl = 'search/tickets?query="' + this.$store.filters + '"'
-      this.loadTickets()
     },
 
     async fetchTicketsByPage() {
       this.tickets = []
 
-      //for (let i = 1; this.keepFetching; i++) {
+      // for (let i = 1; this.keepFetching; i++) {
       for (let i = 1; i < 2; i++) {
         await this.fetchTickets(i)
         setTimeout(() => {}, 3000)
@@ -238,7 +251,7 @@ export default defineComponent({
     async fetchTickets(i) {
       await ApiCall.get(this.apiCallUrl + '&page=' + i).then((response) => {
         if (response) {
-          this.tickets[i] = Object.values(response)
+          this.tickets[i] = Object.values(response.results ?? response)
         }
       })
 
