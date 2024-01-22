@@ -2,7 +2,7 @@
   <a-dialog :manual-open="open" custom-class="-mt-28 md:-mt-14">
     <template #trigger>
       <button
-        class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 px-3 shadow-md shadow-primary-600 h-10"
+        class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 px-3 shadow-md shadow-primary-600 h-10 w-auto"
         :title="'Settings'"
         @click="open = true"
       >
@@ -53,7 +53,7 @@
                 class="grid grid-cols-1 md:grid-cols-2 items-center gap-x-8 mb-5 bg-secondary-600 rounded-md px-5 py-3"
               >
                 <a-checkbox
-                  v-for="(count, p) in countOptions"
+                  v-for="(count, p) in statusLabels"
                   :key="p"
                   class="my-2 w-full"
                   :label="count"
@@ -94,29 +94,27 @@
           />
         </div>
 
-        <div class="flex items-center justify-between w-full">
-          <div class="flex gap-x-4">
-            <button
-              class="primary-button w-auto text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600"
-              v-text="'Clear all data'"
-              :title="'Logout and delete all current configuration data'"
-              @click.stop="clearAllDashboardData()"
-            />
-            <button
-              class="primary-button w-auto text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600"
-              v-text="'Logout'"
-              :title="'Logout without deleting current configuration data.'"
-              @click.stop="$router.push('/logout')"
-            />
-            <button
-              class="primary-button w-auto text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600"
-              v-text="'Reload'"
-              :title="'Reload entire dashboard.'"
-              @click.stop="$emit('reloadDashboard')"
-            />
-          </div>
+        <div class="grid grid-cols-2 xl:grid-cols-4 w-full gap-x-10 gap-y-4">
           <button
-            class="primary-button w-auto text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600"
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600 h-10 w-auto"
+            v-text="'Clear all data'"
+            :title="'Logout and delete all current configuration data'"
+            @click.stop="clearAllDashboardData()"
+          />
+          <button
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600 h-10 w-auto"
+            v-text="'Logout'"
+            :title="'Logout without deleting current configuration data.'"
+            @click.stop="$router.push('/logout')"
+          />
+          <button
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600 h-10 w-auto"
+            v-text="'Reload'"
+            :title="'Reload entire dashboard.'"
+            @click.stop="$emit('reloadDashboard')"
+          />
+          <button
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600 h-10 w-auto"
             v-text="'Save'"
             :title="'Save current configuration'"
             @click.stop="savePreferencesToState()"
@@ -155,7 +153,6 @@ export default defineComponent({
       refreshSwitch: false,
       clearInterval: null,
       refreshMinRate: 5,
-      countOptions: [],
       customFields: {},
       open: false,
       layout: {}
@@ -163,8 +160,13 @@ export default defineComponent({
   },
 
   computed: {
-    statuses(): Object {
+    statuses() {
       return this.$dashboard?.statuses ?? []
+    },
+    statusLabels() {
+      let labels = this.statuses.map((status) => status?.label)
+      labels.unshift('All', 'Unresolved')
+      return labels
     },
     stateLayout(): Object {
       return this.$dashboard?.dashboardLayout ?? []
@@ -203,7 +205,6 @@ export default defineComponent({
   async mounted() {
     this.customFields = this.stateCustomFields
     this.layout = this.buildLayoutFromStore()
-    this.countOptions = this.layout.ticket_counts.visibleCounts
   },
 
   methods: {
@@ -292,12 +293,14 @@ export default defineComponent({
       if (show) {
         this.layout.ticket_counts.visibleCounts.push(statusLabel)
       } else {
-        this.layout.ticket_counts.visibleCounts = Object.values(
-          this.layout.ticket_counts.visibleCounts
-        ).filter((status) => status != statusLabel)
+        this.layout.ticket_counts.visibleCounts = uniq(
+          Object.values(this.layout.ticket_counts.visibleCounts).filter(
+            (status) => status != statusLabel
+          )
+        )
       }
 
-      this.$dashboard.layout.ticket_counts.visibleCounts = this.layout.ticket_counts.visibleCounts
+      this.$dashboard.layout.ticket_counts.visibleCounts = this.layout.ticket_counts?.visibleCounts
     },
 
     savePreferencesToState() {
@@ -309,22 +312,22 @@ export default defineComponent({
     },
 
     async morphSectionSettingsForState() {
-      this.morphTopRequesters()
-      this.morphTopAgents()
+      let ticketCounts = this.$dashboard.layout.ticket_counts.visibleCounts
+      this.$dashboard.layout.ticket_counts.visibleCounts = uniq(ticketCounts)
+
+      let topRequesters = this.layout.top_requesters?.settings
+      this.layout.top_requesters.settings = {
+        showTrophies: topRequesters?.showTrophies?.value,
+        listLentgh: topRequesters?.listLentgh?.value
+      }
+
+      let topAgents = this.layout.top_agents?.settings
+      this.layout.top_agents.settings = {
+        showTrophies: topAgents?.showTrophies?.value,
+        listLentgh: topAgents?.listLentgh?.value
+      }
 
       this.$dashboard?.saveLayoutToStore(this.layout)
-    },
-
-    morphTopRequesters() {
-      let topRequesters = this.layout.top_requesters.settings
-      this.layout.top_requesters.settings.showTrophies = topRequesters.showTrophies.value
-      this.layout.top_requesters.settings.listLentgh = topRequesters.listLentgh.value
-    },
-
-    morphTopAgents() {
-      let topAgents = this.layout.top_agents.settings
-      this.layout.top_agents.settings.showTrophies = topAgents.showTrophies.value
-      this.layout.top_agents.settings.listLentgh = topAgents.listLentgh.value
     },
 
     clearAllDashboardData() {

@@ -3,19 +3,8 @@
     <h1 class="font-semibold" v-text="label" />
     <div class="flex items-center gap-x-5 w-full">
       <div class="flex flex-col w-full">
-        <label class="text-xs" :class="labelClass" v-text="'From'" />
         <input
-          v-model="inputValueFrom"
-          type="date"
-          class="rounded-md bg-primary-600 shadow-md shadow-primary-800 p-1 w-full"
-          :class="inputClass"
-        />
-      </div>
-      <span v-text="'-'" />
-      <div class="flex flex-col w-full">
-        <label class="text-xs" :class="labelClass" v-text="'To'" />
-        <input
-          v-model="inputValueTo"
+          v-model="inputValue"
           type="date"
           class="rounded-md bg-primary-600 shadow-md shadow-primary-800 p-1 w-full"
           :class="inputClass"
@@ -63,28 +52,23 @@ export default defineComponent({
 
   data() {
     return {
-      inputValueTo: null,
-      inputValueFrom: null
+      inputValue: null
     }
   },
 
   watch: {
-    inputValueTo() {
-      this.emitSelectedDateRange()
-    },
-    inputValueFrom() {
+    inputValue() {
       this.emitSelectedDateRange()
     }
   },
 
   mounted() {
-    this.inputValueTo = this.theValue.to
-    this.inputValueFrom = this.theValue.from
+    this.inputValueTo = this.theValue
   },
 
   methods: {
     emitSelectedDateRange() {
-      this.$emit('changed', { to: this.inputValueTo ?? null, from: this.inputValueFrom ?? null })
+      this.$emit('changed', this.inputValue ?? null)
     }
   }
 })

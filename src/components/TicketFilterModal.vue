@@ -19,10 +19,49 @@
 
         <div v-if="showFilterSection" class="flex flex-col gap-5 p-3">
           <div class="grid grid-cols-1 lg:grid-cols-2 w-full gap-y-3 gap-x-5">
-            <a-date-select :label="'Created at:'" @changed="(value) => (createdAt = value)" />
-            <a-date-select :label="'Updated at:'" @changed="(value) => (updatedAt = value)" />
-            <a-date-select :label="'Closed at:'" @changed="(value) => (createdAt = value)" />
-            <a-date-select :label="'Resolved at:'" @changed="(value) => (updatedAt = value)" />
+            <div class="grid grid-cols-2 gap-x-5">
+              <a-date-select
+                :label="'Created at (from):'"
+                @changed="(value) => (createdAtFrom = value)"
+              />
+              <a-date-select
+                :label="'Created at (to):'"
+                @changed="(value) => (createdAtTo = value)"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5">
+              <a-date-select
+                :label="'Updated at (from):'"
+                @changed="(value) => (updatedAtFrom = value)"
+              />
+              <a-date-select
+                :label="'Updated at (to):'"
+                @changed="(value) => (updatedAtTo = value)"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5">
+              <a-date-select
+                :label="'Closed at (from):'"
+                @changed="(value) => (closedAtFrom = value)"
+              />
+              <a-date-select
+                :label="'Closed at (to):'"
+                @changed="(value) => (closedAtTo = value)"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5">
+              <a-date-select
+                :label="'Resolved at (from):'"
+                @changed="(value) => (resolvedAtFrom = value)"
+              />
+              <a-date-select
+                :label="'Resolved at (to):'"
+                @changed="(value) => (resolvedAtTo = value)"
+              />
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 w-full gap-y-2 gap-x-5">
@@ -61,7 +100,6 @@
 </template>
 
 <script lang="ts">
-import { uniq } from 'lodash'
 import format from 'date-fns/format'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
@@ -80,9 +118,15 @@ export default defineComponent({
     return {
       values: [],
       filters: [],
-      showFilterSection: true,
-      createdAt: { to: '', from: '' },
-      updatedAt: { to: '', from: '' }
+      createdAtTo: '',
+      createdAtFrom: '',
+      updatedAtTo: '',
+      updatedAtFrom: '',
+      closedAtTo: '',
+      closedAtFrom: '',
+      resolvedAtTo: '',
+      resolvedAtFrom: '',
+      showFilterSection: true
     }
   },
 
@@ -119,7 +163,6 @@ export default defineComponent({
 
           if (filter.name == 'status') {
             this.$dashboard.statuses = filter?.choices
-            this.setTicketCountSettings(filter?.choices)
 
             filter.choices = filter?.choices?.map((option) => {
               return { label: option?.label, value: option?.id }
@@ -129,30 +172,33 @@ export default defineComponent({
       })
     },
 
-    setTicketCountSettings(statuses) {
-      if (!this.$dashboard?.ticket_counts?.visibleCounts?.length) {
-        let statusLabels = ['All', 'Unresolved']
-        statuses.map((status) => statusLabels.push(status?.label))
-
-        this.$dashboard.layout.ticket_counts.visibleCounts = uniq(statusLabels)
-      }
-    },
-
     applyTicketFilters() {
       let urlFilters = Array()
 
-      urlFilters.push(
-        this.createdAt?.from ? "created_at:>'" + this.fdate(this.createdAt?.from) + "'" : ''
-      )
-      urlFilters.push(
-        this.createdAt?.to ? "created_at:<'" + this.fdate(this.createdAt?.to) + "'" : ''
-      )
-      urlFilters.push(
-        this.updatedAt?.from ? "updated_at:>'" + this.fdate(this.updatedAt?.from) + "'" : ''
-      )
-      urlFilters.push(
-        this.updatedAt?.to ? "updated_at:<'" + this.fdate(this.updatedAt?.to) + "'" : ''
-      )
+      if (this.createdAtFrom) {
+        urlFilters.push("created_at:>'" + this.fdate(this.createdAtFrom) + "'")
+      }
+      if (this.createdAtTo) {
+        urlFilters.push("created_at:<'" + this.fdate(this.createdAtTo) + "'")
+      }
+      if (this.updatedAtFrom) {
+        urlFilters.push("updated_at:>'" + this.fdate(this.updatedAtFrom) + "'")
+      }
+      if (this.updatedAtTo) {
+        urlFilters.push("updated_at:<'" + this.fdate(this.updatedAtTo) + "'")
+      }
+      if (this.closedAtFrom) {
+        urlFilters.push("closed_at:>'" + this.fdate(this.closedAtFrom) + "'")
+      }
+      if (this.closedAtTo) {
+        urlFilters.push("closed_at:<'" + this.fdate(this.closedAtTo) + "'")
+      }
+      if (this.resolvedAtFrom) {
+        urlFilters.push("resolved_at:>'" + this.fdate(this.resolvedAtFrom) + "'")
+      }
+      if (this.resolvedAtTo) {
+        urlFilters.push("resolved_at:<'" + this.fdate(this.resolvedAtTo) + "'")
+      }
 
       Object.keys(this.values).forEach((value) => {
         if (this.values[value]) {
@@ -177,7 +223,7 @@ export default defineComponent({
 
     fdate(dateString) {
       console.log(dateString)
-      return format(new Date(dateString), 'yyyy-mm-dd')
+      return format(new Date(dateString), 'yyyy-MM-dd')
     }
   }
 })

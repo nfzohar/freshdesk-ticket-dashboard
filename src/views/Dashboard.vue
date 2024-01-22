@@ -21,7 +21,7 @@
       <div class="flex items-center gap-x-5 justify-between w-full md:w-auto">
         <div class="flex items-center gap-x-5">
           <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-3 shadow-md shadow-primary-600 h-10"
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-3 shadow-md shadow-primary-600 h-10 w-auto"
             :title="'Refresh page'"
             @click.stop="loadTickets()"
           >
@@ -42,21 +42,21 @@
     </div>
 
     <div class="flex flex-col gap-y-5 w-full h-screen overflow-y-scroll px-5 scrollbar-hide">
-      <ticket-count-section v-if="layout.ticket_counts?.show" :tickets="allTickets" />
+      <ticket-count-section v-if="showTicketCounts" :tickets="allTickets" />
 
       <div
-        v-if="typesTagsGroupsVisible"
+        v-if="(showTicketTags || showTicketTypes || showTicketGroups)"
         class="grid gap-5 grid-cols-1"
         :class="typesTagsGroupsClass"
       >
         <ticket-custom-field-section
-          v-if="layout.types?.show"
+          v-if="showTicketTypes"
           :tickets="allTickets"
           :custom-field="'type'"
           title="Ticket types"
         />
-        <ticket-tags-section v-if="layout.tags?.show" :tickets="allTickets" />
-        <ticket-groups-section v-if="layout.groups?.show" :tickets="allTickets" />
+        <ticket-tags-section v-if="showTicketTags" :tickets="allTickets" />
+        <ticket-groups-section v-if="showTicketGroups" :tickets="allTickets" />
       </div>
 
       <!-- WORK IN PROGRESS
@@ -75,13 +75,11 @@
       <div
         class="grid grid-cols-1 gap-5"
         :class="{
-          'sm:grid-cols-2':
-            (layout.top_requesters?.show && layout.top_agents?.show) || customFields?.length > 1
+          'sm:grid-cols-2': (showTopRequesters && showTopAgents) || customFields?.length > 1
         }"
       >
-        <top-requesters-section v-if="layout.top_requesters?.show" :tickets="allTickets" />
-        <top-agents-section v-if="layout.top_agents?.show" :tickets="allTickets" />
-
+        <top-requesters-section v-if="showTopRequesters" :tickets="allTickets" />
+        <top-agents-section v-if="showTopAgents" :tickets="allTickets" />
         <ticket-custom-field-section
           v-for="(customField, cf) in customFields"
           :key="cf"
@@ -92,7 +90,7 @@
       </div>
 
       <ticket-list-section
-        v-if="layout?.ticket_list?.show && allTickets?.length"
+        v-if="showTicketList && allTickets?.length"
         :key="updateToken"
         :tickets-list="allTickets"
         @showTicketDetails="(value) => (detailsTicketId = value)"
@@ -155,29 +153,55 @@ export default defineComponent({
   },
 
   computed: {
-    allTickets(): Object {
-      return this.tickets.flat()
+    showTicketTags() {
+      return this.layout.tags?.show
     },
-    layout(): Object {
-      return this.$dashboard?.dashboardLayout ?? []
+    showTicketTypes() {
+      return this.layout.types?.show
+    },
+    showTicketGroups() {
+      return this.layout.groups?.show
+    },
+    showTopAgents() {
+      return this.layout.top_agents?.show
+    },
+    showTicketList() {
+      return this.layout.ticket_list?.show
+    },
+    showTicketCounts() {
+      return this.layout.ticket_counts?.show
+    },
+    showTopRequesters() {
+      return this.layout.top_requesters?.show
+    },
+    allTickets(): Object {
+      return this.tickets?.flat()
     },
     customFields(): Object {
       return this.$dashboard?.storedCustomFields
+    },
+    layout(): Object {
+      return this.$dashboard?.dashboardLayout ?? []
     },
     appTitle(): String {
       return import.meta.env.VITE_APP_TITLE ?? 'Freshdesk Ticket Dashboard'
     },
     typesTagsGroupsVisible(): Number {
-      return [this.layout?.types?.show, this.layout?.tags?.show, this.layout?.groups?.show].filter(
-        (t) => t
-      ).length
+      return [this.showTicketTags, this.showTicketTypes, this.showTicketGroups].filter((t) => t)
+        .length
     },
     typesTagsGroupsClass(): String {
-      return this.typesTagsGroupsVisible == 2
-        ? 'sm:grid-cols-2'
-        : this.typesTagsGroupsVisible == 3
-        ? 'sm:grid-cols-2 md:grid-cols-3'
-        : 'flex'
+      switch (this.typesTagsGroupsVisible) {
+        case 2: {
+          return 'sm:grid-cols-2'
+        }
+        case 3: {
+          return 'sm:grid-cols-2 md:grid-cols-3'
+        }
+        default: {
+          return 'flex'
+        }
+      }
     },
     customFieldsClass(): String {
       return this.customFields?.length == 2
@@ -240,8 +264,8 @@ export default defineComponent({
     async fetchTicketsByPage() {
       this.tickets = []
 
-      // for (let i = 1; this.keepFetching; i++) {
-      for (let i = 1; i < 2; i++) {
+      for (let i = 1; this.keepFetching; i++) {
+      // for (let i = 1; i < 2; i++) {
         await this.fetchTickets(i)
         setTimeout(() => {}, 3000)
       }

@@ -63,11 +63,6 @@ export const dashboad_Settings = defineStore('dashboard_settings', {
 
   actions: {
     watch: {
-      layout(newValue, oldValue) {
-        if (newValue != oldValue) {
-          this.saveLayoutToStore(newValue)
-        }
-      },
       customFields(newValue, oldValue) {
         if (newValue != oldValue) {
           this.saveCustomFieldsToStore(newValue)
@@ -86,11 +81,18 @@ export const dashboad_Settings = defineStore('dashboard_settings', {
     },
 
     initializeStateFromStorage() {
+      this.loadLayoutFromStore()
+      this.loadCustomFieldsFromStore()
+    },
+
+    loadLayoutFromStore() {
       const localLayout = localStorage.getItem('stored_layout')
       if (localLayout) {
         this.layout = JSON.parse(localLayout)
       }
+    },
 
+    loadCustomFieldsFromStore() {
       const localCustomFields = localStorage.getItem('stored_custom_fields')
       if (localCustomFields) {
         this.customFields = JSON.parse(localCustomFields)

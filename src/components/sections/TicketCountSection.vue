@@ -9,13 +9,14 @@
         : 'grid grid-cols-1 sm:grid-cols-2 ' + getConditionalGridStyle()
     ]"
   >
-    <template v-for="(stat, s) in statistics" :key="s">
+    <template v-for="(status, s) in allStatusLabels" :key="s">
       <div
-        v-if="layoutTicketCounts?.visibleCounts?.includes(stat?.label)"
+        v-if="visibleCounts?.includes(status)"
+        :key="tickets?.length"
         class="block mb-3 md:mb-0 rounded-md border border-primary-500 shadow-md h-full shadow-primary-600 bg-primary-500 hover:bg-primary-600 py-5 px-2 w-full text-center font-bold"
       >
-        <span class="block text-7xl w-full" v-text="stat.ticket_count" />
-        {{ stat.label }}
+        <span class="block text-7xl w-full" v-text="countTicketsOfStatus(status)" />
+        <span v-text="status" />
       </div>
     </template>
   </div>
@@ -38,61 +39,52 @@ export default defineComponent({
 
   data() {
     return {
-      statistics: Array()
-    }
-  },
-
-  computed: {
-    layoutTicketCounts(): Object {
-      return this.$dashboard?.layout?.ticket_counts ?? []
-    },
-    statuses(): Array {
-      return Object.values(this.$dashboard?.statuses) ?? []
-    },
-    visibleCounts() {
-      return Object.values(this.layoutTicketCounts?.visibleCounts)
-    },
-    closedStatus(): Object {
-      return this.statuses.filter((status) => status.label == 'Closed')[0].id
-    },
-    resolvedStatus(): Object {
-      return this.statuses.filter((status) => status.label == 'Resolved')[0].id
+      statusGroupedTickets: []
     }
   },
 
   watch: {
     'tickets.length'() {
-      this.buildTicketCountArray()
+      this.statusGroupedTickets = groupBy(this.tickets, 'status')
     }
   },
 
-  created() {
-    this.buildTicketCountArray()
+  computed: {
+    statuses(): any {
+      return Object.values(this.$dashboard?.statuses) ?? []
+    },
+    allStatusLabels(): any {
+      let labels = this.statuses.map((status) => status?.label)
+      labels.unshift('All', 'Unresolved')
+      return labels
+    },
+    visibleCounts(): any {
+      return this.$dashboard?.layout?.ticket_counts?.visibleCounts ?? []
+    }
+  },
+
+  mounted() {
+    this.statusGroupedTickets = groupBy(this.tickets, 'status')
   },
 
   methods: {
-    async buildTicketCountArray() {
-      let ticketsByStatus = groupBy(this.tickets, 'status')
-
-      this.statistics = {
-        all: {
-          label: 'All',
-          ticket_count: this.tickets?.length
-        },
-        unresolved: {
-          label: 'Unresolved',
-          ticket_count: this.tickets?.filter(
-            (ticket) => ![this.closedStatus, this.resolvedStatus].includes(ticket.status)
-          ).length
-        }
+    countTicketsOfStatus(status: string): number {
+      if (status == 'All') {
+        return this.tickets?.length
       }
 
-      Object.values(this.statuses).forEach((status) => {
-        this.statistics[status?.label] = {
-          label: status?.label,
-          ticket_count: ticketsByStatus[status?.id]?.length ?? 0
-        }
-      })
+      if (status == 'Unresolved') {
+        return this.tickets?.filter(
+          (ticket) =>
+            ![this.getStatusId('Closed'), this.getStatusId('Resolved')].includes(ticket?.status)
+        ).length
+      }
+
+      return this.statusGroupedTickets[this.getStatusId(status)]?.length ?? 0
+    },
+
+    getStatusId(statusLabel: string) {
+      return this.statuses.filter((status) => status.label == statusLabel)[0].id
     },
 
     getConditionalGridStyle() {

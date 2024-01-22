@@ -3,7 +3,7 @@
     <h1
       class="text-xl font-bold mb-1 cursor-pointer"
       :class="{
-        'border-l-4 pl-2 border-primary-400 bg-secondary-600 px-2 py-1 rounded-r-md':
+        'border-l-4 border-primary-400 bg-secondary-600 pr-2 pl-1 rounded-r-md':
           !sectionVisible
       }"
       v-text="theText"
