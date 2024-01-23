@@ -152,8 +152,8 @@ export default defineComponent({
     title() {
       return '#' + this.details?.id + ': ' + this.details?.subject
     },
-    darkBackground(): Boolean {
-      return colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR)
+    darkBackground() {
+      return Boolean(colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR))
     },
     freshdeskWebUrl() {
       return String(this.$store.domain).replace('api/v2/', 'a/')
@@ -168,7 +168,7 @@ export default defineComponent({
       return Object.values(this.details?.custom_fields ?? []).length > 0
     },
     customFields() {
-      let ticketCustomFields = []
+      let ticketCustomFields = Array()
 
       Object.keys(this.details.custom_fields).forEach((customField) => {
         let aCustomField = {
@@ -229,7 +229,7 @@ export default defineComponent({
       }
     },
 
-    fdate(date) {
+    fdate(date: String) {
       return date ? format(new Date(date), 'd. d. y') : '-'
     },
 

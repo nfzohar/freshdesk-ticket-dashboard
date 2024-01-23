@@ -2,7 +2,7 @@ import { Store } from './index'
 import { dashboad_Settings } from './dashboardSettingsStore'
 
 export default {
-  install: (app) => {
+  install: (app: any) => {
     const mainStore = Store()
     const dashboardSettings = dashboad_Settings()
 

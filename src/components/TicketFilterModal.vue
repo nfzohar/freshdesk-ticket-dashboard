@@ -168,12 +168,18 @@ export default defineComponent({
               return { label: option?.label, value: option?.id }
             })
           }
+
+          if (filter.name == 'ticket_type') {
+            filter.name = 'type'
+          }
         }
       })
     },
 
     applyTicketFilters() {
       let urlFilters = Array()
+
+      console.log(this.values)
 
       if (this.createdAtFrom) {
         urlFilters.push("created_at:>'" + this.fdate(this.createdAtFrom) + "'")
@@ -203,7 +209,7 @@ export default defineComponent({
       Object.keys(this.values).forEach((value) => {
         if (this.values[value]) {
           if (typeof this.values[value] == 'string') {
-            urlFilters.push(value + ':"' + this.values[value] + '"')
+            urlFilters.push(value + ":'" + this.values[value] + "'")
           } else {
             urlFilters.push(value + ':' + this.values[value])
           }

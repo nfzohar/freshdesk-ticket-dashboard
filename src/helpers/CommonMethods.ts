@@ -45,25 +45,36 @@ export function colorIsDark(color: String) {
     return false
   }
 
-  let r, g, b, hsp
+  let r, g, b
 
   if (color.match(/^rgb/)) {
-    let colorAsRGB = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/)
+    // eslint-disable-next-line no-use-before-define
+    const colorAsRGB = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/)
 
-    r = colorAsRGB[1]
-    g = colorAsRGB[2]
-    b = colorAsRGB[3]
+    if (colorAsRGB) {
+      r = colorAsRGB[1]
+      g = colorAsRGB[2]
+      b = colorAsRGB[3]
+    }
   } else {
-    let colorAsHex = +('0x' + color.slice(1).replace(color.length < 5 && /./g, '$&$&'))
+    const colorAsHex = +('0x' + color.slice(1).replace(String(color.length < 5 && /./g), '$&$&'))
 
-    r = colorAsHex >> 16
-    g = (colorAsHex >> 8) & 255
-    b = colorAsHex & 255
+    if (colorAsHex) {
+      r = colorAsHex >> 16
+      g = (colorAsHex >> 8) & 255
+      b = colorAsHex & 255
+    }
   }
 
-  hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
+  if (typeof r && g && b) {
+    r = Number(r)
+    g = Number(g)
+    b = Number(b)
 
-  return !(hsp > 127.5)
+    const hsp: any = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
+
+    return !(hsp > 127.5)
+  }
 }
 
 // Check, if the number is even.

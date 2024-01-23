@@ -42,14 +42,14 @@
             <div v-for="(section, s) in layout" :key="s" class="w-full flex flex-col">
               <a-checkbox
                 class="w-max font-bold pr-2 mb-2"
-                :the-value="section.show"
+                :the-value="section?.show"
                 :label="'Show ' + section?.label"
                 :title="'Toggle section visibility.'"
                 @changed="(value) => (section.show = value)"
               />
 
               <div
-                v-if="section?.show && section?.label == 'Ticket count'"
+                v-if="section['show'] && section['label'] == 'Ticket count'"
                 class="grid grid-cols-1 md:grid-cols-2 items-center gap-x-8 mb-5 bg-secondary-600 rounded-md px-5 py-3"
               >
                 <a-checkbox
@@ -150,8 +150,9 @@ export default defineComponent({
 
   data() {
     return {
+      intervalId: null,
       refreshSwitch: false,
-      clearInterval: null,
+      clearInterval: Number,
       refreshMinRate: 5,
       customFields: {},
       open: false,
@@ -164,7 +165,7 @@ export default defineComponent({
       return this.$dashboard?.statuses ?? []
     },
     statusLabels() {
-      let labels = this.statuses.map((status) => status?.label)
+      let labels = this.statuses.map((status: { label: String }) => status?.label)
       labels.unshift('All', 'Unresolved')
       return labels
     },
@@ -277,7 +278,7 @@ export default defineComponent({
       let optionKeys = [
         'All',
         'Unresolved',
-        Object.values(this.statuses).map((status) => status.label)
+        Object.values(this.statuses).map((status) => status['label'])
       ].flat()
 
       optionKeys?.forEach((option) => {

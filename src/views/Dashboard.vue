@@ -45,7 +45,7 @@
       <ticket-count-section v-if="showTicketCounts" :tickets="allTickets" />
 
       <div
-        v-if="(showTicketTags || showTicketTypes || showTicketGroups)"
+        v-if="showTicketTags || showTicketTypes || showTicketGroups"
         class="grid gap-5 grid-cols-1"
         :class="typesTagsGroupsClass"
       >
@@ -75,7 +75,7 @@
       <div
         class="grid grid-cols-1 gap-5"
         :class="{
-          'sm:grid-cols-2': (showTopRequesters && showTopAgents) || customFields?.length > 1
+          'sm:grid-cols-2': (showTopRequesters || showTopAgents) || customFields?.length > 1
         }"
       >
         <top-requesters-section v-if="showTopRequesters" :tickets="allTickets" />
@@ -100,7 +100,7 @@
 </template>
 
 <script lang="ts">
-import { format } from 'date-fns'
+import { format, isAfter } from 'date-fns'
 import { defineComponent } from 'vue'
 import { useToast } from 'vue-toastification'
 import ApiCall from '@/helpers/APICallHelper'
@@ -264,12 +264,16 @@ export default defineComponent({
     async fetchTicketsByPage() {
       this.tickets = []
 
-      for (let i = 1; this.keepFetching; i++) {
-      // for (let i = 1; i < 2; i++) {
-        await this.fetchTickets(i)
+      try {
+        for (let i = 1; this.keepFetching; i++) {
+          // for (let i = 1; i < 2; i++) {
+          await this.fetchTickets(i)
         setTimeout(() => {}, 3000)
       }
-      this.keepFetching = false
+      } catch (error) {
+        this.keepFetching = false
+        this.findOldestTicketDate()
+      }
     },
 
     async fetchTickets(i) {
@@ -285,10 +289,12 @@ export default defineComponent({
     },
 
     findOldestTicketDate() {
-      let ticketCreationDates = this.allTickets.map((ticket) => ticket.created_at)
+      let ticketCreationDates = this.allTickets.map(
+        (ticket: { created_at: String }) => ticket.created_at
+      )
 
-      ticketCreationDates = ticketCreationDates.sort(
-        (date1, date2) => new Date(date1) - new Date(date2)
+      ticketCreationDates = ticketCreationDates.sort((date1: String, date2: String) =>
+        isAfter(new Date(date2), new Date(date1))
       )
 
       let dateFromArray = new Date(ticketCreationDates[0] ?? null)

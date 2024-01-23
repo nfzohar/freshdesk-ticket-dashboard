@@ -25,48 +25,48 @@ export const Store = defineStore('main', {
 
   actions: {
     watch: {
-      domainURL(newValue, oldValue) {
+      domainURL(newValue: any, oldValue: any) {
         if (newValue != oldValue) {
           this.setNewDomainUrl(newValue)
         }
       },
-      apiKey(newValue, oldValue) {
+      apiKey(newValue: any, oldValue: any) {
         if (newValue != oldValue) {
           this.setNewApiKey(newValue)
         }
       },
-      auth(newValue, oldValue) {
+      auth(newValue: any, oldValue: any) {
         if (newValue != oldValue) {
           this.setAuthState(newValue)
         }
       },
-      filters(newValue, oldValue) {
+      filters(newValue: any, oldValue: any) {
         if (newValue != oldValue) {
           this.setApiFilters(newValue)
         }
       }
     },
 
-    canAuthenticate(correctCredentials) {
+    canAuthenticate(correctCredentials: boolean) {
       this.auth = correctCredentials
     },
 
-    setAuthState(newAuthState) {
+    setAuthState(newAuthState: boolean) {
       this.auth = newAuthState
       localStorage.setItem('stored_auth_state', JSON.stringify(newAuthState))
     },
 
-    setApiFilters(newFilters) {
+    setApiFilters(newFilters: string) {
       this.apiFilters = newFilters
       localStorage.setItem('stored_filters', JSON.stringify(newFilters))
     },
 
-    setNewDomainUrl(newDomainUrl) {
+    setNewDomainUrl(newDomainUrl: string) {
       this.domainURL = newDomainUrl
       localStorage.setItem('stored_domain_url', JSON.stringify(newDomainUrl))
     },
 
-    setNewApiKey(newApiKey) {
+    setNewApiKey(newApiKey: string) {
       this.apiKey = newApiKey
       localStorage.setItem('stored_api_key', JSON.stringify(newApiKey))
     },

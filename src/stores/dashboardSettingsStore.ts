@@ -63,19 +63,28 @@ export const dashboad_Settings = defineStore('dashboard_settings', {
 
   actions: {
     watch: {
-      customFields(newValue, oldValue) {
+      customFields(newValue: any, oldValue: any) {
         if (newValue != oldValue) {
           this.saveCustomFieldsToStore(newValue)
         }
       }
     },
 
-    saveLayoutToStore(data) {
+    saveLayoutToStore(data: {
+      ticket_counts: { show: boolean; visibleCounts: never[] }
+      types: { show: boolean }
+      tags: { show: boolean }
+      groups: { show: boolean }
+      top_requesters: { show: boolean; settings: { showTrophies: boolean; listLentgh: number } }
+      top_agents: { show: boolean; settings: { showTrophies: boolean; listLentgh: number } }
+      ticket_open_closed_graph: { show: boolean }
+      ticket_list: { show: boolean }
+    }) {
       this.layout = data
       localStorage.setItem('stored_layout', JSON.stringify(data))
     },
 
-    saveCustomFieldsToStore(data) {
+    saveCustomFieldsToStore(data: never[]) {
       this.customFields = data
       localStorage.setItem('stored_custom_fields', JSON.stringify(data))
     },

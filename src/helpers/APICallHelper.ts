@@ -17,11 +17,11 @@ export default class ApiCall {
     return new this().get(path)
   }
 
-  post(path: string, data: [Array, Object]) {
+  post(path: string, data: [Object]) {
     return this.performApiCall('post', path, data)
   }
 
-  static post(path: string, data: [Array, Object]) {
+  static post(path: string, data: [Object]) {
     return new this().post(path, data)
   }
 
@@ -50,7 +50,7 @@ export default class ApiCall {
         })
         .catch((error) => {
           toast.error('Data could not be loaded. Please try again.')
-          console.error(error)
+          toast.error(error)
         })
 
       return results
