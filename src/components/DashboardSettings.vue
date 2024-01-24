@@ -272,22 +272,24 @@ export default defineComponent({
     },
 
     ticketCountsFromStatuses() {
-      let currentTicketCounts = Object.values(this.stateLayout?.ticket_counts?.visibleCounts)
-      let visibleTicketCounts = Array()
+      if (this.stateLayout?.ticket_counts?.visibleCounts) {
+        let currentTicketCounts = Object.values(this.stateLayout?.ticket_counts?.visibleCounts)
+        let visibleTicketCounts = Array()
 
-      let optionKeys = [
-        'All',
-        'Unresolved',
-        Object.values(this.statuses).map((status) => status['label'])
-      ].flat()
+        let optionKeys = [
+          'All',
+          'Unresolved',
+          Object.values(this.statuses).map((status) => status['label'])
+        ].flat()
 
-      optionKeys?.forEach((option) => {
-        if (currentTicketCounts.includes(option)) {
-          visibleTicketCounts.push(option)
-        }
-      })
+        optionKeys?.forEach((option) => {
+          if (currentTicketCounts.includes(option)) {
+            visibleTicketCounts.push(option)
+          }
+        })
 
-      return uniq(visibleTicketCounts)
+        return uniq(visibleTicketCounts)
+      }
     },
 
     updateVisibleTicketCounts(statusLabel: String, show: false) {

@@ -75,7 +75,7 @@
       <div
         class="grid grid-cols-1 gap-5"
         :class="{
-          'sm:grid-cols-2': (showTopRequesters || showTopAgents) || customFields?.length > 1
+          'sm:grid-cols-2': showTopRequesters || showTopAgents || customFields?.length > 1
         }"
       >
         <top-requesters-section v-if="showTopRequesters" :tickets="allTickets" />
@@ -100,9 +100,8 @@
 </template>
 
 <script lang="ts">
+import { defineComponent, useAttrs } from 'vue'
 import { format, isAfter } from 'date-fns'
-import { defineComponent } from 'vue'
-import { useToast } from 'vue-toastification'
 import ApiCall from '@/helpers/APICallHelper'
 import TheLayout from '@/views/TheLayout.vue'
 import ReloadIcon from '@/components/icons/ReloadIcon.vue'
@@ -139,6 +138,7 @@ export default defineComponent({
 
   data() {
     return {
+      page: 1,
       filters: [],
       tickets: [],
       apiCallUrl: '',
@@ -148,7 +148,8 @@ export default defineComponent({
       isLoading: true,
       keepFetching: true,
       detailsTicketId: null,
-      oldestTicketDate: new Date().toDateString()
+      oldestTicketDate: new Date().toDateString(),
+      youngestTicketDate: new Date().toDateString()
     }
   },
 
@@ -246,14 +247,10 @@ export default defineComponent({
 
       await this.fetchTicketsByPage()
 
-      if (!this.keepFetching) {
-        this.isLoading = false
-
-        if (this.tickets?.length) {
-          this.findOldestTicketDate()
-        } else {
-          useToast().error('No ticket to display found.')
-        }
+      if (this.tickets?.length) {
+        this.findOldestTicketDate()
+      } else {
+        this.$toast.error('No ticket to display found.')
       }
     },
 
@@ -263,28 +260,33 @@ export default defineComponent({
 
     async fetchTicketsByPage() {
       this.tickets = []
+      this.page = 1
 
       try {
-        for (let i = 1; this.keepFetching; i++) {
-          // for (let i = 1; i < 2; i++) {
-          await this.fetchTickets(i)
-        setTimeout(() => {}, 3000)
-      }
+        await this.fetchTickets()
       } catch (error) {
         this.keepFetching = false
-        this.findOldestTicketDate()
+        this.isLoading = false
       }
     },
 
-    async fetchTickets(i) {
-      await ApiCall.get(this.apiCallUrl + '&page=' + i).then((response) => {
+    async fetchTickets() {
+      await ApiCall.get(this.apiCallUrl + '&page=' + this.page).then((response) => {
         if (response) {
-          this.tickets[i] = Object.values(response.results ?? response)
+          this.tickets[this.page] = Object.values(response.results ?? response)
         }
       })
 
-      if (!this.tickets[i]?.length) {
+      if (!this.tickets[this.page]?.length) {
         this.keepFetching = false
+        this.isLoading = false
+      }
+
+      if (this.keepFetching) {
+        this.page++
+        setTimeout(() => {
+          this.fetchTickets()
+        }, 5000)
       }
     },
 
@@ -294,7 +296,7 @@ export default defineComponent({
       )
 
       ticketCreationDates = ticketCreationDates.sort((date1: String, date2: String) =>
-        isAfter(new Date(date2), new Date(date1))
+        isAfter(new Date(date1), new Date(date2))
       )
 
       let dateFromArray = new Date(ticketCreationDates[0] ?? null)

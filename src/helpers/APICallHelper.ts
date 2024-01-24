@@ -49,8 +49,8 @@ export default class ApiCall {
           return response.data
         })
         .catch((error) => {
+          console.error(error)
           toast.error('Data could not be loaded. Please try again.')
-          toast.error(error)
         })
 
       return results

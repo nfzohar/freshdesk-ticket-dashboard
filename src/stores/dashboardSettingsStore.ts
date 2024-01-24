@@ -9,7 +9,7 @@ export const dashboad_Settings = defineStore('dashboard_settings', {
     layout: {
       ticket_counts: {
         show: true,
-        visibleCounts: []
+        visibleCounts: ['All', 'Unresolved', 'Resolved', 'Closed']
       },
       types: {
         show: true
