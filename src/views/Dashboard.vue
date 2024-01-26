@@ -11,11 +11,10 @@
     >
       <div class="w-full">
         <h1 class="text-xl md:text-4xl font-semibold" v-text="appTitle" />
-        <h1
-          :key="updateToken"
-          class="font-semibold"
-          v-text="'Ticket statistics since: ' + oldestTicketDate"
-        />
+        <h1 :key="updateToken" class="flex items-center gap-x-2">
+          Ticket statistics from: <b v-text="oldestTicketDate" /> to
+          <b v-text="youngestTicketDate" />
+        </h1>
       </div>
 
       <div class="flex items-center gap-x-5 justify-between w-full md:w-auto">
@@ -100,8 +99,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, useAttrs } from 'vue'
-import { format, isAfter } from 'date-fns'
+import { format } from 'date-fns'
+import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import TheLayout from '@/views/TheLayout.vue'
 import ReloadIcon from '@/components/icons/ReloadIcon.vue'
@@ -246,12 +245,6 @@ export default defineComponent({
       }
 
       await this.fetchTicketsByPage()
-
-      if (this.tickets?.length) {
-        this.findOldestTicketDate()
-      } else {
-        this.$toast.error('No ticket to display found.')
-      }
     },
 
     loadFilteredTickets() {
@@ -275,34 +268,50 @@ export default defineComponent({
         if (response) {
           this.tickets[this.page] = Object.values(response.results ?? response)
         }
+
+        if (this.tickets[this.page]?.length) {
+          this.keepFetching = false
+          this.isLoading = false
+
+          if (this.tickets?.length) {
+            this.findFirstLastTicketDate()
+          } else {
+            this.$toast.error('No ticket to display found.')
+          }
+        }
+
+        if (this.keepFetching) {
+          this.page++
+          setTimeout(() => {
+            this.fetchTickets()
+          }, 6000)
+        }
       })
-
-      if (!this.tickets[this.page]?.length) {
-        this.keepFetching = false
-        this.isLoading = false
-      }
-
-      if (this.keepFetching) {
-        this.page++
-        setTimeout(() => {
-          this.fetchTickets()
-        }, 5000)
-      }
     },
 
-    findOldestTicketDate() {
+    epochDateForm(date: Date) {
+      return (date.getTime() - date.getMilliseconds()) / 1000
+    },
+
+    findFirstLastTicketDate() {
       let ticketCreationDates = this.allTickets.map(
-        (ticket: { created_at: String }) => ticket.created_at
+        (ticket: { created_at: String }) => new Date(ticket.created_at)
       )
 
-      ticketCreationDates = ticketCreationDates.sort((date1: String, date2: String) =>
-        isAfter(new Date(date1), new Date(date2))
+      ticketCreationDates = ticketCreationDates.filter((date) => date)
+
+      ticketCreationDates = ticketCreationDates.sort(
+        (date1: Date, date2: Date) => this.epochDateForm(date1) - this.epochDateForm(date2)
       )
 
       let dateFromArray = new Date(ticketCreationDates[0] ?? null)
+      let dateToArray = new Date(ticketCreationDates[ticketCreationDates.length - 1] ?? null)
 
       if (dateFromArray) {
         this.oldestTicketDate = format(dateFromArray, "eeee',' do MMMM y")
+      }
+      if (dateToArray) {
+        this.youngestTicketDate = format(dateToArray, "eeee',' do MMMM y")
       }
     }
   }

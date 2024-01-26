@@ -84,7 +84,11 @@ export default defineComponent({
     },
 
     getStatusId(statusLabel: string) {
-      return this.statuses.filter((status) => status.label == statusLabel)[0].id ?? 0
+      if(!this.statuses?.length){
+        return 0
+      }
+
+      return this.statuses?.filter((status) => status.label == statusLabel)[0].id ?? 0
     },
 
     getConditionalGridStyle() {

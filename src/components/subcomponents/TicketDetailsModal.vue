@@ -230,7 +230,7 @@ export default defineComponent({
     },
 
     fdate(date: String) {
-      return date ? format(new Date(date), 'd. d. y') : '-'
+      return date ? format(new Date(date), 'd. M. y') : '-'
     },
 
     reset() {
