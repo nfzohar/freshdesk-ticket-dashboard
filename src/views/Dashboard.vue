@@ -269,7 +269,7 @@ export default defineComponent({
           this.tickets[this.page] = Object.values(response.results ?? response)
         }
 
-        if (this.tickets[this.page]?.length) {
+        if (!this.tickets[this.page]?.length) {
           this.keepFetching = false
           this.isLoading = false
 
