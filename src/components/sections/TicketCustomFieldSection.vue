@@ -65,6 +65,11 @@ export default defineComponent({
       type: String,
       required: true,
       default: 'Custom field Section'
+    },
+    showUndefined: {
+      type: Boolean,
+      required: true,
+      default: false
     }
   },
 
@@ -132,10 +137,12 @@ export default defineComponent({
           }
         })
 
-        this.uniqueFields.push({
-          name: 'Undefined',
-          ticket_count: customFields.filter((customField) => !customField).length
-        })
+        if (this.showUndefined) {
+          this.uniqueFields.push({
+            name: 'Undefined',
+            ticket_count: customFields.filter((customField) => !customField).length
+          })
+        }
       }
 
       this.isLoading = false

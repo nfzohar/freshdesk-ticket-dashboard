@@ -52,6 +52,7 @@
           v-if="showTicketTypes"
           :tickets="allTickets"
           :custom-field="'type'"
+          :show-undefined="true"
           title="Ticket types"
         />
         <ticket-tags-section v-if="showTicketTags" :tickets="allTickets" />
