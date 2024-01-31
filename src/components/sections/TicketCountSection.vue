@@ -3,11 +3,7 @@
     v-if="visibleCounts.length > 0"
     :key="visibleCounts?.length"
     class="gap-5 w-full rounded-md px-10 items-center justify-between"
-    :class="[
-      visibleCounts.length > 10
-        ? 'flex items-center justify-between'
-        : 'grid grid-cols-1 sm:grid-cols-2 ' + getConditionalGridStyle()
-    ]"
+    :class="getConditionalGridStyle()"
   >
     <template v-for="(status, s) in allStatusLabels" :key="s">
       <div
@@ -84,7 +80,7 @@ export default defineComponent({
     },
 
     getStatusId(statusLabel: string) {
-      if(!this.statuses?.length){
+      if (!this.statuses?.length) {
         return 0
       }
 
@@ -94,6 +90,9 @@ export default defineComponent({
     getConditionalGridStyle() {
       let count = Number(this.visibleCounts?.length)
 
+      if (count > 10) {
+        return 'flex items-center justify-between'
+      }
       if (count % 3 == 0) {
         return 'md:grid-cols-3'
       }

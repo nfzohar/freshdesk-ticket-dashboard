@@ -11,7 +11,7 @@
     >
       <div class="w-full">
         <h1 class="text-xl md:text-4xl font-semibold" v-text="appTitle" />
-        <h1 :key="updateToken" class="flex items-center gap-x-2">
+        <h1 :key="updateToken" class="md:flex text-sm md:text-base items-center gap-x-2">
           Ticket statistics from: <b v-text="oldestTicketDate" /> to
           <b v-text="youngestTicketDate" />
         </h1>
@@ -27,6 +27,11 @@
             <reload-icon :pt-height="'20'" :pt-width="'20'" />
           </button>
 
+          <ticket-excel-exporter
+            :all-tickets="allTickets"
+            @startExport="isLoading = true"
+            @finishExport="isLoading = false"
+          />
           <ticket-filter-modal
             @filtersApply="loadFilteredTickets()"
             @filtersReset="apiCallUrl = ''"
@@ -107,6 +112,7 @@ import TheLayout from '@/views/TheLayout.vue'
 import ReloadIcon from '@/components/icons/ReloadIcon.vue'
 import DashboardSettings from '@/components/DashboardSettings.vue'
 import TicketFilterModal from '@/components/TicketFilterModal.vue'
+import TicketExcelExporter from '@/components/TicketExcelExporter.vue'
 import TopAgentsSection from '@/components/sections/TopAgentsSection.vue'
 import TicketTagsSection from '@/components/sections/TicketTagsSection.vue'
 import TicketListSection from '@/components/sections/TicketListSection.vue'
@@ -131,6 +137,7 @@ export default defineComponent({
     TicketCountSection,
     TicketDetailsModal,
     TicketGroupsSection,
+    TicketExcelExporter,
     TopRequestersSection,
     TicketCustomFieldSection
     // TicketStatisticsOpenClosedGraph
@@ -253,7 +260,6 @@ export default defineComponent({
     },
 
     async fetchTicketsByPage() {
-      this.tickets = []
       this.page = 1
 
       try {
@@ -265,17 +271,24 @@ export default defineComponent({
     },
 
     async fetchTickets() {
+      let ticketsList = []
+
       await ApiCall.get(this.apiCallUrl + '&page=' + this.page).then((response) => {
         if (response) {
-          this.tickets[this.page] = Object.values(response.results ?? response)
+          ticketsList[this.page] = Object.values(response.results ?? response)
         }
 
-        if (!this.tickets[this.page]?.length) {
+        if (!ticketsList[this.page]?.length) {
           this.keepFetching = false
-          this.isLoading = false
 
-          if (this.tickets?.length) {
+          if (ticketsList?.length) {
+            this.isLoading = true
+
+            this.tickets = ticketsList
+            this.tickets = []
+
             this.findFirstLastTicketDate()
+            this.isLoading = false
           } else {
             this.$toast.error('No ticket to display found.')
           }
