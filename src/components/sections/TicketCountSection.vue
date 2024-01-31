@@ -4,9 +4,7 @@
     :key="visibleCounts?.length"
     class="gap-5 w-full rounded-md px-10 items-center justify-between"
     :class="
-      visibleCounts?.length > 10
-        ? 'flex items-center justify-between'
-        : 'grid grid-cols-1 sm:grid-cols-2' + getConditionalGridStyle()
+      visibleCounts?.length > 10 ? 'flex items-center justify-between' : getConditionalGridStyle()
     "
   >
     <template v-for="(status, s) in allStatusLabels" :key="s">
@@ -93,16 +91,19 @@ export default defineComponent({
 
     getConditionalGridStyle() {
       let count = Number(this.visibleCounts?.length)
+      let style = 'grid grid-cols-1 sm:grid-cols-2 '
 
       if (count % 3 == 0) {
-        return 'md:grid-cols-3'
+        style += 'md:grid-cols-3'
       }
       if (count % 4 == 0) {
-        return 'md:grid-cols-4'
+        style += 'md:grid-cols-4'
       }
       if (count % 5 == 0) {
-        return 'md:grid-cols-5'
+        style += 'md:grid-cols-5'
       }
+
+      return style
     }
   }
 })
