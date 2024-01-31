@@ -261,6 +261,7 @@ export default defineComponent({
 
     async fetchTicketsByPage() {
       this.page = 1
+      this.tickets = []
 
       try {
         await this.fetchTickets()
@@ -271,24 +272,17 @@ export default defineComponent({
     },
 
     async fetchTickets() {
-      let ticketsList = []
-
       await ApiCall.get(this.apiCallUrl + '&page=' + this.page).then((response) => {
         if (response) {
-          ticketsList[this.page] = Object.values(response.results ?? response)
+          this.tickets[this.page] = Object.values(response.results ?? response)
         }
 
-        if (!ticketsList[this.page]?.length) {
+        if (!this.tickets[this.page]?.length) {
           this.keepFetching = false
+          this.isLoading = false
 
-          if (ticketsList?.length) {
-            this.isLoading = true
-
-            this.tickets = ticketsList
-            this.tickets = []
-
+          if (this.tickets?.length) {
             this.findFirstLastTicketDate()
-            this.isLoading = false
           } else {
             this.$toast.error('No ticket to display found.')
           }
