@@ -110,6 +110,7 @@ export default defineComponent({
 
   mounted() {
     this.generateCustomFieldStatistics()
+    window.addEventListener('resize', () => this.updateToken++)
   },
 
   methods: {

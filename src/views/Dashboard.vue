@@ -24,10 +24,15 @@
             :title="'Refresh page'"
             @click.stop="loadTickets()"
           >
-            <reload-icon :pt-height="'20'" :pt-width="'20'" />
+            <reload-icon
+              :class="{ 'animate-spin': keepFetching }"
+              :pt-height="'20'"
+              :pt-width="'20'"
+            />
           </button>
 
           <ticket-excel-exporter
+            v-if="tickets?.length"
             :all-tickets="allTickets"
             @startExport="isLoading = true"
             @finishExport="isLoading = false"
@@ -148,6 +153,7 @@ export default defineComponent({
       page: 1,
       filters: [],
       tickets: [],
+      ticketsTemp: [],
       apiCallUrl: '',
       updateToken: 0,
       reloadToken: 0,
@@ -243,7 +249,6 @@ export default defineComponent({
 
   methods: {
     async loadTickets() {
-      this.isLoading = true
       this.keepFetching = true
 
       // Set default api call if not set
@@ -261,30 +266,32 @@ export default defineComponent({
 
     async fetchTicketsByPage() {
       this.page = 1
-      this.tickets = []
+      this.ticketsTemp = []
 
       try {
         await this.fetchTickets()
       } catch (error) {
         this.keepFetching = false
-        this.isLoading = false
+        this.stopLoading()
       }
     },
 
     async fetchTickets() {
       await ApiCall.get(this.apiCallUrl + '&page=' + this.page).then((response) => {
         if (response) {
-          this.tickets[this.page] = Object.values(response.results ?? response)
+          this.ticketsTemp[this.page] = Object.values(response.results ?? response)
         }
 
-        if (!this.tickets[this.page]?.length) {
+        if (!this.ticketsTemp[this.page]?.length) {
           this.keepFetching = false
-          this.isLoading = false
 
-          if (this.tickets?.length) {
+          if (this.ticketsTemp?.length) {
+            this.refershTicketsFromTemp()
             this.findFirstLastTicketDate()
           } else {
-            this.$toast.error('No ticket to display found.')
+            this.$toast.clear()
+            this.$toast.error('No tickets to display found.')
+            this.stopLoading()
           }
         }
 
@@ -295,6 +302,16 @@ export default defineComponent({
           }, 6000)
         }
       })
+    },
+
+    async refershTicketsFromTemp() {
+      this.startLoading()
+      this.tickets = this.ticketsTemp
+
+      setTimeout(async () => {
+        this.ticketsTemp = []
+        this.stopLoading()
+      }, 3000)
     },
 
     epochDateForm(date: Date) {
@@ -321,6 +338,14 @@ export default defineComponent({
       if (dateToArray) {
         this.youngestTicketDate = format(dateToArray, "eeee',' do MMMM y")
       }
+    },
+
+    startLoading() {
+      this.isLoading = true
+    },
+
+    stopLoading() {
+      this.isLoading = false
     }
   }
 })
