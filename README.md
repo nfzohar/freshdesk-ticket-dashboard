@@ -22,6 +22,7 @@ Designed to work with the "Growth" freshdesk plan.
 - [Vue Router](https://router.vuejs.org/guide/)
 - [Vue Api Query](https://robsontenorio.github.io/vue-api-query/)
 - [Vue Toastification](https://vue-toastification.maronato.dev/)
+- [Write Excel File](https://www.npmjs.com/package/write-excel-file)
 
 ## Project Setup
 
