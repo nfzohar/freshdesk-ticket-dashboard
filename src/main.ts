@@ -1,8 +1,9 @@
+import { createApp, defineAsyncComponent } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import AToast from '@/components/General/AToast.vue'
 import { useToast } from 'vue-toastification'
 import Toast from 'vue-toastification'
 import { createPinia } from 'pinia'
-import { createApp } from 'vue'
 import router from './router'
 import App from './App.vue'
 
@@ -25,7 +26,7 @@ app.use(router)
 app.use(Toast, {
   AToast,
   position: 'top-center',
-  timeout: false,
+  timeout: 3000,
   closeOnClick: true,
   draggable: true,
   draggablePercent: 0.6,
@@ -39,5 +40,23 @@ app.use(Toast, {
 
 // Register Toast globally
 app.config.globalProperties.$toast = useToast()
+
+// Register components in folders globally
+const globalComponentFolders = [
+  import.meta.glob('@/components/layouts/*'),
+  import.meta.glob('@/components/panels/*')
+]
+
+globalComponentFolders.forEach((folder) => {
+  Object.entries(folder).map(([path, importFn]) => {
+    const parts = path.split('/')
+    const filename = parts[parts.length - 1]
+    const componentName = filename.slice(0, -4)
+    app.component(
+      componentName,
+      defineAsyncComponent(() => importFn())
+    )
+  })
+})
 
 app.mount('#app')

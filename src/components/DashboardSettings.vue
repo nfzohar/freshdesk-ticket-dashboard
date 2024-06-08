@@ -1,12 +1,8 @@
 <template>
   <a-dialog :manual-open="open" custom-class="-mt-28 md:-mt-14">
     <template #trigger>
-      <button
-        class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 px-3 shadow-md shadow-primary-600 h-10 w-auto"
-        :title="'Settings'"
-        @click="open = true"
-      >
-        <settings-icon class="cursor-pointer" />
+      <button class="actions-button" :title="'Settings'" @click="open = true">
+        <i class="fa fa-cog" />
       </button>
     </template>
 

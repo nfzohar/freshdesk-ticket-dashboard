@@ -1,10 +1,7 @@
 <template>
-  <button
-    class="primary-button w-20 h-10 text-center bg-primary-500 hover:bg-primary-600 border-none py-2 shadow-md shadow-primary-600 hover:font-semibold"
-    v-text="'Export'"
-    :title="'Export tickets to excel'"
-    @click="exportTickets()"
-  />
+  <button class="actions-button" :title="'Export tickets to Excel'" @click="exportTickets()">
+    <i class="fa fa-file-excel" />
+  </button>
 </template>
 
 <script lang="ts">
@@ -14,7 +11,7 @@ import { defineComponent } from 'vue'
 import writeXlsxFile from 'write-excel-file'
 
 export default defineComponent({
-  name: 'TIcketExcelExporter',
+  name: 'TicketExcelExporter',
 
   emits: ['startExport', 'finishExport'],
 

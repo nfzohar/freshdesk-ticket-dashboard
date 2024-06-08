@@ -12,6 +12,10 @@ body {
   @apply border rounded-md bg-primary-500;
 }
 
+.actions-button {
+  @apply border rounded-md text-center text-lg bg-primary-500 border-none hover:bg-primary-600 py-2 px-3 shadow-md shadow-primary-600 h-10 w-10;
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
