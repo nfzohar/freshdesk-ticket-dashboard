@@ -1,13 +1,12 @@
 <template>
   <div
     class="flex flex-col rounded-md w-full bg-primary-500 hover:bg-primary-600 border-secondary-600 px-3 py-2"
-    :title="description"
   >
     <span class="font-bold" v-text="name" />
 
     <span class="text-sm">
       <span class="font-semibold" v-text="'Count of tickets: '" />
-      <span v-text="ticketCount" />
+      <span v-text="count" />
     </span>
   </div>
 </template>
@@ -16,26 +15,19 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'AGroup',
+  name: 'ACard',
 
   props: {
-    group: {
-      type: [Object, Array],
+    name: {
+      type: String,
+      required: true
+    },
+    count: {
+      type: [Number, String],
       required: false,
-      default: () => []
-    }
-  },
-
-  computed: {
-    name() {
-      return this.group?.name
+      default: 0
     },
-    description() {
-      return this.group?.description
-    },
-    ticketCount() {
-      return this.group?.ticket_count ?? 0
-    }
+    
   }
 })
 </script>

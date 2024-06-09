@@ -126,13 +126,12 @@ import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
 import ADialog from '@/components/General/ADialog.vue'
 import ACheckbox from '@/components/General/ACheckbox.vue'
-import SettingsIcon from '@/components/icons/SettingsIcon.vue'
-import CustomFieldsManager from '@/components/subcomponents/CustomFieldsManager.vue'
+import CustomFieldsManager from '@/components/CustomFieldsManager.vue'
 
 export default defineComponent({
   name: 'DashboardSettings',
 
-  components: { ACheckbox, ADialog, SettingsIcon, CustomFieldsManager },
+  components: { ACheckbox, ADialog, CustomFieldsManager },
 
   emits: ['refreshDashboard', 'reloadDashboard'],
 

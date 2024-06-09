@@ -1,6 +1,7 @@
 <template>
   <div
     class="w-full h-20 mb-4 px-1 bg-secondary-500 border-b border-primary-500 shadow-md shadow-primary-500 transition-all"
+    :class="{ '-mt-24 ': autoHideTopBar }"
   >
     <div
       class="flex flex-col md:flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md"
@@ -20,9 +21,11 @@
 
         <ticket-excel-exporter
           :all-tickets="allTickets"
-          @startExport="$emit('toggleLoading')"
-          @finishExport="$emit('toggleLoading')"
+          @startExport="$emit('startLoading')"
+          @finishExport="$emit('stopLoading')"
         />
+
+        <all-tickets-list :all-tickets="allTickets" />
 
         <!-- <ticket-filter-modal
             @filtersApply="loadFilteredTickets()"
@@ -42,6 +45,7 @@
 <script lang="ts">
 import { format } from 'date-fns'
 import { defineComponent } from 'vue'
+import AllTicketsList from '@/components/AllTicketsListModal.vue'
 import DashboardSettings from '@/components/DashboardSettings.vue'
 import TicketFilterModal from '@/components/TicketFilterModal.vue'
 import TicketExcelExporter from '@/components/TicketExcelExporter.vue'
@@ -57,16 +61,21 @@ export default defineComponent({
     loading: {
       type: Boolean,
       required: true
+    },
+    autoHideTopBar: {
+      type: Boolean,
+      required: true
     }
   },
 
   components: {
+    AllTicketsList,
     TicketFilterModal,
     DashboardSettings,
     TicketExcelExporter
   },
 
-  emits: ['reload', 'refresh', 'toggleLoading'],
+  emits: ['reload', 'refresh', 'startLoading', 'stopLoading'],
 
   data() {
     return {

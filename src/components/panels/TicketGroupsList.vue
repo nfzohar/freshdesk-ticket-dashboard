@@ -7,7 +7,12 @@
         :class="'overflow-y-scroll scrollbar-hide'"
         style="max-height: 50vh"
       >
-        <a-group v-for="(group, t) in ticketGroups" :key="t" :group="group" />
+        <a-card
+          v-for="(group, g) in ticketGroups"
+          :key="g"
+          :name="group?.name"
+          :count="group?.ticket_count"
+        />
       </div>
     </template>
   </a-section>
@@ -17,16 +22,16 @@
 import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
-import ASection from '@/components/General/ASection.vue'
-import AGroup from '@/components/subcomponents/AGroup.vue'
+import ACard from '@/components/subcomponents/panel/ACard.vue'
+import ASection from '@/components/subcomponents/general/ASection.vue'
 
 export default defineComponent({
-  name: 'TicketGroupStatisticsSection',
+  name: 'TicketGroupsList',
 
-  components: { AGroup, ASection },
+  components: { ASection, ACard },
 
   props: {
-    tickets: {
+    allTickets: {
       type: [Array, Object],
       required: false,
       default: () => {}
@@ -50,7 +55,7 @@ export default defineComponent({
   },
 
   watch: {
-    'tickets.length'() {
+    'allTickets.length'() {
       this.getGroupTicketCounts()
     }
   },
@@ -61,25 +66,27 @@ export default defineComponent({
 
   methods: {
     async fetchTicketGroups() {
-      this.groups = []
+      if (!this.$configuration.storedGroups?.length) {
+        this.groups = []
 
-      await ApiCall.get('groups?per_page=100')
-        .then((response) => {
-          if (response) {
-            this.groups = response
-          }
-        })
-        .then(() => {
-          this.getGroupTicketCounts()
-        })
-        .then(() => {
-          this.$dashboard.groups = this.groups
-        })
+        await ApiCall.get('groups?per_page=100')
+          .then((response) => {
+            if (response) {
+              this.groups = response
+            }
+          })
+          .then(() => {
+            this.getGroupTicketCounts()
+          })
+          .then(() => {
+            this.$dashboard.groups = this.groups
+          })
+      }
     },
 
     async getGroupTicketCounts() {
       this.ticketGroups = []
-      let ticketsGrouped = groupBy(this.tickets, 'group_id')
+      let ticketsGrouped = groupBy(this.allTickets, 'group_id')
 
       Object.values(this.groups).forEach((group) => {
         if (group) {

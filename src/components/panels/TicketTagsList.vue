@@ -6,7 +6,12 @@
         :class="'overflow-y-scroll scrollbar-hide'"
         style="max-height: 50vh"
       >
-        <a-tag v-for="(tag, t) in uniqueTags" :key="t" :tag="tag" />
+        <a-card
+          v-for="(tag, t) in uniqueTags"
+          :key="t"
+          :name="tag?.name"
+          :count="tag?.ticket_count"
+        />
       </div>
     </template>
   </a-section>
@@ -15,13 +20,13 @@
 <script lang="ts">
 import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
-import ATag from '@/components/subcomponents/ATag.vue'
 import ASection from '@/components/General/ASection.vue'
+import ACard from '@/components/subcomponents/panel/ACard.vue'
 
 export default defineComponent({
   name: 'TicketTagStatisticsSection',
 
-  components: { ATag, ASection },
+  components: { ACard, ASection },
 
   props: {
     tickets: {

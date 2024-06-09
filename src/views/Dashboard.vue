@@ -6,39 +6,36 @@
   />
   <div
     class="flex flex-col bg-secondary-500 h-screen w-screen transition-colors"
-    :class="[{ 'is-loading': isLoading }, { 'cursor-none': hiddenTopBar }]"
+    :class="[{ 'is-loading': isLoading }, { 'cursor-none': autoHideTopBar }]"
     :key="reloadToken"
     @mousemove="displayTopBar"
   >
-    <top-bar
-      :class="{ '-mt-24 ': hiddenTopBar }"
+    <the-top-bar
       :loading="isLoading"
+      :auto-hide-top-bar="autoHideTopBar"
       :all-tickets="allTickets"
-      @refresh="loader"
-      @reload="reloadToken++"
-      @toggleLoading="toggleLoading()"
+      @refresh="fetchTicketsOfPage(1)"
+      @reload="fetchTicketsOfPage(1)"
+      @startLoading="toggleLoading()"
+      @stopLoading="toggleLoading()"
     />
-    <component :is="`${selectedDashboardLayout}-layout`" :all-tickets="allTickets" />
-
-    <!-- <ticket-list /> -->
+    <component :is="`${dashboardLayoutAlignment}-layout`" :all-tickets="allTickets" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import TopBar from '@/views/TopBar.vue'
 import ApiCall from '@/helpers/APICallHelper'
-import TicketList from '@/components/panels/TicketList.vue'
+import TheTopBar from '@/components/DashboardTopBar.vue'
 import RowsLayout from '@/components/layouts/RowsLayout.vue'
 import ColumnsLayout from '@/components/layouts/ColumnsLayout.vue'
-import TicketDetailsModal from '@/components/subcomponents/TicketDetailsModal.vue'
+import TicketDetailsModal from '@/components/TicketDetailsModal.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
 
   components: {
-    TopBar,
-    TicketList,
+    TheTopBar,
     RowsLayout,
     ColumnsLayout,
     TicketDetailsModal
@@ -62,9 +59,11 @@ export default defineComponent({
   },
 
   computed: {
-    selectedDashboardLayout() {
-      let sel = true
-      return !sel ? 'rows' : 'columns'
+    dashboardLayoutAlignment() {
+      return this.$configuration?.orientation == 'vertical' ? 'columns' : 'rows'
+    },
+    autoHideTopBar() {
+      return this.$configuration?.autoHideTopBar && this.hiddenTopBar
     },
     allTickets(): Object {
       return this.tickets?.flat()
@@ -80,14 +79,42 @@ export default defineComponent({
     }
   },
 
+  created() {
+    this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '2023').toISOString()
+  },
+
   async mounted() {
     // if (!this.$store.authenticated) {
     //   this.$router.push('/')
     // }
+    this.fetchTicketsOfPage(1)
   },
 
   methods: {
-    loader() {},
+    // TEMPOPRARY FOR LOADING FIRST PAGE ONLY. REMOVE FOR PRODUCITON
+    async fetchTicketsOfPage(page: Number) {
+      let callUrl =
+        'tickets?updated_since=' + this.startYear + '&include=requester,stats&per_page=100'
+
+      await ApiCall.get(callUrl + '&page=' + page).then((response) => {
+        if (response) {
+          this.ticketsTemp[page] = Object.values(response.results ?? response)
+        }
+
+        if (!this.ticketsTemp[this.page]?.length) {
+          this.keepFetching = false
+
+          if (this.ticketsTemp?.length) {
+            this.refershTicketsFromTemp()
+            this.toggleLoading()
+          } else {
+            this.$toast.clear()
+            this.$toast.error('No tickets to display found.')
+            this.toggleLoading()
+          }
+        }
+      })
+    },
 
     async loadTickets() {
       this.keepFetching = true
@@ -100,10 +127,6 @@ export default defineComponent({
       }
 
       await this.fetchTicketsByPage()
-    },
-
-    loadFilteredTickets() {
-      this.apiCallUrl = 'search/tickets?query="' + this.$store.filters + '"'
     },
 
     async fetchTicketsByPage() {
@@ -153,6 +176,10 @@ export default defineComponent({
         this.ticketsTemp = []
         this.toggleLoading()
       }, 3000)
+    },
+
+    loadFilteredTickets() {
+      this.apiCallUrl = 'search/tickets?query="' + this.$store.filters + '"'
     },
 
     toggleLoading() {

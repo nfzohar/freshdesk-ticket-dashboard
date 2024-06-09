@@ -5,8 +5,8 @@
     <span class="font-bold" v-text="name" />
 
     <span class="text-sm">
-      <span class="font-semibold" v-text="'Count of tickets: '" />
-      <span v-text="ticketCount" />
+      <span class="font-semibold" v-text="countPrefix" />
+      <span v-text="count" />
     </span>
   </div>
 </template>
@@ -15,22 +15,22 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'ATag',
+  name: 'ACard',
 
   props: {
-    tag: {
-      type: [Object, Array],
-      required: false,
-      default: () => []
-    }
-  },
-
-  computed: {
-    name() {
-      return this.tag?.name
+    name: {
+      type: String,
+      required: true
     },
-    ticketCount() {
-      return this.tag?.ticket_count ?? 0
+    count: {
+      type: [Number, String],
+      required: false,
+      default: 0
+    },
+    countPrefix: {
+      type: String,
+      required: false,
+      default: 'Count of tickets: '
     }
   }
 })
