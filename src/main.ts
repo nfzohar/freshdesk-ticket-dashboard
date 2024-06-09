@@ -1,6 +1,5 @@
 import { createApp, defineAsyncComponent } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import AToast from '@/components/General/AToast.vue'
+import AToast from '@/components/general/AToast.vue'
 import { useToast } from 'vue-toastification'
 import Toast from 'vue-toastification'
 import { createPinia } from 'pinia'

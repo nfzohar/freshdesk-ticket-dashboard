@@ -22,8 +22,8 @@
 import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
+import ASection from '@/components/general/ASection.vue'
 import ACard from '@/components/subcomponents/panel/ACard.vue'
-import ASection from '@/components/subcomponents/general/ASection.vue'
 
 export default defineComponent({
   name: 'TicketGroupsList',
@@ -31,7 +31,7 @@ export default defineComponent({
   components: { ASection, ACard },
 
   props: {
-    allTickets: {
+    tickets: {
       type: [Array, Object],
       required: false,
       default: () => {}
@@ -55,7 +55,7 @@ export default defineComponent({
   },
 
   watch: {
-    'allTickets.length'() {
+    'tickets.length'() {
       this.getGroupTicketCounts()
     }
   },
@@ -86,7 +86,7 @@ export default defineComponent({
 
     async getGroupTicketCounts() {
       this.ticketGroups = []
-      let ticketsGrouped = groupBy(this.allTickets, 'group_id')
+      let ticketsGrouped = groupBy(this.tickets, 'group_id')
 
       Object.values(this.groups).forEach((group) => {
         if (group) {

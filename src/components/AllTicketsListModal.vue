@@ -48,9 +48,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import ADialog from '@/components/general/ADialog.vue'
 import ATicket from '@/components/subcomponents/ATicket.vue'
 import ASectionTitle from '@/components/General/ASectionTitle.vue'
-import ADialog from '@/components/subcomponents/general/ADialog.vue'
 
 export default defineComponent({
   name: 'TicketListSection',

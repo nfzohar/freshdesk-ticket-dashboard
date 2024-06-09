@@ -54,7 +54,8 @@ export default defineComponent({
       isLoading: false,
       keepFetching: true,
       hiddenTopBar: false,
-      detailsTicketId: null
+      detailsTicketId: null,
+      timeoutId: null
     }
   },
 
@@ -87,45 +88,20 @@ export default defineComponent({
     // if (!this.$store.authenticated) {
     //   this.$router.push('/')
     // }
-    this.fetchTicketsOfPage(1)
+
+    await this.loadTickets()
   },
 
   methods: {
-    // TEMPOPRARY FOR LOADING FIRST PAGE ONLY. REMOVE FOR PRODUCITON
-    async fetchTicketsOfPage(page: Number) {
-      let callUrl =
-        'tickets?updated_since=' + this.startYear + '&include=requester,stats&per_page=100'
-
-      await ApiCall.get(callUrl + '&page=' + page).then((response) => {
-        if (response) {
-          this.ticketsTemp[page] = Object.values(response.results ?? response)
-        }
-
-        if (!this.ticketsTemp[this.page]?.length) {
-          this.keepFetching = false
-
-          if (this.ticketsTemp?.length) {
-            this.refershTicketsFromTemp()
-            this.toggleLoading()
-          } else {
-            this.$toast.clear()
-            this.$toast.error('No tickets to display found.')
-            this.toggleLoading()
-          }
-        }
-      })
-    },
-
     async loadTickets() {
       this.keepFetching = true
-      this.isLoading = true
+      this.isLoading = !true
 
       // Set default api call if not set
       if (!this.apiCallUrl) {
         this.apiCallUrl =
           'tickets?updated_since=' + this.startYear + '&include=requester,stats&per_page=100'
       }
-
       await this.fetchTicketsByPage()
     },
 
@@ -159,12 +135,15 @@ export default defineComponent({
           }
         }
 
-        if (this.keepFetching) {
-          this.page++
-          setTimeout(() => {
-            this.fetchTickets()
-          }, 6000)
-        }
+        this.keepFetching = false
+        this.toggleLoading()
+
+        // if (this.keepFetching) {
+        //   this.page++
+        //   setTimeout(() => {
+        //     this.fetchTickets()
+        //   }, 6000)
+        // }
       })
     },
 
@@ -188,7 +167,8 @@ export default defineComponent({
 
     displayTopBar() {
       this.hiddenTopBar = false
-      setTimeout(() => {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(() => {
         this.hiddenTopBar = true
       }, 10000)
     }
