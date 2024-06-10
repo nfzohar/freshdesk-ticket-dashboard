@@ -71,7 +71,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import LogoIcon from '../components/icons/LogoIcon.vue'
+import LogoIcon from '../components/general/LogoIcon.vue'
 import { checkAuthCredentials } from '../helpers/CommonMethods'
 
 export default defineComponent({

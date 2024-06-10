@@ -2,7 +2,7 @@
   <a-section
     :datasets="dataset"
     :dataset-labels="datasetLabels"
-    :title="'Top ' + topListCount + ' requesters'"
+    :title="`Top ${leaderboardsLength} requesters`"
   >
     <template #defaultView>
       <div
@@ -12,12 +12,21 @@
         :class="'overflow-y-scroll scrollbar-hide'"
         style="max-height: 50vh"
       >
-        <a-top-requester
-          v-for="(topRequester, t) in topCountedRequesters"
-          :key="t"
-          :position="t"
-          :requester="topRequester"
-        />
+        <div v-for="(requester, r) in topCountedRequesters" :key="r" class="flex items-center">
+          <a-card
+            :class="{ 'rounded-l-md rounded-r-none': showTrophies }"
+            :name="requester?.name"
+            :subtitle="requester?.email"
+            :count-label="'Created tickets'"
+            :count="requester?.ticket_count"
+          />
+          <span
+            v-if="showTrophies && Number(r) < 3"
+            class="block h-auto w-max bg-primary-500 px-3 py-6 rounded-r-md"
+          >
+            <i :class="`text-4xl ${trophyIcon} ${trophyColors[r]}`" />
+          </span>
+        </div>
       </div>
     </template>
   </a-section>
@@ -26,13 +35,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { groupBy, uniqBy } from 'lodash'
-import ASection from '@/components/General/ASection.vue'
-import ATopRequester from '@/components/subcomponents/ATopRequester.vue'
+import ASection from '@/components/general/ASection.vue'
+import ACard from '@/components/subcomponents//ACard.vue'
 
 export default defineComponent({
   name: 'RequestersLeaderboard',
 
-  components: { ATopRequester, ASection },
+  components: { ASection, ACard },
 
   props: {
     tickets: {
@@ -68,6 +77,19 @@ export default defineComponent({
     },
     datasetLabels() {
       return Object.values(this.topCountedRequesters?.map((field) => field?.name))
+    },
+
+    leaderboardsLength(): number {
+      return this.$configuration.leaderboardsLength
+    },
+    showTrophies(): Boolean {
+      return this.$configuration.showTrophies
+    },
+    trophyColors(): Array {
+      return this.$configuration.trophyColors
+    },
+    trophyIcon(): String {
+      return this.$configuration.trophyIcon
     }
   },
 

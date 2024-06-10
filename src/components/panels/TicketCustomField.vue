@@ -18,11 +18,11 @@
         class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 overflow-y-scroll scrollbar-hide"
         style="max-height: 50vh"
       >
-        <a-custom-field
+        <!-- <a-custom-field
           v-for="(customField, c) in uniqueFields"
           :key="c"
           :custom-field="customField"
-        />
+        /> -->
       </div>
 
       <a-statistics-graph
@@ -41,14 +41,13 @@
 <script lang="ts">
 import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
-import ASectionTitle from '@/components//General/ASectionTitle.vue'
-import ACustomField from '@/components/subcomponents/ACustomField.vue'
-import AStatisticsGraph from '@/components/General/AStatisticsGraph.vue'
+import ASectionTitle from '@/components/general/ASectionTitle.vue'
+import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
 
 export default defineComponent({
   name: 'TicketCustomFieldSection',
 
-  components: { ACustomField, AStatisticsGraph, ASectionTitle },
+  components: { AStatisticsGraph, ASectionTitle },
 
   props: {
     tickets: {

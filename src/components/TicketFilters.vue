@@ -103,9 +103,9 @@
 import format from 'date-fns/format'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
-import ADialog from '@/components/General/ADialog.vue'
-import ASelect from '@/components/General/ASelect.vue'
-import ADateSelect from '@/components/General/ADateSelect.vue'
+import ADialog from '@/components/general/ADialog.vue'
+import ASelect from '@/components/general/ASelect.vue'
+import ADateSelect from '@/components/general/ADateSelect.vue'
 
 export default defineComponent({
   name: 'TicketFilterSection',

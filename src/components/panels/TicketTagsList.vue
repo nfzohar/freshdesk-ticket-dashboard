@@ -20,8 +20,8 @@
 <script lang="ts">
 import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
-import ASection from '@/components/General/ASection.vue'
-import ACard from '@/components/subcomponents/panel/ACard.vue'
+import ASection from '@/components/general/ASection.vue'
+import ACard from '@/components/subcomponents/ACard.vue'
 
 export default defineComponent({
   name: 'TicketTagStatisticsSection',

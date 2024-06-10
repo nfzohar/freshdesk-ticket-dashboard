@@ -86,3 +86,7 @@ export function isEven(number: number) {
 export function isOdd(number: number) {
   return number % 2 !== 0
 }
+
+export function generateGraphDataset() {
+  return ''
+}

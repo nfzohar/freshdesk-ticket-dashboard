@@ -1,7 +1,7 @@
 <template>
   <div class="flex w-full h-screen overflow-y-scroll p-2 scrollbar-hide gap-y-5 flex-col">
     <div class="w-full h-full border flex gap-x-5 p-2">
-      <component :tickets="allTickets" :is="'AgentsLeaderboard'" />
+      <component :tickets="allTickets" :is="'agents-leaderboard'" />
       <component :tickets="allTickets" :is="'RequestersLeaderboard'" />
     </div>
     <div class="w-full h-full border flex gap-x-5 p-2">

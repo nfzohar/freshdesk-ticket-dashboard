@@ -12,10 +12,15 @@ export const configuration = defineStore('configuration', {
       perMinutes: ''
     },
 
-    layout: {
+    leaderboards: {
+      length: 5,
       showThrophies: true,
-      autoHideTopBar: true,
-      leaderboardsLength: 5,
+      trophyIcon: 'fa fa-trophy',
+      trophyColors: ['text-yellow-500', 'text-gray-400', 'text-amber-900']
+    },
+
+    layout: {
+      autoHideToolbar: true,
       direction: 'horizontal',
 
       groups: [
@@ -37,6 +42,9 @@ export const configuration = defineStore('configuration', {
     theAutoRefresh(): Object {
       return this.autoRefresh
     },
+    autoHideToolbar(): Boolean {
+      return this.layout.autoHideToolbar
+    },
 
     panelGroups(): Object {
       return this.layout.groups
@@ -44,14 +52,17 @@ export const configuration = defineStore('configuration', {
     orientation(): String {
       return this.layout.direction
     },
-    showTrophies(): Boolean {
-      return this.layout.showThrophies
+    trophyIcon(): String {
+      return this.leaderboards.trophyIcon
     },
-    autoHideTopBar(): Boolean {
-      return this.layout.autoHideTopBar
+    trophyColors(): Array {
+      return this.leaderboards.trophyColors
+    },
+    showTrophies(): Boolean {
+      return this.leaderboards.showThrophies
     },
     leaderboardsLength(): Number {
-      return this.layout.leaderboardsLength
+      return this.leaderboards.length
     },
 
     storedStatuses(): Object {
@@ -72,6 +83,7 @@ export const configuration = defineStore('configuration', {
     updateCurrentConfiguration(data: Object) {
       this.layout = data?.layout
       this.autoRefresh = data.autoRefresh
+      this.leaderboards = data.leaderboards
 
       this.saveConfigurationToStore()
     },
@@ -79,7 +91,8 @@ export const configuration = defineStore('configuration', {
     saveConfigurationToStore() {
       const storeData = {
         layout: this.layout,
-        autoRefresh: this.autoRefresh
+        autoRefresh: this.autoRefresh,
+        leaderboards: this.leaderboards
       }
 
       localStorage.setItem('stored_configuration', JSON.stringify(storeData))
@@ -91,6 +104,7 @@ export const configuration = defineStore('configuration', {
       if (storedConfiguration) {
         this.layout = JSON.parse(storedConfiguration.layout)
         this.autoRefresh = JSON.parse(storedConfiguration.autoRefresh)
+        this.leaderboards = JSON.parse(storedConfiguration.leaderboards)
       }
     },
 

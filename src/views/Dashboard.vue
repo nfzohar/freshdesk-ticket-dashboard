@@ -1,19 +1,14 @@
 <template>
-  <ticket-details-modal
-    :key="Number(detailsTicketId)"
-    :ticket-id="Number(detailsTicketId)"
-    @modalClosed="detailsTicketId = null"
-  />
   <div
+    :key="reloadToken"
     class="flex flex-col bg-secondary-500 h-screen w-screen transition-colors"
     :class="[{ 'is-loading': isLoading }, { 'cursor-none': autoHideTopBar }]"
-    :key="reloadToken"
     @mousemove="displayTopBar"
   >
-    <the-top-bar
+    <tool-bar
       :loading="isLoading"
-      :auto-hide-top-bar="autoHideTopBar"
       :all-tickets="allTickets"
+      :auto-hide="autoHideTopBar"
       @refresh="fetchTicketsOfPage(1)"
       @reload="fetchTicketsOfPage(1)"
       @startLoading="toggleLoading()"
@@ -26,19 +21,17 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
-import TheTopBar from '@/components/DashboardTopBar.vue'
+import ToolBar from '@/components/DashboardToolbar.vue'
 import RowsLayout from '@/components/layouts/RowsLayout.vue'
 import ColumnsLayout from '@/components/layouts/ColumnsLayout.vue'
-import TicketDetailsModal from '@/components/TicketDetailsModal.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
 
   components: {
-    TheTopBar,
+    ToolBar,
     RowsLayout,
-    ColumnsLayout,
-    TicketDetailsModal
+    ColumnsLayout
   },
 
   data() {
@@ -54,7 +47,6 @@ export default defineComponent({
       isLoading: false,
       keepFetching: true,
       hiddenTopBar: false,
-      detailsTicketId: null,
       timeoutId: null
     }
   },
@@ -64,7 +56,7 @@ export default defineComponent({
       return this.$configuration?.orientation == 'vertical' ? 'columns' : 'rows'
     },
     autoHideTopBar() {
-      return this.$configuration?.autoHideTopBar && this.hiddenTopBar
+      return this.$configuration?.autoHideToolbar && this.hiddenTopBar
     },
     allTickets(): Object {
       return this.tickets?.flat()
@@ -81,7 +73,7 @@ export default defineComponent({
   },
 
   created() {
-    this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '2023').toISOString()
+    this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970').toISOString()
   },
 
   async mounted() {

@@ -6,13 +6,15 @@ import { createPinia } from 'pinia'
 import router from './router'
 import App from './App.vue'
 
-// Import the CSS or use your own!
 import './index.css'
 import 'vue-toastification/dist/index.css'
+import '@fortawesome/fontawesome-free/css/all.css'
+// import '@fortawesome/fontawesome-free/js/all.js'
+
 import piniaPlugin from './stores/piniaPlugin'
 
-const app = createApp(App)
 const pinia = createPinia()
+const app = createApp(App)
 
 //Register store
 app.use(pinia)
@@ -51,6 +53,7 @@ globalComponentFolders.forEach((folder) => {
     const parts = path.split('/')
     const filename = parts[parts.length - 1]
     const componentName = filename.slice(0, -4)
+
     app.component(
       componentName,
       defineAsyncComponent(() => importFn())

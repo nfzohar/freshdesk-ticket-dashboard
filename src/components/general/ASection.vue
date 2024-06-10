@@ -30,8 +30,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import ASectionTitle from '@/components//General/ASectionTitle.vue'
-import AStatisticsGraph from '@/components/General/AStatisticsGraph.vue'
+import ASectionTitle from '@/components/general/ASectionTitle.vue'
+import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
 
 export default defineComponent({
   name: 'ASection',

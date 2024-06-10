@@ -3,8 +3,7 @@
     <h1
       class="text-xl font-bold mb-1 cursor-pointer"
       :class="{
-        'border-l-4 border-primary-400 bg-secondary-600 pr-2 pl-1 rounded-r-md':
-          !sectionVisible
+        'border-l-4 border-primary-400 bg-secondary-600 pr-2 pl-1 rounded-r-md': !sectionVisible
       }"
       v-text="theText"
       @click.stop="$emit('toggleVisibility')"
@@ -17,7 +16,7 @@
         :title="'Generate new graph color palette'"
         @click="$emit('recolorGraph')"
       >
-        <brush-icon pt-width="12pt" pt-height="12pt" />
+        <!-- <brush-icon pt-width="12pt" pt-height="12pt" /> -->
       </button>
       <button
         v-if="showSwitchButton"
@@ -25,20 +24,20 @@
         :title="'Switch display type'"
         @click="$emit('switchView')"
       >
-        <switch-icon pt-width="18pt" pt-height="18pt" />
+        <!-- <switch-icon pt-width="18pt" pt-height="18pt" /> -->
       </button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import BrushIcon from '@/components/icons/BrushIcon.vue'
-import SwitchIcon from '@/components/icons/SwitchIcon.vue'
+// import BrushIcon from '@/components/icons/BrushIcon.vue'
+// import SwitchIcon from '@/components/icons/SwitchIcon.vue'
 
 export default {
   name: 'SectionTitle',
 
-  components: { SwitchIcon, BrushIcon },
+  // components: { SwitchIcon, BrushIcon },
 
   props: {
     theText: {

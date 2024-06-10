@@ -26,8 +26,8 @@
 <script lang="ts">
 import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
-import ASelect from '@/components/General/ASelect.vue'
-import AStatisticsGraph from '@/components/General/AStatisticsGraph.vue'
+import ASelect from '@/components/general/ASelect.vue'
+import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
 
 export default defineComponent({
   name: 'TicketStatisticsOpenClosedGraph',
@@ -172,7 +172,7 @@ export default defineComponent({
           ticketsOfStatus[month] = []
         }
       }
-      
+
       return Object.values(ticketsOfStatus).map((month) => month?.length)
     }
   }

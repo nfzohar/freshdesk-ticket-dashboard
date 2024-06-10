@@ -93,7 +93,7 @@ import { format } from 'date-fns'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import { colorIsDark } from '@/helpers/CommonMethods'
-import ADialog from '@/components/General/ADialog.vue'
+import ADialog from '@/components/general/ADialog.vue'
 
 export default defineComponent({
   name: 'TheDashboard',

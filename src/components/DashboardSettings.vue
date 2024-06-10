@@ -82,12 +82,6 @@
               </div>
             </div>
           </div>
-
-          <custom-fields-manager
-            :a-ticket="aTicket"
-            :custom-fields="customFields"
-            @newCustomFields="(value) => (customFields = value)"
-          />
         </div>
 
         <div class="grid grid-cols-2 xl:grid-cols-4 w-full gap-x-10 gap-y-4">
@@ -124,14 +118,13 @@
 <script lang="ts">
 import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
-import ADialog from '@/components/General/ADialog.vue'
-import ACheckbox from '@/components/General/ACheckbox.vue'
-import CustomFieldsManager from '@/components/CustomFieldsManager.vue'
+import ADialog from '@/components/general/ADialog.vue'
+import ACheckbox from '@/components/general/ACheckbox.vue'
 
 export default defineComponent({
   name: 'DashboardSettings',
 
-  components: { ACheckbox, ADialog, CustomFieldsManager },
+  components: { ACheckbox, ADialog },
 
   emits: ['refreshDashboard', 'reloadDashboard'],
 

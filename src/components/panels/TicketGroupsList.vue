@@ -23,7 +23,7 @@ import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import ASection from '@/components/general/ASection.vue'
-import ACard from '@/components/subcomponents/panel/ACard.vue'
+import ACard from '@/components/subcomponents/ACard.vue'
 
 export default defineComponent({
   name: 'TicketGroupsList',

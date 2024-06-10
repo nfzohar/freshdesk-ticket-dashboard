@@ -5,7 +5,7 @@
 
   <div v-if="open">
     <dialog
-      class="bg-opacity-50 bg-secondary-500 w-screen h-screen"
+      class="absolute top-10 bg-opacity-50 bg-secondary-500 w-screen h-screen"
       :class="customClass"
       :open="open"
       @close="closeDialog"
@@ -13,7 +13,7 @@
     >
       <div class="absolute right-2 top-10 cursor-pointer" @click="closeDialog">
         <div class="mx-5 bg-secondary-500 border border-primary-500 rounded-md">
-          <cross-icon />
+          <i class="fa fa-times text-3xl px-2 py-1 text-primary-500" />
         </div>
       </div>
 
@@ -26,12 +26,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import CrossIcon from '@/components/icons/CrossIcon.vue'
 
 export default defineComponent({
   name: 'ADialog',
-
-  components: { CrossIcon },
 
   emits: ['open', 'close'],
 

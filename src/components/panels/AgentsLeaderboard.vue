@@ -13,14 +13,18 @@
       >
         <div v-for="(agent, a) in topCountedAgents" :key="a" class="flex items-center">
           <a-card
-            :class="'rounded-l-md rounded-r-none'"
-            :name="agent?.contact?.name ?? 'Agent'"
-            :subtitle="agent?.contact?.email ?? 'john@doe.com'"
+            class="block h-24"
+            :class="{ 'rounded-l-md rounded-r-none': showTrophies }"
+            :name="agent?.contact?.name"
+            :subtitle="agent?.contact?.email"
             :count-label="'Assigned tickets'"
             :count="agent?.ticket_count"
           />
-          <span class="block h-auto w-max bg-primary-500 px-3 py-6 rounded-r-md">
-            <i class="fa fa-trophy text-4xl" :class="trophyColors[a]" />
+          <span
+            v-if="showTrophies && Number(a) < 3"
+            class="block w-max h-24 bg-primary-500 px-3 py-6 rounded-r-md"
+          >
+            <i :class="`text-4xl ${trophyIcon} ${trophyColors[a]}`" />
           </span>
         </div>
       </div>
@@ -32,8 +36,8 @@
 import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
-import ASection from '@/components/General/ASection.vue'
-import ACard from '@/components/subcomponents/panel/ACard.vue'
+import ASection from '@/components/general/ASection.vue'
+import ACard from '@/components/subcomponents/ACard.vue'
 
 export default defineComponent({
   name: 'AgentsLeaderboard',
@@ -73,14 +77,19 @@ export default defineComponent({
     datasetLabels() {
       return Object.values(this.topCountedAgents?.map((agent) => agent?.name))
     },
-    trophyColors() {
-      return ['text-yellow-500', 'text-gray-400', 'text-amber-900']
-    },
+
     leaderboardsLength(): number {
       return this.$configuration.leaderboardsLength
     },
+
     showTrophies(): Boolean {
       return this.$configuration.showTrophies
+    },
+    trophyColors(): Array {
+      return this.$configuration.trophyColors
+    },
+    trophyIcon(): String {
+      return this.$configuration.trophyIcon
     }
   },
 

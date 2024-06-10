@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import ConfigWizard from '@/views/ConfigurationWizard.vue'
 import LandingPage from '@/views/LandingPage.vue'
 import LogoutPage from '@/views/LogoutPage.vue'
 import LoginPage from '@/views/LoginPage.vue'
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: Dashboard
+    },
+    {
+      path: '/setup',
+      name: 'configuration-wizard',
+      component: ConfigWizard
     },
     {
       path: '/:pathMatch(.*)*',

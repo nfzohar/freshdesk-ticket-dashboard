@@ -1,7 +1,13 @@
 <template>
+  <ticket-details-modal
+    :key="Number(detailsTicketId)"
+    :ticket-id="Number(detailsTicketId)"
+    @modalClosed="detailsTicketId = null"
+  />
+
   <div
     class="w-full h-20 mb-4 px-1 bg-secondary-500 border-b border-primary-500 shadow-md shadow-primary-500 transition-all"
-    :class="{ '-mt-24 ': autoHideTopBar }"
+    :class="{ '-mt-24 ': autoHide }"
   >
     <div
       class="flex flex-col md:flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md"
@@ -15,7 +21,12 @@
       </div>
 
       <div class="flex items-center mx-1 gap-3 justify-between w-max">
-        <button class="actions-button" :title="'Refresh page'" @click.stop="$emit('refresh')">
+        <button
+          class="actions-button"
+          :title="'Refresh page'"
+          :key="Number(loadingState)"
+          @click.stop="$emit('refresh')"
+        >
           <i class="fa fa-rotate" :class="{ loadingState: 'animate-spin' }" />
         </button>
 
@@ -32,7 +43,7 @@
             @filtersReset="apiCallUrl = ''"
           /> -->
 
-        <dashboard-settings
+        <dashboard-settings-modal
           @refreshDashboard="$emit('refresh')"
           @reloadDashboard="$emit('reload')"
           :a-ticket="allTickets[0]"
@@ -45,13 +56,14 @@
 <script lang="ts">
 import { format } from 'date-fns'
 import { defineComponent } from 'vue'
-import AllTicketsList from '@/components/AllTicketsListModal.vue'
-import DashboardSettings from '@/components/DashboardSettings.vue'
-import TicketFilterModal from '@/components/TicketFilterModal.vue'
+import AllTicketsList from '@/components/AllTicketsList.vue'
+import TicketFilterModal from '@/components/TicketFilters.vue'
+import TicketDetailsModal from '@/components/TicketDetailedView.vue'
 import TicketExcelExporter from '@/components/TicketExcelExporter.vue'
+import DashboardSettingsModal from '@/components/DashboardSettings.vue'
 
 export default defineComponent({
-  name: 'TopBar',
+  name: 'DashboardToolbar',
 
   props: {
     allTickets: {
@@ -62,7 +74,7 @@ export default defineComponent({
       type: Boolean,
       required: true
     },
-    autoHideTopBar: {
+    autoHide: {
       type: Boolean,
       required: true
     }
@@ -71,14 +83,16 @@ export default defineComponent({
   components: {
     AllTicketsList,
     TicketFilterModal,
-    DashboardSettings,
-    TicketExcelExporter
+    TicketDetailsModal,
+    TicketExcelExporter,
+    DashboardSettingsModal
   },
 
   emits: ['reload', 'refresh', 'startLoading', 'stopLoading'],
 
   data() {
     return {
+      detailsTicketId: null,
       loadingState: this.loading,
       lastTicketDate: new Date().toDateString(),
       firstTicketDate: new Date().toDateString()
