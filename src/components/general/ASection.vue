@@ -1,18 +1,36 @@
 <template>
-  <div class="w-full">
-    <a-section-title
-      :the-text="title"
-      :section-visible="showSection"
-      :show-recolor-button="selectedView != 'default'"
-      @toggleVisibility="showSection = !showSection"
-      @recolorGraph="updateToken++"
-      @switchView="nextView()"
-    />
+  <details
+    class="w-full h-max border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
+    :open="openState"
+  >
+    <summary class="list-none py-1 px-2">
+      <div class="flex items-center justify-between">
+        <h1
+          class="text-xl font-bold mb-1 cursor-pointer"
+          v-text="title"
+          @click.stop="$emit('toggleVisibility')"
+        />
 
-    <div
-      v-if="showSection"
-      class="border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
-    >
+        <div class="flex items-center gap-x-2">
+          <button
+            v-if="!selectedViewDefault"
+            class="graph-icon"
+            :title="'Generate new graph color palette'"
+            @click="updateToken++"
+          >
+            <i class="fa fa-brush" />
+          </button>
+
+          <button class="graph-icon" :title="'Switch display type'" @click="nextView()">
+            <i class="fa fa-shuffle" />
+          </button>
+        </div>
+      </div>
+    </summary>
+
+    <div class="w-full h-auto">
+      <hr class="mx-1 border border-primary-500" />
+
       <slot v-if="selectedViewDefault" name="defaultView" />
 
       <a-statistics-graph
@@ -25,18 +43,17 @@
         :dataset-labels="datasetLabels"
       />
     </div>
-  </div>
+  </details>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import ASectionTitle from '@/components/general/ASectionTitle.vue'
 import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
 
 export default defineComponent({
   name: 'ASection',
 
-  components: { AStatisticsGraph, ASectionTitle },
+  components: { AStatisticsGraph },
 
   props: {
     title: {
@@ -53,6 +70,11 @@ export default defineComponent({
       type: [Array, Object],
       required: false,
       default: () => []
+    },
+    openState: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
 
@@ -60,7 +82,6 @@ export default defineComponent({
     return {
       updateToken: 0,
       isLoading: true,
-      showSection: true,
       selectedView: 'default',
       views: ['default', 'v-bar', 'h-bar', 'pie', 'doughnut']
     }
@@ -80,3 +101,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.graph-icon {
+  @apply w-7 h-7 rounded-full border border-primary-500 hover:bg-primary-500 hover:shadow-md hover:shadow-primary-600;
+}
+</style>

@@ -22,9 +22,9 @@
           />
           <span
             v-if="showTrophies && Number(a) < 3"
-            class="block w-max h-24 bg-primary-500 px-3 py-6 rounded-r-md"
+            class="block w-max h-24 bg-primary-500 px-3 py-6 rounded-r-md align-middle"
           >
-            <i :class="`text-4xl ${trophyIcon} ${trophyColors[a]}`" />
+            <i :class="`stroke-secondary-500 text-4xl ${trophyIcon} ${trophyColors[a]}`" />
           </span>
         </div>
       </div>
@@ -37,7 +37,7 @@ import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import ASection from '@/components/general/ASection.vue'
-import ACard from '@/components/subcomponents/ACard.vue'
+import ACard from '@/components/general/ACard.vue'
 
 export default defineComponent({
   name: 'AgentsLeaderboard',

@@ -36,7 +36,7 @@
 import { defineComponent } from 'vue'
 import { groupBy, uniqBy } from 'lodash'
 import ASection from '@/components/general/ASection.vue'
-import ACard from '@/components/subcomponents//ACard.vue'
+import ACard from '@/components/general/ACard.vue'
 
 export default defineComponent({
   name: 'RequestersLeaderboard',

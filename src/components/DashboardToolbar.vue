@@ -7,15 +7,15 @@
 
   <div
     class="w-full h-20 mb-4 px-1 bg-secondary-500 border-b border-primary-500 shadow-md shadow-primary-500 transition-all"
-    :class="{ '-mt-24 ': autoHide }"
+    :class="{ 'sm:-mt-24 ': autoHide }"
   >
     <div
-      class="flex flex-col md:flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md"
+      class="flex flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md"
     >
       <div>
-        <h1 class="text-xl md:text-2xl font-bold w-max text-center" v-text="appTitle" />
+        <h1 class="text-base sm:text-xl md:text-2xl font-bold w-max text-center" v-text="appTitle" />
         <span
-          class="w-max md:flex text-sm md:text-sm font-semibold items-center text-center gap-x-2"
+          class="text-xs sm:text-sm w-1/2 sm:w-max md:flex md:text-sm font-semibold items-center text-center gap-x-2"
           v-text="`Tickets from ${firstTicketDate} to ${lastTicketDate}`"
         />
       </div>

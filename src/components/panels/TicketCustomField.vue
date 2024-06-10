@@ -1,14 +1,5 @@
 <template>
   <div v-if="customFieldIsDefined" class="w-full" :key="tickets.length">
-    <a-section-title
-      :the-text="title"
-      :section-visible="showSection"
-      :show-recolor-button="selectedView != 'default'"
-      @toggleVisibility="showSection = !showSection"
-      @recolorGraph="updateToken++"
-      @switchView="nextView()"
-    />
-
     <div
       v-if="showSection"
       class="border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
@@ -41,13 +32,12 @@
 <script lang="ts">
 import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
-import ASectionTitle from '@/components/general/ASectionTitle.vue'
 import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
 
 export default defineComponent({
-  name: 'TicketCustomFieldSection',
+  name: 'TicketCustomFieldPanel',
 
-  components: { AStatisticsGraph, ASectionTitle },
+  components: { AStatisticsGraph },
 
   props: {
     tickets: {
