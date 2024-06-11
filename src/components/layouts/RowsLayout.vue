@@ -1,22 +1,25 @@
 <template>
-  <div class="flex w-full h-screen overflow-y-scroll p-2 scrollbar-hide gap-y-5 flex-col">
-    <div class="w-full h-auto flex gap-x-5 p-2">
-      <component :tickets="allTickets" :is="'TicketTagsList'" />
-      <component :tickets="allTickets" :is="'TicketGroupsList'" />
-      <component :tickets="allTickets" :is="'TicketCustomField'" />
-    </div>
-
-    <div class="w-full h-auto flex gap-x-5 p-2">
-      <component :tickets="allTickets" :is="'TicketCounters'" />
-    </div>
-
-    <div class="w-full h-auto flex gap-x-5 p-2">
-      <component :tickets="allTickets" :is="'AgentsLeaderboard'" />
-      <component :tickets="allTickets" :is="'RequestersLeaderboard'" />
-    </div>
-
-    <div class="w-full h-auto flex gap-x-5 p-2">
-      <component :tickets="allTickets" :is="'TicketStatisticsOpenClosedGraph'" />
+  <div
+    class="grid w-full h-screen overflow-y-scroll p-2 scrollbar-hide gap-y-5"
+    :class="`grid-cols-1 grid-rows-${rows?.length}`"
+  >
+    <div
+      v-for="(items, r) in rows"
+      :key="(r, configChangedToken)"
+      class="grid w-full h-auto gap-x-5 p-2"
+      :class="`grid-cols-${items.length}`"
+    >
+      <component
+        v-for="(panel, p) in items"
+        :key="p"
+        :id="panel.id"
+        :tickets="allTickets"
+        :is="panel.component"
+        :is-open="panel.visible"
+        :additional-data="panel.data"
+        :display-type="panel.displayType"
+        @updated-configuration="configChangedToken++"
+      />
     </div>
   </div>
 </template>
@@ -32,6 +35,23 @@ export default defineComponent({
       type: [Array, Object],
       required: true
     }
+  },
+
+  data() {
+    return {
+      rows: [],
+      configChangedToken: 0
+    }
+  },
+
+  watch: {
+    configChangedToken() {
+      this.rows = this.$configuration.layoutGroups
+    }
+  },
+
+  created() {
+    this.rows = this.$configuration.layoutGroups
   }
 })
 </script>

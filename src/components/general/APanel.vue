@@ -1,15 +1,11 @@
 <template>
   <details
-    class="w-full h-max border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
-    :open="openState"
+    class="w-full h-max border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600 cursor-pointer"
+    :open="isOpen"
   >
     <summary class="list-none py-1 px-2">
       <div class="flex items-center justify-between">
-        <h1
-          class="text-xl font-bold mb-1 cursor-pointer"
-          v-text="title"
-          @click.stop="$emit('toggleVisibility')"
-        />
+        <h1 class="text-xl font-bold mb-1" v-text="title" @click.stop="$emit('toggleVisibility')" />
 
         <div class="flex items-center gap-x-2">
           <button
@@ -51,11 +47,17 @@ import { defineComponent } from 'vue'
 import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
 
 export default defineComponent({
-  name: 'ASection',
+  name: 'APanel',
 
   components: { AStatisticsGraph },
 
+  emits: ['updated-configuration'],
+
   props: {
+    id: {
+      type: String,
+      required: true
+    },
     title: {
       type: String,
       required: true,
@@ -71,10 +73,15 @@ export default defineComponent({
       required: false,
       default: () => []
     },
-    openState: {
+    isOpen: {
       type: Boolean,
       required: false,
       default: true
+    },
+    displayType: {
+      type: String,
+      required: false,
+      default: 'default'
     }
   },
 
@@ -93,10 +100,31 @@ export default defineComponent({
     }
   },
 
+  mounted() {
+    this.selectedView = this.displayType
+  },
+
   methods: {
     nextView() {
       let currentIndex = this.views.indexOf(this.selectedView) + 1
       this.selectedView = this.views[currentIndex] ?? 'default'
+
+      this.updatePanelDisplayTypeInState(this.selectedView)
+      this.$emit('updated-configuration')
+    },
+
+    updatePanelDisplayTypeInState(newDisplayType) {
+      let currentLayout = this.$configuration.layout
+
+      currentLayout?.groups.forEach((group) => {
+        group.forEach((panel) => {
+          if (panel.id == this.id) {
+            panel.displayType = newDisplayType
+          }
+        })
+      })
+
+      this.$configuration.updateCurrentConfiguration(currentLayout)
     }
   }
 })

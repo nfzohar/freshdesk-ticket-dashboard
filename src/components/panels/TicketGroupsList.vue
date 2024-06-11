@@ -1,5 +1,5 @@
 <template>
-  <a-section :title="'Groups'" :datasets="dataset" :dataset-labels="datasetLabels">
+  <a-panel :title="'Groups'" :datasets="dataset" :dataset-labels="datasetLabels">
     <template #defaultView>
       <div
         :key="ticketGroups?.length"
@@ -15,20 +15,20 @@
         />
       </div>
     </template>
-  </a-section>
+  </a-panel>
 </template>
 
 <script lang="ts">
-import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
+import { groupBy, sortBy, get } from 'lodash'
 import ApiCall from '@/helpers/APICallHelper'
-import ASection from '@/components/general/ASection.vue'
 import ACard from '@/components/general/ACard.vue'
+import APanel from '@/components/general/APanel.vue'
 
 export default defineComponent({
   name: 'TicketGroupsList',
 
-  components: { ASection, ACard },
+  components: { APanel, ACard },
 
   props: {
     tickets: {
@@ -79,7 +79,7 @@ export default defineComponent({
             this.getGroupTicketCounts()
           })
           .then(() => {
-            this.$dashboard.groups = this.groups
+            this.$configuration.setGroups(this.groups)
           })
       }
     },
@@ -92,10 +92,13 @@ export default defineComponent({
         if (group) {
           this.ticketGroups.push({
             name: group?.name,
-            ticket_count: ticketsGrouped[group?.id]?.length ?? 0
+            ticket_count: Number(ticketsGrouped[group?.id]?.length)
           })
         }
       })
+
+      this.ticketGroups = sortBy(this.ticketGroups, 'ticket_count')
+      this.ticketGroups.reverse()
     }
   }
 })

@@ -18,8 +18,8 @@
 </template>
 
 <script lang="ts">
+import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
-import { uniq, sortBy, get } from 'lodash'
 import ACard from '@/components/general/ACard.vue'
 import APanel from '@/components/general/APanel.vue'
 
@@ -70,30 +70,21 @@ export default defineComponent({
       let uniqueTagList = uniq(this.tags.flat())
 
       if (uniqueTagList?.length <= 1) {
-        this.setSingleTagObject(uniqueTagList)
+        this.uniqueTags.push({
+          name: uniqueTagList[0],
+          ticket_count: this.tags?.length
+        })
         return
       }
 
-      uniqueTagList?.forEach((tag) => {
-        let ticketsOfTags = this.tags?.filter((aTag) => aTag?.includes(tag))
+      uniqueTagList?.forEach((uniqueTag) => {
+        let ticketsOfTags = this.tags?.filter((tag) => tag?.includes(uniqueTag))
 
         this.uniqueTags.push({
-          name: tag,
+          name: uniqueTag,
           ticket_count: ticketsOfTags?.length
         })
       })
-
-      this.uniqueTags = sortBy(this.uniqueTags, 'ticket_count')
-      this.uniqueTags.reverse()
-    },
-
-    setSingleTagObject(uniqueTagList: Array) {
-      let tag = {
-        name: get(uniqueTagList, '[0]'),
-        ticket_count: this.tags?.length
-      }
-
-      this.uniqueTags.push(tag)
     }
   }
 })

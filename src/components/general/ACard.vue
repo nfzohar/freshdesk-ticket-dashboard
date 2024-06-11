@@ -1,12 +1,15 @@
 <template>
-  <div class="flex flex-col rounded-md w-full bg-primary-500 border-secondary-600 px-3 py-2">
-    <span class="font-bold" v-text="name" />
-    <span v-if="subtitle" class="text-sm mb-2" v-text="subtitle" />
+  <div
+    class="flex items-center justify-between rounded-md w-full h-full bg-primary-500 border-secondary-600 px-3 py-2"
+  >
+    <div class="flex flex-col w-full h-full">
+      <span class="font-bold" v-text="name" />
+      <span v-if="subtitle" class="text-sm mb-2" v-text="subtitle" />
 
-    <span class="text-sm">
-      <span class="font-semibold" v-text="`${countLabel}: `" />
-      <span v-text="count" />
-    </span>
+      <span class="text-sm" v-html="`<b>${countLabel}:</B> ${count}`" />
+    </div>
+
+    <slot v-if="$slots['card-icon']" :name="'card-icon'" />
   </div>
 </template>
 

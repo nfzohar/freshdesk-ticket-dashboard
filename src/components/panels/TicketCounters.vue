@@ -32,6 +32,11 @@ export default defineComponent({
       type: [Object, Array],
       required: true,
       default: () => []
+    },
+    additionalData: {
+      type: [Object, Array],
+      required: true,
+      default: () => []
     }
   },
 
@@ -49,7 +54,7 @@ export default defineComponent({
 
   computed: {
     statuses(): any {
-      return Object.values(this.$dashboard?.statuses) ?? []
+      return Object.values(this.$configuration?.statuses) ?? []
     },
     allStatusLabels(): any {
       let labels = this.statuses.map((status) => status?.label)
@@ -57,7 +62,7 @@ export default defineComponent({
       return labels
     },
     visibleCounts(): any {
-      return this.$dashboard?.layout?.ticket_counts?.visibleCounts ?? []
+      return this.$configuration?.layout?.ticket_counts?.visibleCounts ?? []
     }
   },
 

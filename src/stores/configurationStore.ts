@@ -26,7 +26,41 @@ export const configuration = defineStore('configuration', {
       groups: [
         [
           {
-            component: 'AgentLeaderboards',
+            id: '1-1',
+            component: 'TicketTagsList',
+            displayType: 'default',
+            visible: true,
+            data: {}
+          },
+          {
+            id: '1-2',
+            component: 'TicketGroupsList',
+            displayType: 'default',
+            visible: true,
+            data: {}
+          }
+        ],
+        [
+          {
+            id: '2-1',
+            component: 'TicketCounters',
+            displayType: 'default',
+            visible: true,
+            data: {}
+          }
+        ],
+        [
+          {
+            id: '3-1',
+            component: 'AgentsLeaderboard',
+            displayType: 'default',
+            visible: true,
+            data: {}
+          },
+          {
+            id: '3-2',
+            component: 'RequestersLeaderboard',
+            displayType: 'v-bar',
             visible: true,
             data: {}
           }
@@ -43,26 +77,26 @@ export const configuration = defineStore('configuration', {
       return this.autoRefresh
     },
     autoHideToolbar(): Boolean {
-      return this.layout.autoHideToolbar
+      return this.layout?.autoHideToolbar
     },
 
     panelGroups(): Object {
       return this.layout.groups
     },
     orientation(): String {
-      return this.layout.direction
+      return this.layout?.direction
     },
     trophyIcon(): String {
-      return this.leaderboards.trophyIcon
+      return this.leaderboards?.trophyIcon
     },
     trophyColors(): Array {
-      return this.leaderboards.trophyColors
+      return this.leaderboards?.trophyColors
     },
     showTrophies(): Boolean {
-      return this.leaderboards.showThrophies
+      return this.leaderboards?.showThrophies
     },
     leaderboardsLength(): Number {
-      return this.leaderboards.length
+      return this.leaderboards?.length
     },
 
     storedStatuses(): Object {
@@ -76,10 +110,29 @@ export const configuration = defineStore('configuration', {
     },
     storedFilters(): Object {
       return this.filters
+    },
+    layoutGroups(): Array {
+      return this.layout?.groups
     }
   },
 
   actions: {
+    setGroups(newValue: Array) {
+      this.groups = newValue
+    },
+
+    setAgents(newValue: Array) {
+      this.agents = newValue
+    },
+
+    setFilters(newValue: Array) {
+      this.filters = newValue
+    },
+
+    setStatuses(newValue: Array) {
+      this.statuses = newValue
+    },
+
     updateCurrentConfiguration(data: Object) {
       this.layout = data?.layout
       this.autoRefresh = data.autoRefresh

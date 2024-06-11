@@ -100,10 +100,10 @@ export default defineComponent({
       ].slice(new Date(this.oldestTicket).getMonth())
     },
     openStatusId(): Object {
-      return this.$dashboard.statuses.filter((st) => st.value == 'Open')[0]?.id
+      return this.$configuration.statuses.filter((st) => st.value == 'Open')[0]?.id
     },
     closedStatusId(): Object {
-      return this.$dashboard.statuses.filter((st) => st.value == 'Closed')[0]?.id
+      return this.$configuration.statuses.filter((st) => st.value == 'Closed')[0]?.id
     }
   },
 

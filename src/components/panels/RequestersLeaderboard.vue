@@ -1,5 +1,5 @@
 <template>
-  <a-section
+  <a-panel
     :datasets="dataset"
     :dataset-labels="datasetLabels"
     :title="`Top ${leaderboardsLength} requesters`"
@@ -14,34 +14,33 @@
       >
         <div v-for="(requester, r) in topCountedRequesters" :key="r" class="flex items-center">
           <a-card
-            :class="{ 'rounded-l-md rounded-r-none': showTrophies }"
             :name="requester?.name"
             :subtitle="requester?.email"
             :count-label="'Created tickets'"
             :count="requester?.ticket_count"
-          />
-          <span
-            v-if="showTrophies && Number(r) < 3"
-            class="block h-auto w-max bg-primary-500 px-3 py-6 rounded-r-md"
           >
-            <i :class="`text-4xl ${trophyIcon} ${trophyColors[r]}`" />
-          </span>
+            <template v-if="showTrophies && Number(r) < 3" #card-icon>
+              <span class="text-5xl">
+                <i :class="`${trophyIcon} ${trophyColors[r]}`" />
+              </span>
+            </template>
+          </a-card>
         </div>
       </div>
     </template>
-  </a-section>
+  </a-panel>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { groupBy, uniqBy } from 'lodash'
-import ASection from '@/components/general/ASection.vue'
 import ACard from '@/components/general/ACard.vue'
+import APanel from '@/components/general/APanel.vue'
+import { groupBy, uniqBy, sortBy, get } from 'lodash'
 
 export default defineComponent({
   name: 'RequestersLeaderboard',
 
-  components: { ASection, ACard },
+  components: { APanel, ACard },
 
   props: {
     tickets: {
@@ -65,18 +64,14 @@ export default defineComponent({
   },
 
   computed: {
-    topListCount(): number {
-      let count = this.$dashboard?.$state?.layout?.top_requesters?.settings?.listLentgh
-      return count > 0 ? count : 5
-    },
     topCountedRequesters(): Object {
-      return this.topRequesters.slice(0, this.topListCount)
-    },
-    dataset() {
-      return Object.values(this.topCountedRequesters?.map((field) => field?.ticket_count))
+      return Object.values(this.topRequesters.slice(0, this.leaderboardsLength))
     },
     datasetLabels() {
-      return Object.values(this.topCountedRequesters?.map((field) => field?.name))
+      return this.topCountedRequesters?.map((field) => field?.name)
+    },
+    dataset() {
+      return this.topCountedRequesters?.map((field) => field?.ticket_count)
     },
 
     leaderboardsLength(): number {
@@ -104,15 +99,13 @@ export default defineComponent({
       Object.keys(requesters).forEach((requester) => {
         this.topRequesters.push({
           name: requester,
+          email: get(requesters[requester], '[0].requester.email'),
           ticket_count: requesters[requester].length
         })
       })
 
-      this.topRequesters = this.topRequesters.sort(
-        (tr1, tr2) => tr2?.ticket_count - tr1?.ticket_count
-      )
-
-      this.topRequesters = uniqBy(this.topRequesters, 'name')
+      this.topRequesters = sortBy(uniqBy(this.topRequesters, 'name'), 'ticket_count')
+      this.topRequesters.reverse()
     }
   }
 })

@@ -9,10 +9,10 @@
       :loading="isLoading"
       :all-tickets="allTickets"
       :auto-hide="autoHideTopBar"
-      @refresh="fetchTicketsOfPage(1)"
+      @refresh="loadTickets"
       @reload="fetchTicketsOfPage(1)"
-      @startLoading="toggleLoading()"
-      @stopLoading="toggleLoading()"
+      @startLoading=""
+      @stopLoading=""
     />
     <component :is="`${dashboardLayoutAlignment}-layout`" :all-tickets="allTickets" />
   </div>
@@ -87,7 +87,7 @@ export default defineComponent({
   methods: {
     async loadTickets() {
       this.keepFetching = true
-      this.isLoading = !true
+      this.isLoading = true
 
       // Set default api call if not set
       if (!this.apiCallUrl) {
@@ -115,20 +115,21 @@ export default defineComponent({
           this.ticketsTemp[this.page] = Object.values(response.results ?? response)
         }
 
-        if (!this.ticketsTemp[this.page]?.length) {
-          this.keepFetching = false
+        this.refershTicketsFromTemp()
+        this.keepFetching = this.isLoading = !true
+        return
 
-          if (this.ticketsTemp?.length) {
-            this.refershTicketsFromTemp()
-          } else {
-            this.$toast.clear()
-            this.$toast.error('No tickets to display found.')
-            this.toggleLoading()
-          }
-        }
+        // if (!this.ticketsTemp[this.page]?.length) {
+        //   this.keepFetching = false
 
-        this.keepFetching = false
-        this.toggleLoading()
+        //   if (this.ticketsTemp?.length) {
+        //     this.refershTicketsFromTemp()
+        //   } else {
+        //     this.$toast.clear()
+        //     this.$toast.error('No tickets to display found.')
+        //     this.toggleLoading()
+        //   }
+        // }
 
         // if (this.keepFetching) {
         //   this.page++
