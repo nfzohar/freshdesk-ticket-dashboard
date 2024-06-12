@@ -17,7 +17,8 @@
           :is-open="panel.visible"
           :additional-data="panel.data"
           :display-type="panel.displayType"
-          @updated-configuration="(value) => updatePanelDisplayType(value, panel?.id)"
+          @updatedDisplayType="(value) => updatePanelState(value, panel?.id, 'displayType')"
+          @toggleVisibility="(value) => updatePanelState(value, panel?.id, 'visible')"
         />
       </div>
     </template>
@@ -57,8 +58,18 @@ export default defineComponent({
         })
       })
 
-      this.$configuration.layout.groups = this.rows
-      this.$configuration.saveConfigurationToStore()
+      this.$configuration.updateLayoutGroups(this.rows)
+    },
+
+    updatePanelState(newValue: String, panelId: String, property: String) {
+      this.rows.forEach((row) => {
+        row.forEach((panel) => {
+          if (panel.id == panelId) {
+            panel[property] = newValue
+          }
+        })
+      })
+      this.$configuration.updateLayoutGroups(this.rows)
     }
   }
 })

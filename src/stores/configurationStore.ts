@@ -125,10 +125,23 @@ export const configuration = defineStore('configuration', {
       this.statuses = newValue
     },
 
-    updateCurrentConfiguration(data: Object) {
-      this.layout = data?.layout
-      this.autoRefresh = data.autoRefresh
-      this.leaderboards = data.leaderboards
+    updateLayout(layout: Array) {
+      this.layout = layout
+      this.saveConfigurationToStore()
+    },
+
+    updateLayoutGroups(layoutGroups: Array) {
+      this.layout.groups = layoutGroups
+      this.saveConfigurationToStore()
+    },
+
+    updateAutoRefreshSettings(autoRefresh: Object) {
+      this.autoRefresh = autoRefresh
+      this.saveConfigurationToStore()
+    },
+
+    updateLeaderboardSettings(leaderboards: Object) {
+      this.leaderboards = leaderboards
       this.saveConfigurationToStore()
     },
 

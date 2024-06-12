@@ -1,32 +1,28 @@
 <template>
-  <details
+  <div
     class="w-full h-max border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600 cursor-pointer"
-    :open="isOpen"
   >
-    <summary class="list-none py-1 px-2">
-      <div class="flex items-center justify-between">
-        <h1 class="text-xl font-bold mb-1" v-text="title" @click.stop="$emit('toggleVisibility')" />
+    <div class="flex items-center justify-between py-1 px-2" @click="toggleVisibility()">
+      <h1 class="text-xl font-bold mb-1" v-text="title" />
 
-        <div class="flex items-center gap-x-2">
-          <button
-            v-if="!selectedViewDefault"
-            class="graph-icon"
-            :title="'Generate new graph color palette'"
-            @click="updateToken++"
-          >
-            <i class="fa fa-brush" />
-          </button>
+      <div class="flex items-center gap-x-2">
+        <button
+          v-if="!selectedViewDefault"
+          class="graph-icon"
+          :title="'Generate new graph color palette'"
+          @click="updateToken++"
+        >
+          <i class="fa fa-brush" />
+        </button>
 
-          <button class="graph-icon" :title="'Switch display type'" @click="nextView()">
-            <i class="fa fa-shuffle" />
-          </button>
-        </div>
+        <button class="graph-icon" :title="'Switch display type'" @click="nextView()">
+          <i class="fa fa-shuffle" />
+        </button>
       </div>
-    </summary>
+    </div>
 
-    <div class="w-full h-auto">
+    <div v-if="isVisible" class="w-full h-auto">
       <hr class="mx-1 border border-primary-500" />
-
       <slot v-if="selectedViewDefault" name="defaultView" />
 
       <a-statistics-graph
@@ -39,7 +35,7 @@
         :dataset-labels="datasetLabels"
       />
     </div>
-  </details>
+  </div>
 </template>
 
 <script lang="ts">
@@ -51,7 +47,7 @@ export default defineComponent({
 
   components: { AStatisticsGraph },
 
-  emits: ['updated-configuration'],
+  emits: ['updatedDisplayType', 'toggleVisibility'],
 
   props: {
     id: {
@@ -89,6 +85,7 @@ export default defineComponent({
     return {
       updateToken: 0,
       isLoading: true,
+      isVisible: true,
       selectedView: 'default',
       views: ['default', 'v-bar', 'h-bar', 'pie', 'doughnut']
     }
@@ -100,16 +97,25 @@ export default defineComponent({
     }
   },
 
+  watch: {
+    selectedView() {
+      this.$emit('updatedDisplayType', this.selectedView)
+    }
+  },
+
   mounted() {
     this.selectedView = this.displayType
+    this.isVisible = this.isOpen
   },
 
   methods: {
     nextView() {
       let currentIndex = this.views.indexOf(this.selectedView) + 1
       this.selectedView = this.views[currentIndex] ?? 'default'
-
-      this.$emit('updated-configuration', this.selectedView)
+    },
+    toggleVisibility() {
+      this.isVisible = !this.isOpen
+      this.$emit('toggleVisibility', this.isVisible)
     }
   }
 })
