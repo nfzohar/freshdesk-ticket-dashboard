@@ -2,8 +2,8 @@
   <div
     class="w-full h-max border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600 cursor-pointer"
   >
-    <div class="flex items-center justify-between py-1 px-2" @click="toggleVisibility()">
-      <h1 class="text-xl font-bold mb-1" v-text="title" />
+    <div class="flex items-center justify-between py-1 px-2">
+      <h1 class="text-xl font-bold mb-1" v-text="title" @click="toggleVisibility" />
 
       <div class="flex items-center gap-x-2">
         <button
@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div v-if="isVisible" class="w-full h-auto">
+    <div v-show="isOpen" class="w-full h-auto">
       <hr class="mx-1 border border-primary-500" />
       <slot v-if="selectedViewDefault" name="defaultView" />
 
@@ -47,7 +47,7 @@ export default defineComponent({
 
   components: { AStatisticsGraph },
 
-  emits: ['updatedDisplayType', 'toggleVisibility'],
+  emits: ['updatedDisplayType', 'toggleVisibility', 'panelUpdated'],
 
   props: {
     id: {
@@ -85,7 +85,6 @@ export default defineComponent({
     return {
       updateToken: 0,
       isLoading: true,
-      isVisible: true,
       selectedView: 'default',
       views: ['default', 'v-bar', 'h-bar', 'pie', 'doughnut']
     }
@@ -105,7 +104,6 @@ export default defineComponent({
 
   mounted() {
     this.selectedView = this.displayType
-    this.isVisible = this.isOpen
   },
 
   methods: {
@@ -114,8 +112,10 @@ export default defineComponent({
       this.selectedView = this.views[currentIndex] ?? 'default'
     },
     toggleVisibility() {
-      this.isVisible = !this.isOpen
-      this.$emit('toggleVisibility', this.isVisible)
+      if (this.isOpen) {
+        this.updateToken++
+      }
+      this.$emit('toggleVisibility', !this.isOpen)
     }
   }
 })

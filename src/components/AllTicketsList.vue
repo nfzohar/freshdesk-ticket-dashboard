@@ -42,7 +42,7 @@ import ADialog from '@/components/general/ADialog.vue'
 import ATicket from '@/components/general/ATicket.vue'
 
 export default defineComponent({
-  name: 'TicketListSection',
+  name: 'AllTicketsList',
 
   components: { ATicket, ADialog },
 

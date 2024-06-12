@@ -4,10 +4,7 @@
     :class="`grid-cols-1 grid-rows-${rows?.length}`"
   >
     <template v-for="(items, r) in rows" :key="r">
-      <div
-        class="grid w-full h-auto gap-x-5 p-2"
-        :class="items?.length ? `grid-cols-${items.length}` : 'hidden'"
-      >
+      <div class="grid w-full h-auto gap-x-5 p-2" :class="`grid-cols-${items?.length}`">
         <component
           v-for="(panel, p) in items"
           :key="p"
@@ -17,8 +14,8 @@
           :is-open="panel.visible"
           :additional-data="panel.data"
           :display-type="panel.displayType"
-          @updatedDisplayType="(value) => updatePanelState(value, panel?.id, 'displayType')"
           @toggleVisibility="(value) => updatePanelState(value, panel?.id, 'visible')"
+          @updatedDisplayType="(value) => updatePanelState(value, panel?.id, 'displayType')"
         />
       </div>
     </template>
@@ -39,9 +36,7 @@ export default defineComponent({
   },
 
   data() {
-    return {
-      rows: []
-    }
+    return { rows: [] }
   },
 
   mounted() {
@@ -49,18 +44,6 @@ export default defineComponent({
   },
 
   methods: {
-    updatePanelDisplayType(newDisplayType: String, panelId: Number) {
-      this.rows.forEach((row) => {
-        row.forEach((panel) => {
-          if (panel.id == panelId) {
-            panel.displayType = newDisplayType
-          }
-        })
-      })
-
-      this.$configuration.updateLayoutGroups(this.rows)
-    },
-
     updatePanelState(newValue: String, panelId: String, property: String) {
       this.rows.forEach((row) => {
         row.forEach((panel) => {
@@ -69,6 +52,7 @@ export default defineComponent({
           }
         })
       })
+
       this.$configuration.updateLayoutGroups(this.rows)
     }
   }

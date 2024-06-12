@@ -87,6 +87,17 @@ export function isOdd(number: number) {
   return number % 2 !== 0
 }
 
-export function generateGraphDataset() {
-  return ''
+// Read @/components/panels folder and return a list of present components.
+export function getAvailablePanelComponents() {
+  const listOfPanelComponents = new Array()
+
+  Object.entries(import.meta.glob('@/components/panels/*')).map(([path]) => {
+    const parts = path.split('/')
+    const filename = parts[parts.length - 1]
+    const componentName = filename.slice(0, -4)
+
+    listOfPanelComponents.push(componentName)
+  })
+
+  return listOfPanelComponents
 }

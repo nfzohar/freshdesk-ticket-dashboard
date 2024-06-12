@@ -6,6 +6,7 @@ export const configuration = defineStore('configuration', {
     groups: [],
     filters: [],
     statuses: [],
+    panelComponents: [],
 
     autoRefresh: {
       active: false,

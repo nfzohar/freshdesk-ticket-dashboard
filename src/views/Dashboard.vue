@@ -12,9 +12,9 @@
       @stopLoading="stopLoading"
       @startLoading="startLoading"
       @refresh="loadTickets"
-      />
-      <!-- @reload="" -->
-    <component :is="`${dashboardLayoutAlignment}-layout`" :all-tickets="allTickets" />
+    />
+    <!-- @reload="" -->
+    <component :is="dashboardLayoutAlignment" :all-tickets="allTickets" />
   </div>
 </template>
 
@@ -24,6 +24,7 @@ import ApiCall from '@/helpers/APICallHelper'
 import ToolBar from '@/components/DashboardToolbar.vue'
 import RowsLayout from '@/components/layouts/RowsLayout.vue'
 import ColumnsLayout from '@/components/layouts/ColumnsLayout.vue'
+import { getAvailablePanelComponents } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'TheDashboard',
@@ -53,7 +54,7 @@ export default defineComponent({
 
   computed: {
     dashboardLayoutAlignment() {
-      return this.$configuration?.orientation == 'vertical' ? 'columns' : 'rows'
+      return this.$configuration?.orientation == 'vertical' ? 'columns-layout' : 'rows-layout'
     },
     autoHideTopBar() {
       return this.$configuration?.autoHideToolbar && this.hiddenTopBar
