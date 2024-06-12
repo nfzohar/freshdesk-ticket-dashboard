@@ -109,32 +109,6 @@ export const configuration = defineStore('configuration', {
   },
 
   actions: {
-    watch: {
-      layout: {
-        handler: () => {
-          const storeData = {
-            layout: this.layout,
-            autoRefresh: this.autoRefresh,
-            leaderboards: this.leaderboards
-          }
-          console.log('updated state config')
-          localStorage.setItem('stored_configuration', JSON.stringify(storeData))
-        },
-        deep: true
-      },
-
-      // 'layout.groups'() {
-      //   this.saveConfigurationToStore()
-      // },
-      autoRefresh() {
-        this.saveConfigurationToStore()
-      },
-
-      leaderboards() {
-        this.saveConfigurationToStore()
-      }
-    },
-
     setGroups(newValue: Array) {
       this.groups = newValue
     },
@@ -169,12 +143,14 @@ export const configuration = defineStore('configuration', {
     },
 
     initializeConfigurationFromStorage() {
-      const storedConfiguration = localStorage.getItem('stored_configuration')
+      let configurationFromStore = localStorage.getItem('stored_configuration')
 
-      if (storedConfiguration) {
-        this.layout = JSON.parse(storedConfiguration.layout)
-        this.autoRefresh = JSON.parse(storedConfiguration.autoRefresh)
-        this.leaderboards = JSON.parse(storedConfiguration.leaderboards)
+      if (configurationFromStore) {
+        configurationFromStore = JSON.parse(configurationFromStore)
+
+        this.layout = configurationFromStore?.layout
+        this.autoRefresh = configurationFromStore?.autoRefresh
+        this.leaderboards = configurationFromStore?.leaderboards
       }
     },
 

@@ -43,7 +43,7 @@ export default defineComponent({
     }
   },
 
-  created() {
+  mounted() {
     this.rows = this.$configuration.layoutGroups
   },
 
@@ -58,6 +58,7 @@ export default defineComponent({
       })
 
       this.$configuration.layout.groups = this.rows
+      this.$configuration.saveConfigurationToStore()
     }
   }
 })
