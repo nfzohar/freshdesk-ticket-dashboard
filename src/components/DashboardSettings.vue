@@ -323,7 +323,7 @@ export default defineComponent({
 
     clearAllDashboardData() {
       this.$dashboard?.deleteStoreData()
-      this.$store.resetAuth()
+      this.$auth.resetAuth()
       this.$router.go(0)
     }
   }

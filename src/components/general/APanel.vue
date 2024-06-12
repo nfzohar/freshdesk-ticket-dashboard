@@ -109,22 +109,7 @@ export default defineComponent({
       let currentIndex = this.views.indexOf(this.selectedView) + 1
       this.selectedView = this.views[currentIndex] ?? 'default'
 
-      this.updatePanelDisplayTypeInState(this.selectedView)
-      this.$emit('updated-configuration')
-    },
-
-    updatePanelDisplayTypeInState(newDisplayType) {
-      let currentLayout = this.$configuration.layout
-
-      currentLayout?.groups.forEach((group) => {
-        group.forEach((panel) => {
-          if (panel.id == this.id) {
-            panel.displayType = newDisplayType
-          }
-        })
-      })
-
-      this.$configuration.updateCurrentConfiguration(currentLayout)
+      this.$emit('updated-configuration', this.selectedView)
     }
   }
 })

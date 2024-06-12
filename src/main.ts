@@ -11,14 +11,14 @@ import 'vue-toastification/dist/index.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 // import '@fortawesome/fontawesome-free/js/all.js'
 
-import piniaPlugin from './stores/piniaPlugin'
+import plugin from './stores/index'
 
 const pinia = createPinia()
 const app = createApp(App)
 
 //Register store
 app.use(pinia)
-app.use(piniaPlugin)
+app.use(plugin)
 
 //Register router
 app.use(router)

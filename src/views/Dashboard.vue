@@ -9,11 +9,11 @@
       :loading="isLoading"
       :all-tickets="allTickets"
       :auto-hide="autoHideTopBar"
+      @stopLoading="stopLoading"
+      @startLoading="startLoading"
       @refresh="loadTickets"
-      @reload="fetchTicketsOfPage(1)"
-      @startLoading=""
-      @stopLoading=""
-    />
+      />
+      <!-- @reload="" -->
     <component :is="`${dashboardLayoutAlignment}-layout`" :all-tickets="allTickets" />
   </div>
 </template>
@@ -77,7 +77,7 @@ export default defineComponent({
   },
 
   async mounted() {
-    // if (!this.$store.authenticated) {
+    // if (!this.$auth.authenticated) {
     //   this.$router.push('/')
     // }
 
@@ -87,7 +87,7 @@ export default defineComponent({
   methods: {
     async loadTickets() {
       this.keepFetching = true
-      this.isLoading = true
+      this.startLoading()
 
       // Set default api call if not set
       if (!this.apiCallUrl) {
@@ -105,7 +105,7 @@ export default defineComponent({
         await this.fetchTickets()
       } catch (error) {
         this.keepFetching = false
-        this.toggleLoading()
+        this.stopLoading()
       }
     },
 
@@ -127,7 +127,7 @@ export default defineComponent({
         //   } else {
         //     this.$toast.clear()
         //     this.$toast.error('No tickets to display found.')
-        //     this.toggleLoading()
+        //     this.stopLoading()
         //   }
         // }
 
@@ -141,21 +141,25 @@ export default defineComponent({
     },
 
     async refershTicketsFromTemp() {
-      this.toggleLoading()
+      this.startLoading()
       this.tickets = this.ticketsTemp
 
       setTimeout(async () => {
         this.ticketsTemp = []
-        this.toggleLoading()
+        this.stopLoading()
       }, 3000)
     },
 
     loadFilteredTickets() {
-      this.apiCallUrl = 'search/tickets?query="' + this.$store.filters + '"'
+      this.apiCallUrl = 'search/tickets?query="' + this.$auth.filters + '"'
     },
 
-    toggleLoading() {
-      this.isLoading = !this.isLoading
+    startLoading() {
+      this.isLoading = true
+    },
+
+    stopLoading() {
+      this.isLoading = false
     },
 
     displayTopBar() {

@@ -216,13 +216,13 @@ export default defineComponent({
         }
       })
 
-      this.$store.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
+      this.$auth.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
       this.$emit('filtersApply')
       this.showFilterSection = false
     },
 
     resetTicketFilters() {
-      this.$store.setApiFilters('')
+      this.$auth.setApiFilters('')
       this.$emit('filtersReset')
       this.showFilterSection = false
     },

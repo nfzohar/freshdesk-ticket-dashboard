@@ -108,13 +108,13 @@ export default defineComponent({
 
   watch: {
     domainUrl() {
-      this.$store.setNewDomainUrl(this.domainUrl)
+      this.$auth.setNewDomainUrl(this.domainUrl)
     },
     apiKey() {
-      this.$store.setNewApiKey(this.apiKey)
+      this.$auth.setNewApiKey(this.apiKey)
     },
-    '$store.$state.auth'() {
-      if (this.$store.authenticated) {
+    '$auth.$state.auth'() {
+      if (this.$auth.authenticated) {
         this.$router.push('/dashboard')
       }
     }
@@ -128,11 +128,11 @@ export default defineComponent({
       this.apiKey = this.freshdeskApiKey
     }
 
-    if (!this.freshdeskDomainUrl && this.$store.domainURL) {
-      this.domainUrl = this.$store.domainURL
+    if (!this.freshdeskDomainUrl && this.$auth.domainURL) {
+      this.domainUrl = this.$auth.domainURL
     }
-    if (!this.freshdeskApiKey && this.$store.apiKey) {
-      this.apiKey = this.$store.apiKey
+    if (!this.freshdeskApiKey && this.$auth.apiKey) {
+      this.apiKey = this.$auth.apiKey
     }
   },
 
@@ -147,7 +147,7 @@ export default defineComponent({
       if (this.freshdeskDomainUrl && this.freshdeskApiKey) {
         checkAuthCredentials(this.username, this.password)
       } else {
-        this.$store.canAuthenticate(this.$store?.domain && this.$store?.api_key)
+        this.$auth.canAuthenticate(this.$auth?.domain && this.$auth?.api_key)
         this.$router.push('/dashboard')
       }
     }

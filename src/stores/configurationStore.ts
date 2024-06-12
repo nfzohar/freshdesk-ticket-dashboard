@@ -40,15 +40,7 @@ export const configuration = defineStore('configuration', {
             data: {}
           }
         ],
-        [
-          {
-            id: '2-1',
-            component: 'TicketCounters',
-            displayType: 'default',
-            visible: true,
-            data: {}
-          }
-        ],
+        [],
         [
           {
             id: '3-1',
@@ -117,6 +109,32 @@ export const configuration = defineStore('configuration', {
   },
 
   actions: {
+    watch: {
+      layout: {
+        handler: () => {
+          const storeData = {
+            layout: this.layout,
+            autoRefresh: this.autoRefresh,
+            leaderboards: this.leaderboards
+          }
+          console.log('updated state config')
+          localStorage.setItem('stored_configuration', JSON.stringify(storeData))
+        },
+        deep: true
+      },
+
+      // 'layout.groups'() {
+      //   this.saveConfigurationToStore()
+      // },
+      autoRefresh() {
+        this.saveConfigurationToStore()
+      },
+
+      leaderboards() {
+        this.saveConfigurationToStore()
+      }
+    },
+
     setGroups(newValue: Array) {
       this.groups = newValue
     },
@@ -137,7 +155,6 @@ export const configuration = defineStore('configuration', {
       this.layout = data?.layout
       this.autoRefresh = data.autoRefresh
       this.leaderboards = data.leaderboards
-
       this.saveConfigurationToStore()
     },
 

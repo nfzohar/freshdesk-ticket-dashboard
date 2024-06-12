@@ -1,4 +1,4 @@
-import { Store } from '@/stores'
+import { auth } from '../stores/auth'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
@@ -6,7 +6,7 @@ const toast = useToast()
 export function checkAuthCredentials(username: String, password: String) {
   let authenticationSuccess = false
 
-  if (Store().$state.auth) {
+  if (auth().$state.auth) {
     return
   }
 
@@ -28,7 +28,7 @@ export function checkAuthCredentials(username: String, password: String) {
 
   authenticationSuccess = username == envUsername && password == envPassword
 
-  Store().canAuthenticate(authenticationSuccess)
+  auth().canAuthenticate(authenticationSuccess)
 
   if (!authenticationSuccess) {
     let theError = 'Incorrect credentials. Please, try again.'

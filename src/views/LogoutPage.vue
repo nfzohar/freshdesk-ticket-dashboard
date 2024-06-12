@@ -16,7 +16,7 @@ export default defineComponent({
   components: { LogoIcon },
 
   async created() {
-    this.$store.canAuthenticate(false)
+    this.$auth.canAuthenticate(false)
 
     setTimeout(() => {
       this.$router.push('/login')

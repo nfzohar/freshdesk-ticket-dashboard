@@ -156,7 +156,7 @@ export default defineComponent({
       return Boolean(colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR))
     },
     freshdeskWebUrl() {
-      return String(this.$store.domain).replace('api/v2/', 'a/')
+      return String(this.$auth.domain).replace('api/v2/', 'a/')
     },
     requesterPageUrl(): string {
       return this.freshdeskWebUrl + 'contacts/' + this.requester?.id

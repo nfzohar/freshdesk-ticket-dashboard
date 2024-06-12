@@ -1,13 +1,13 @@
 import axios from 'axios'
-import { Store } from '@/stores'
+import { auth } from '../stores/auth'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
 
 export default class ApiCall {
-  protected freshdeskDomainUrl = Store().domain
+  protected freshdeskDomainUrl = auth().domain
 
-  protected freshdeskApiKey = Store().api_key
+  protected freshdeskApiKey = auth().api_key
 
   get(path: string) {
     return this.performApiCall('get', path)

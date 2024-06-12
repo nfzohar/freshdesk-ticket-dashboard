@@ -13,7 +13,7 @@
 
     <div class="flex items-center">
       <div class="flex flex-col w-10/12">
-        <div v-if="!$store?.filters?.length" class="flex items-center gap-x-1">
+        <div v-if="!$auth?.filters?.length" class="flex items-center gap-x-1">
           <span class="font-semibold" v-text="'Requested by:'" />
           <span class="text-base" v-text="requester" />
         </div>
