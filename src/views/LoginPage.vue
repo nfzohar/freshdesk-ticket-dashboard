@@ -115,7 +115,7 @@ export default defineComponent({
     },
     '$auth.$state.auth'() {
       if (this.$auth.authenticated) {
-        this.$router.push('/dashboard')
+        this.$router.push('/setup')
       }
     }
   },
@@ -137,7 +137,7 @@ export default defineComponent({
   },
 
   mounted() {
-    if (localStorage.getItem('stored_auth_state')) {
+    if (this.$auth.authenticated) {
       this.$router.push('/dashboard')
     }
   },
@@ -148,7 +148,7 @@ export default defineComponent({
         checkAuthCredentials(this.username, this.password)
       } else {
         this.$auth.canAuthenticate(this.$auth?.domain && this.$auth?.api_key)
-        this.$router.push('/dashboard')
+        this.$router.push('/setup')
       }
     }
   }

@@ -6,12 +6,37 @@ export const configuration = defineStore('configuration', {
     groups: [],
     filters: [],
     statuses: [],
-    panelComponents: [],
 
     autoRefresh: {
       active: false,
-      perMinutes: ''
+      perMinutes: 0
     },
+    autoRefreshShortcuts: [
+      {
+        label: '5 minutes',
+        value: 5
+      },
+      {
+        label: '10 minutes',
+        value: 10
+      },
+      {
+        label: '15 minutes',
+        value: 15
+      },
+      {
+        label: '30 minutes',
+        value: 30
+      },
+      {
+        label: '1 hour',
+        value: 60
+      },
+      {
+        label: '2 hours',
+        value: 180
+      }
+    ],
 
     leaderboards: {
       length: 5,
@@ -173,10 +198,6 @@ export const configuration = defineStore('configuration', {
       this.groups = []
       this.statuses = []
       localStorage.removeItem('stored_configuration')
-    },
-
-    loadConfigurationPreset() {
-      return ''
     }
   }
 })
