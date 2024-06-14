@@ -5,7 +5,6 @@
     <component
       :is="chartType"
       :class="customClass"
-      style="max-height: 50vh"
       :data="chartData"
       :options="chartOptions"
     />
@@ -80,7 +79,7 @@ export default defineComponent({
       type: String,
       required: false,
       default:
-        'w-full p-2 border-primary-700 border bg-secondary-500 rounded-md shadow-md shadow-primary-600'
+        'w-full p-2 border-primary-700 border bg-secondary-500 rounded-md  shadow-primary-600'
     }
   },
 

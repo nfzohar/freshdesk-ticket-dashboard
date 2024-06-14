@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full h-max border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600 cursor-pointer"
+    class="w-full h-max border-primary-800 border bg-secondary-500 rounded-md shadow-primary-600 cursor-pointer"
   >
     <div class="flex items-center justify-between py-1 px-2">
       <h1 class="text-xl font-bold mb-1" v-text="title" @click="toggleVisibility" />
@@ -123,6 +123,6 @@ export default defineComponent({
 
 <style scoped>
 .graph-icon {
-  @apply w-7 h-7 rounded-full border border-primary-500 hover:bg-primary-500 hover:shadow-md hover:shadow-primary-600;
+  @apply w-7 h-7 rounded-full border border-primary-500 hover:bg-primary-500 hover:shadow-primary-600;
 }
 </style>

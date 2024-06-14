@@ -7,9 +7,9 @@
     <template #defaultView>
       <div
         :key="tickets.length"
-        class="grid grid-cols-1 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
+        class="grid grid-cols-1 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-primary-600"
         :class="'overflow-y-scroll scrollbar-hide'"
-        style="max-height: 50vh"
+
       >
         <div v-for="(agent, a) in topCountedAgents" :key="a" class="flex items-center">
           <a-card
@@ -78,15 +78,14 @@ export default defineComponent({
     leaderboardsLength(): number {
       return this.$configuration.leaderboardsLength
     },
-
+    trophyIcon(): String {
+      return this.$configuration.trophyIcon
+    },
     showTrophies(): Boolean {
       return this.$configuration.showTrophies
     },
     trophyColors(): Array {
-      return this.$configuration.trophyColors
-    },
-    trophyIcon(): String {
-      return this.$configuration.trophyIcon
+      return this.$information.trophyColors
     }
   },
 
@@ -96,7 +95,7 @@ export default defineComponent({
 
   methods: {
     async fetchAgents() {
-      if (!this.$configuration.storedAgents?.length) {
+      if (!this.$information.storedAgents?.length) {
         await ApiCall.get('agents?per_page=100')
           .then((response) => {
             if (response) {
@@ -107,7 +106,7 @@ export default defineComponent({
             this.calculateAgentStatistics()
           })
           .then(() => {
-            this.$configuration.setAgents(this.allAgents)
+            this.$information.setAgents(this.allAgents)
           })
       }
     },
@@ -125,8 +124,7 @@ export default defineComponent({
         }
       })
 
-      this.sortedAgents = sortBy(this.sortedAgents, 'ticket_count')
-      this.sortedAgents.reverse()
+      this.sortedAgents = sortBy(this.sortedAgents, 'ticket_count').reverse()
     }
   }
 })

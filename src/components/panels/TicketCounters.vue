@@ -11,7 +11,7 @@
       <div
         v-if="visibleCounts?.includes(status)"
         :key="tickets?.length"
-        class="block mb-3 md:mb-0 rounded-md border border-primary-500 shadow-md h-full shadow-primary-600 bg-primary-500 hover:bg-primary-600 py-5 px-2 w-full text-center font-bold"
+        class="block mb-3 md:mb-0 rounded-md border border-primary-500 h-full shadow-primary-600 bg-primary-500 hover:bg-primary-600 py-5 px-2 w-full text-center font-bold"
       >
         <span class="block text-7xl w-full" v-text="countTicketsOfStatus(status)" />
         <span v-text="status" />

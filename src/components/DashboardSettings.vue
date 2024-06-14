@@ -86,25 +86,25 @@
 
         <div class="grid grid-cols-2 xl:grid-cols-4 w-full gap-x-10 gap-y-4">
           <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600 h-10 w-auto"
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
             v-text="'Clear all data'"
             :title="'Logout and delete all current configuration data'"
             @click.stop="clearAllDashboardData()"
           />
           <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600 h-10 w-auto"
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
             v-text="'Logout'"
             :title="'Logout without deleting current configuration data.'"
             @click.stop="$router.push('/logout')"
           />
           <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600 h-10 w-auto"
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
             v-text="'Reload'"
             :title="'Reload entire dashboard.'"
             @click.stop="$emit('reloadDashboard')"
           />
           <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-md shadow-primary-600 h-10 w-auto"
+            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
             v-text="'Save'"
             :title="'Save current configuration'"
             @click.stop="savePreferencesToState()"

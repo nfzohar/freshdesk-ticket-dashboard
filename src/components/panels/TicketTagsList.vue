@@ -2,9 +2,8 @@
   <a-panel :title="'Tags'" :datasets="dataset" :dataset-labels="datasetLabels">
     <template #defaultView>
       <div
-        class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 border-primary-800 bg-secondary-500 border rounded-md shadow-md shadow-primary-600"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 border-primary-800 bg-secondary-500 border rounded-md shadow-primary-600"
         :class="'overflow-y-scroll scrollbar-hide'"
-        style="max-height: 50vh"
       >
         <a-card
           v-for="(tag, t) in uniqueTags"

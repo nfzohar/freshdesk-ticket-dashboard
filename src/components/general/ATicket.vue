@@ -1,7 +1,7 @@
 <template>
   <div
     :title="'Show details'"
-    class="bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 shadow-md cursor-pointer"
+    class="bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 cursor-pointer"
     @click="$emit('openTicketDetails', id)"
   >
     <div class="flex items-center justify-between">

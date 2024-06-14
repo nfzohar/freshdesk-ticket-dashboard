@@ -79,7 +79,7 @@
 
         <span class="text-base mb-2 font-bold" v-text="'Description:'" />
         <div
-          class="bg-white text-black p-5 rounded-lg overflow-y-scroll scrollbar-hide shadow-md shadow-primary-500"
+          class="bg-white text-black p-5 rounded-lg overflow-y-scroll scrollbar-hide shadow-primary-500"
           style="max-height: 60vh"
           v-html="details?.description"
         />

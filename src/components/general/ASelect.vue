@@ -3,7 +3,7 @@
     <label :class="labelClass" v-text="label" />
     <select
       v-model="inputValue"
-      class="rounded-md w-full bg-primary-500 border-primary-700 shadow-primary-700 shadow-md p-1 cursor-pointer"
+      class="rounded-md w-full bg-primary-500 border-primary-700 shadow-primary-700 p-1 cursor-pointer"
       :class="inputClass"
     >
       <option v-if="showNullValue" :value="''" v-text="'All'" />

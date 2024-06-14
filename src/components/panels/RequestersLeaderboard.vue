@@ -8,9 +8,9 @@
       <div
         v-if="showSection"
         :key="tickets.length"
-        class="grid grid-cols-1 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
+        class="grid grid-cols-1 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-primary-600"
         :class="'overflow-y-scroll scrollbar-hide'"
-        style="max-height: 50vh"
+
       >
         <div v-for="(requester, r) in topCountedRequesters" :key="r" class="flex items-center">
           <a-card
@@ -80,11 +80,11 @@ export default defineComponent({
     showTrophies(): Boolean {
       return this.$configuration.showTrophies
     },
-    trophyColors(): Array {
-      return this.$configuration.trophyColors
-    },
     trophyIcon(): String {
       return this.$configuration.trophyIcon
+    },
+    trophyColors(): Array {
+      return this.$information.trophyColors
     }
   },
 
@@ -104,8 +104,7 @@ export default defineComponent({
         })
       })
 
-      this.topRequesters = sortBy(uniqBy(this.topRequesters, 'name'), 'ticket_count')
-      this.topRequesters.reverse()
+      this.topRequesters = sortBy(uniqBy(this.topRequesters, 'name'), 'ticket_count').reverse()
     }
   }
 })

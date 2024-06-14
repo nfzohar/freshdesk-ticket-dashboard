@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { clone } from 'lodash'
+import { clone, get } from 'lodash'
 import format from 'date-fns/format'
 import { defineComponent } from 'vue'
 import writeXlsxFile from 'write-excel-file'
@@ -41,7 +41,7 @@ export default defineComponent({
 
   computed: {
     statuses(): any {
-      return Object.values(this.$dashboard?.statuses) ?? []
+      return Object.values(this.$information?.statuses) ?? []
     },
     customFields() {
       return Object.keys(this.allTickets[0].custom_fields)
@@ -165,7 +165,10 @@ export default defineComponent({
     },
 
     getStatusLabel(statusId: string) {
-      return this.statuses.filter((status) => status?.id == statusId)[0].label
+      return get(
+        this.statuses.filter((status) => status?.id == statusId),
+        '[0].label'
+      )
     },
 
     titleCase(word: String) {

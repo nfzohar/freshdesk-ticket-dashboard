@@ -1,72 +1,49 @@
 import { defineStore } from 'pinia'
 
+const storeLocalStorageKey = 'stored_configuration'
+
 export const configuration = defineStore('configuration', {
   state: () => ({
     agents: [],
-    groups: [],
-    filters: [],
-    statuses: [],
 
     autoRefresh: {
       active: false,
       perMinutes: 0
     },
-    autoRefreshShortcuts: [
-      {
-        label: '5 minutes',
-        value: 5
-      },
-      {
-        label: '10 minutes',
-        value: 10
-      },
-      {
-        label: '15 minutes',
-        value: 15
-      },
-      {
-        label: '30 minutes',
-        value: 30
-      },
-      {
-        label: '1 hour',
-        value: 60
-      },
-      {
-        label: '2 hours',
-        value: 180
-      }
-    ],
 
     leaderboards: {
       length: 5,
       showThrophies: true,
-      trophyIcon: 'fa fa-trophy',
-      trophyColors: ['text-yellow-500', 'text-gray-400', 'text-amber-900']
+      trophyIcon: 'fa fa-trophy'
     },
 
     layout: {
       autoHideToolbar: true,
       direction: 'horizontal',
-
       groups: [
         [
           {
             id: '1-1',
-            component: 'TicketTagsList',
+            component: 'TicketTypesList',
             displayType: 'default',
             visible: true,
             data: {}
           },
           {
             id: '1-2',
+            component: 'TicketTagsList',
+            displayType: 'default',
+            visible: true,
+            data: {}
+          },
+          {
+            id: '1-3',
             component: 'TicketGroupsList',
             displayType: 'default',
             visible: true,
             data: {}
           }
         ],
-        [],
         [
           {
             id: '3-1',
@@ -97,9 +74,8 @@ export const configuration = defineStore('configuration', {
     autoHideToolbar(): Boolean {
       return this.layout?.autoHideToolbar
     },
-
-    panelGroups(): Object {
-      return this.layout.groups
+    layoutGroups(): Array {
+      return this.layout?.groups
     },
     orientation(): String {
       return this.layout?.direction
@@ -107,30 +83,11 @@ export const configuration = defineStore('configuration', {
     trophyIcon(): String {
       return this.leaderboards?.trophyIcon
     },
-    trophyColors(): Array {
-      return this.leaderboards?.trophyColors
-    },
     showTrophies(): Boolean {
       return this.leaderboards?.showThrophies
     },
     leaderboardsLength(): Number {
       return this.leaderboards?.length
-    },
-
-    storedStatuses(): Object {
-      return this.statuses
-    },
-    storedAgents(): Object {
-      return this.agents
-    },
-    storedGroups(): Object {
-      return this.groups
-    },
-    storedFilters(): Object {
-      return this.filters
-    },
-    layoutGroups(): Array {
-      return this.layout?.groups
     }
   },
 
@@ -178,11 +135,11 @@ export const configuration = defineStore('configuration', {
         leaderboards: this.leaderboards
       }
 
-      localStorage.setItem('stored_configuration', JSON.stringify(storeData))
+      localStorage.setItem(storeLocalStorageKey, JSON.stringify(storeData))
     },
 
     initializeConfigurationFromStorage() {
-      let configurationFromStore = localStorage.getItem('stored_configuration')
+      let configurationFromStore = localStorage.getItem(storeLocalStorageKey)
 
       if (configurationFromStore) {
         configurationFromStore = JSON.parse(configurationFromStore)
@@ -197,7 +154,7 @@ export const configuration = defineStore('configuration', {
       this.agents = []
       this.groups = []
       this.statuses = []
-      localStorage.removeItem('stored_configuration')
+      localStorage.removeItem(storeLocalStorageKey)
     }
   }
 })

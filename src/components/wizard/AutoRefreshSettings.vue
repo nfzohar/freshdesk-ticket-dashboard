@@ -12,7 +12,7 @@
         @changed="(value) => (autoRefreshActive = value)"
       />
 
-      <div v-if="autoRefreshActive">
+      <div v-if="autoRefreshActive" class="bg-secondary-600 p-5 rounded-md">
         <div>
           <span v-text="'Set refresh interval with shortcuts:'" />
           <div :key="perMinutes" class="grid grid-cols-3 gap-5 my-5">
@@ -34,10 +34,10 @@
             type="number"
             :placeholder="'0'"
             :title="'Count of minutes in a refresh interval.'"
-            class="w-52 h-16 rounded-md text-black text-3xl px-1"
+            class="w-52 h-14 rounded-md text-black text-2xl px-1"
           />
           <button
-            class="border border-primary-600 bg-primary-500 p-3 mx-2 rounded-md text-3xl hover:bg-primary-600 hover:border-primary-500"
+            class="border border-primary-600 bg-primary-500 p-3 mx-2 rounded-md text-2xl hover:bg-primary-600 hover:border-primary-500"
             v-text="'Set'"
             @click="setNewAutoRefreshSettings()"
           />
@@ -60,7 +60,7 @@ export default defineComponent({
     return {
       pageTitle: `Do you want the dashboard to automatically refresh:`,
       autoRefreshActive: false,
-      perMinutes: 0
+      perMinutes: 5
     }
   },
 
@@ -69,7 +69,7 @@ export default defineComponent({
       return this.$configuration.theAutoRefresh
     },
     intervalShortcuts(): Array {
-      return this.$configuration.autoRefreshShortcuts
+      return this.$information.autoRefreshShortcuts
     }
   },
 

@@ -18,8 +18,7 @@
 
           <div
             v-if="allTickets?.length"
-            class="flex flex-col gap-y-4 w-full overflow-y-scroll scrollbar-hide rounded-md shadow-md shadow-primary-600 p-3 mb-5"
-            style="max-height: 55vh"
+            class="flex flex-col gap-y-4 w-full overflow-y-scroll scrollbar-hide rounded-md shadow-primary-600 p-3 mb-5"
           >
             <template v-for="(ticket, t) in allTickets" :key="t">
               <a-ticket

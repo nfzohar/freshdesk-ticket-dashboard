@@ -3,11 +3,10 @@
     <div
       v-for="(option, o) in options"
       :key="o"
-      class="flex flex-col w-full p-5 lg:p-10 border border-primary-500 rounded-md"
+      class="flex flex-col w-full p-5 gap-y-3 lg:p-10 border border-primary-500 rounded-md"
     >
       <h2 class="uppercase font-bold text-base lg:text-lg xl:text-2xl" v-text="option?.title" />
-      <hr />
-      <p class="my-5" v-text="option?.description" />
+      <p v-text="option?.description" />
       <button
         class="flex flex-col items-center border-4 border-primary-600 bg-primary-500 rounded-md py-5 px-10 m-auto font-bold"
         :class="'hover:bg-primary-600 hover:border-primary-500'"
@@ -44,8 +43,7 @@ export default defineComponent({
         },
         {
           title: 'Build a custom configuration',
-          description:
-            'Use the step-by-step configuration wizard to create a customized dashboard.',
+          description: 'Use the configuration wizard to create a customized dashboard.',
           button: 'Build custom',
           icon: 'fa fa-wrench',
           function: () => this.$emit('buildCustom')

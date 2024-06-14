@@ -1,15 +1,25 @@
 <template>
-  <div class="w-screen h-screen overflow-hidden bg-secondary-500 py-24">
+  <div class="w-screen h-screen overflow-hidden bg-secondary-500 sm:py-24">
     <div class="w-11/12 md:w-10/12 h-11/12 m-auto">
       <h1 class="text-5xl w-full text-left p-5 font-bold" v-text="'Configuration Wizard'" />
 
-      <div class="px-5" :class="{ 'border border-primary-500 rounded-md py-5': page }">
+      <div class="px-5" :class="{ 'border border-primary-500 rounded-md py-5 ': page }">
         <preset-or-custom-configuration
           v-if="!page"
-          @usePreset="page = 9"
           @buildCustom="page = 1"
+          @usePreset="$router.replace('')"
         />
-        <component v-else :is="wizardComponent[page]" />
+        <tabs v-else :key="page" :tab-keywords="steps" :def-selected-tab="page">
+          <template #tab_1>
+            <auto-refresh-settings />
+          </template>
+          <template #tab_2>
+            <leaderboards-settings />
+          </template>
+          <template #tab_3>
+            <layout-orientation />
+          </template>
+        </tabs>
       </div>
 
       <div v-if="page" class="flex justify-between w-full py-5 px-3">
@@ -22,6 +32,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import Tabs from '@/components/wizard/Tabs.vue'
 import LayoutOrientation from '@/components/wizard/LayoutOrientation.vue'
 import AutoRefreshSettings from '@/components/wizard/AutoRefreshSettings.vue'
 import LeaderboardsSettings from '@/components/wizard/LeaderboardsSettings.vue'
@@ -34,19 +45,15 @@ export default defineComponent({
     PresetOrCustomConfiguration,
     AutoRefreshSettings,
     LeaderboardsSettings,
-    LayoutOrientation
+    LayoutOrientation,
+    Tabs
   },
 
   data() {
     return {
       page: 0,
-      wizardComponent: ['', 'auto-refresh-settings', 'leaderboards-settings', 'layout-orientation']
+      steps: ['Auto Refresh Settings', 'Leaderboards Settings', 'Layout Orientation']
     }
-  },
-
-  created() {
-    //if (this.$configuration.layoutGroups?.length) {
-    //}
   }
 })
 </script>

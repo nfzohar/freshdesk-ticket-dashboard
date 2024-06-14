@@ -6,7 +6,7 @@
         <input
           v-model="inputValue"
           type="date"
-          class="rounded-md bg-primary-600 shadow-md shadow-primary-800 p-1 w-full"
+          class="rounded-md bg-primary-600 shadow-primary-800 p-1 w-full"
           :class="inputClass"
         />
       </div>

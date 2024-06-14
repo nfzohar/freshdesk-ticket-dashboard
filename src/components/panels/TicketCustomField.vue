@@ -2,12 +2,11 @@
   <div v-if="customFieldIsDefined" class="w-full" :key="tickets.length">
     <div
       v-if="showSection"
-      class="border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
+      class="border-primary-800 border bg-secondary-500 rounded-md shadow-primary-600"
     >
       <div
         v-if="selectedViewDefault"
         class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 overflow-y-scroll scrollbar-hide"
-        style="max-height: 50vh"
       >
         <!-- <a-custom-field
           v-for="(customField, c) in uniqueFields"

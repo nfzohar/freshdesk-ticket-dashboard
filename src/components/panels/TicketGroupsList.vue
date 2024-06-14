@@ -3,9 +3,9 @@
     <template #defaultView>
       <div
         :key="ticketGroups?.length"
-        class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-md shadow-primary-600"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-primary-600"
         :class="'overflow-y-scroll scrollbar-hide'"
-        style="max-height: 50vh"
+
       >
         <a-card
           v-for="(group, g) in ticketGroups"
@@ -66,7 +66,7 @@ export default defineComponent({
 
   methods: {
     async fetchTicketGroups() {
-      if (!this.$configuration.storedGroups?.length) {
+      if (!this.$information.storedGroups?.length) {
         this.groups = []
 
         await ApiCall.get('groups?per_page=100')
@@ -79,7 +79,7 @@ export default defineComponent({
             this.getGroupTicketCounts()
           })
           .then(() => {
-            this.$configuration.setGroups(this.groups)
+            this.$information.setGroups(this.groups)
           })
       }
     },
