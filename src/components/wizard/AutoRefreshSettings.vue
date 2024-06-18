@@ -4,10 +4,11 @@
 
     <div class="flex flex-col items-center w-full rounded-md text-lg gap-5">
       <a-checkbox
-        :key="perMinutes"
+        :key="(Number(autoRefreshActive), perMinutes)"
         :the-value="autoRefreshActive"
+        :checked="autoRefreshActive"
         class="font-bold m-auto"
-        :label="'Refresh per minutes'"
+        :label="'Refresh dashboard every few minutes'"
         :title="'Toggle automatic refresh.'"
         @changed="(value) => (autoRefreshActive = value)"
       />

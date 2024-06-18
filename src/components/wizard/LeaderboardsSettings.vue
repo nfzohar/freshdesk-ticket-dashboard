@@ -38,6 +38,7 @@
           <i
             v-for="(color, c) in trophyColors"
             :key="c"
+            :title="`${c + 1}. place`"
             class="text-3xl p-6"
             :class="[selectedTrophyIcon, color]"
           />

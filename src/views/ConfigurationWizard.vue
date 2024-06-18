@@ -19,6 +19,9 @@
           <template #tab_3>
             <layout-orientation />
           </template>
+          <template #tab_4>
+            <layout-setup />
+          </template>
         </tabs>
       </div>
 
@@ -33,6 +36,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import Tabs from '@/components/wizard/Tabs.vue'
+import LayoutSetup from '@/components/wizard/LayoutSetup.vue'
 import LayoutOrientation from '@/components/wizard/LayoutOrientation.vue'
 import AutoRefreshSettings from '@/components/wizard/AutoRefreshSettings.vue'
 import LeaderboardsSettings from '@/components/wizard/LeaderboardsSettings.vue'
@@ -46,13 +50,27 @@ export default defineComponent({
     AutoRefreshSettings,
     LeaderboardsSettings,
     LayoutOrientation,
+    LayoutSetup,
     Tabs
   },
 
   data() {
     return {
       page: 0,
-      steps: ['Auto Refresh Settings', 'Leaderboards Settings', 'Layout Orientation']
+      steps: [
+        'Auto Refresh Settings',
+        'Leaderboards Settings',
+        'Layout Orientation',
+        'Layout Setup'
+      ]
+    }
+  },
+
+  watch: {
+    page() {
+      if (this.page == 5) {
+        this.$router.replace('/dashboard')
+      }
     }
   }
 })
