@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ConfigWizard from '@/views/ConfigurationWizard.vue'
+import LoadDataPage from '@/views/LoadDataPage.vue'
 import LandingPage from '@/views/LandingPage.vue'
 import LogoutPage from '@/views/LogoutPage.vue'
 import LoginPage from '@/views/LoginPage.vue'
@@ -33,6 +34,11 @@ const router = createRouter({
       path: '/setup',
       name: 'configuration-wizard',
       component: ConfigWizard
+    },
+    {
+      path: '/loading',
+      name: 'Load-data-page',
+      component: LoadDataPage
     },
     {
       path: '/:pathMatch(.*)*',

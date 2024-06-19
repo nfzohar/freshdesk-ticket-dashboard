@@ -5,12 +5,7 @@
     :title="`Top ${leaderboardsLength} agents`"
   >
     <template #defaultView>
-      <div
-        :key="tickets.length"
-        class="grid grid-cols-1 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-primary-600"
-        :class="'overflow-y-scroll scrollbar-hide'"
-
-      >
+      <div :key="tickets.length" class="panel-body" :class="'overflow-y-scroll scrollbar-hide'">
         <div v-for="(agent, a) in topCountedAgents" :key="a" class="flex items-center">
           <a-card
             :name="agent?.contact?.name"

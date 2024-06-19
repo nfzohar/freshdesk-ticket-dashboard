@@ -6,7 +6,7 @@
   />
 
   <div
-    class="w-full h-20 mb-4 px-1 bg-secondary-500 border-b border-primary-500 shadow-primary-500 transition-all"
+    class="w-full h-20 mb-4 px-1 bg-secondary-600 border-b border-primary-500 shadow-primary-500 transition-all"
     :class="{ 'sm:-mt-24 ': autoHide }"
   >
     <div class="flex flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md">

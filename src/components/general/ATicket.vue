@@ -4,31 +4,18 @@
     class="bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 cursor-pointer"
     @click="$emit('openTicketDetails', id)"
   >
-    <div class="flex items-center justify-between">
-      <h3 class="block font-bold text-lg" v-text="'#' + id + ': ' + subject" />
-      <span class="font-semibold" v-text="type" />
-    </div>
-
+    <h3 class="block font-bold text-lg" v-text="`#${id}: ${subject}`" />
     <hr class="my-1 border-t-2" />
 
-    <div class="flex items-center">
-      <div class="flex flex-col w-10/12">
-        <div v-if="!$auth?.filters?.length" class="flex items-center gap-x-1">
-          <span class="font-semibold" v-text="'Requested by:'" />
-          <span class="text-base" v-text="requester" />
-        </div>
-
-        <div class="flex items-center gap-x-1 mt-2">
-          <span class="font-semibold" v-text="'Tags:'" />
-          <span v-text="tags" />
-        </div>
+    <div class="flex items-center justify-between">
+      <div class="flex flex-col gap-y-1 w-auto text-base">
+        <span v-html="`<b>Requested by:</b> ${requester}`" />
+        <span v-html="`<b>Tags</b>: ${tags}`" />
       </div>
 
-      <div class="w-2/12">
-        <span
-          class="block w-max m-auto font-bold bg-primary-600 border-secondary-400 rounded-md px-2 py-1"
-          v-text="status"
-        />
+      <div class="flex items-center gap-x-2 justify-between p-2 w-auto">
+        <span title="Ticket type" class="ticket-label" v-text="type" />
+        <span title="Ticket status" class="ticket-label" v-text="status" />
       </div>
     </div>
   </div>
@@ -54,34 +41,33 @@ export default defineComponent({
     id() {
       return this.theTicket?.id ?? 0
     },
-    subject() {
-      return this.theTicket?.subject ?? 'New ticket'
-    },
     type() {
       return this.theTicket?.type ?? 'Ticket'
+    },
+    subject() {
+      return this.theTicket?.subject ?? 'New ticket'
     },
     requester() {
       return this.theTicket?.requester?.name ?? 'Not set'
     },
     tags() {
-      if (this.theTicket?.tags?.length) {
-        return this.theTicket?.tags?.join(', ')
+      return this.theTicket?.tags?.length ? this.theTicket?.tags?.join(', ') : 'None'
+    },
+    status(): String {
+      if (!this.theTicket?.status) {
+        return 'N/A'
       }
-      return 'None'
-    },
-    statuses(): Object {
-      return this.$dashboard?.statuses ?? []
-    },
-    status() {
-      let label = 'Undefined'
 
-      Object.values(this.statuses)?.forEach((status) => {
-        if (status.id == this.theTicket?.status) {
-          label = status?.label
-        }
-      })
-      return label
+      return Object.values(this.$information?.statuses).filter(
+        (status) => status?.id == this.theTicket?.status
+      )
     }
   }
 })
 </script>
+
+<style scoped>
+.ticket-label {
+  @apply w-auto m-auto font-bold bg-primary-600 border-secondary-400 rounded-md px-2 py-1;
+}
+</style>

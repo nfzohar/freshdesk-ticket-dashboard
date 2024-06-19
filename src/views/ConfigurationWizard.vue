@@ -69,7 +69,7 @@ export default defineComponent({
   watch: {
     page() {
       if (this.page == 5) {
-        this.$router.replace('/dashboard')
+        this.$router.replace('/loading')
       }
     }
   }

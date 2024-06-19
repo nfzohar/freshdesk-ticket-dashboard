@@ -20,6 +20,10 @@ body {
   display: none;
 }
 
+.panel-body {
+  @apply grid grid-cols-1 gap-5 items-center justify-between w-full bg-transparent p-2 border-primary-800 border rounded-md shadow-primary-600;
+}
+
 .bg-linear-gradient {
   background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
 }

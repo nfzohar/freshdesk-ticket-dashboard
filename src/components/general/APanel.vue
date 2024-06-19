@@ -1,9 +1,7 @@
 <template>
-  <div
-    class="w-full h-max border-primary-800 border bg-secondary-500 rounded-md shadow-primary-600 cursor-pointer"
-  >
+  <div class="w-full h-max border-primary-600 border bg-secondary-600 rounded-md">
     <div class="flex items-center justify-between py-1 px-2">
-      <h1 class="text-xl font-bold mb-1" v-text="title" @click="toggleVisibility" />
+      <h1 class="text-xl font-bold mb-1 cursor-pointer" v-text="title" @click="toggleVisibility" />
 
       <div class="flex items-center gap-x-2">
         <button
@@ -21,7 +19,7 @@
       </div>
     </div>
 
-    <div v-show="isOpen" class="w-full h-auto">
+    <div v-if="isOpen" class="w-full h-auto">
       <hr class="mx-1 border border-primary-500" />
       <slot v-if="selectedViewDefault" name="defaultView" />
 

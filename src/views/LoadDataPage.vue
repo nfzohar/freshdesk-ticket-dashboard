@@ -15,14 +15,12 @@ export default defineComponent({
 
   components: { LogoIcon },
 
-  created() {
-    document.title = 'Fetching data...'
-  },
-
   async mounted() {
     await this.fetchAgentsFromFreshdesk()
     await this.fetchGroupsFromFreshdesk()
     await this.fetchStatusesFromFreshdesk()
+
+    this.$router.replace('/dashboard')
   },
 
   methods: {

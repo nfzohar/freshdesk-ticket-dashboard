@@ -3,9 +3,8 @@
     <template #defaultView>
       <div
         :key="ticketGroups?.length"
-        class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 border-primary-800 border bg-secondary-500 rounded-md shadow-primary-600"
+        class="panel-body lg:grid-cols-2"
         :class="'overflow-y-scroll scrollbar-hide'"
-
       >
         <a-card
           v-for="(group, g) in ticketGroups"
