@@ -64,7 +64,7 @@ export function colorIsDark(color: String) {
       g = (colorAsHex >> 8) & 255
       b = colorAsHex & 255
     }
-  }
+}
 
   if (typeof r && g && b) {
     r = Number(r)
@@ -73,7 +73,10 @@ export function colorIsDark(color: String) {
 
     const hsp: any = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
 
-    return !(hsp > 127.5)
+    const darkColorThreshold = 150
+    // return !(hsp > 127.5)
+
+    return !(hsp > darkColorThreshold)
   }
 }
 

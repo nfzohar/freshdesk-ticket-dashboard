@@ -7,7 +7,7 @@
         <preset-or-custom-configuration
           v-if="!page"
           @buildCustom="page = 1"
-          @usePreset="$router.replace('')"
+          @usePreset="page = 5"
         />
         <tabs v-else :key="page" :tab-keywords="steps" :def-selected-tab="page">
           <template #tab_1>

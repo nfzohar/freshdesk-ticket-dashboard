@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-max border-primary-600 border bg-secondary-600 rounded-md">
+  <div class="w-full h-max border-primary-600 border bg-secondary-500 rounded-md">
     <div class="flex items-center justify-between py-1 px-2">
       <h1 class="text-xl font-bold mb-1 cursor-pointer" v-text="title" @click="toggleVisibility" />
 
@@ -27,7 +27,7 @@
         v-else
         :key="(selectedView, updateToken)"
         :type="selectedView"
-        :custom-class="'p-5 border-primary-700 border'"
+        :custom-class="'p-5'"
         :datasets="datasets"
         :dataset-title="title"
         :dataset-labels="datasetLabels"
