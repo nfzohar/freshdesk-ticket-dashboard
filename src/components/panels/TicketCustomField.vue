@@ -1,42 +1,32 @@
 <template>
-  <div v-if="customFieldIsDefined" class="w-full" :key="tickets.length">
-    <div
-      v-if="showSection"
-      class="border-primary-800 border bg-secondary-500 rounded-md shadow-primary-600"
-    >
+  <a-panel :title="title" :datasets="customDatasets" :dataset-labels="customDatasetLabels">
+    <template #defaultView>
       <div
-        v-if="selectedViewDefault"
-        class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center justify-between w-full p-2 overflow-y-scroll scrollbar-hide"
+        :key="uniqueFields?.length"
+        class="panel-body lg:grid-cols-2"
+        :class="'overflow-y-scroll scrollbar-hide'"
       >
-        <!-- <a-custom-field
+        <a-card
           v-for="(customField, c) in uniqueFields"
           :key="c"
-          :custom-field="customField"
-        /> -->
+          :name="customField?.name"
+          :count="customField?.ticket_count"
+        />
       </div>
-
-      <a-statistics-graph
-        v-else
-        :key="(selectedView, updateToken)"
-        :type="selectedView"
-        :custom-class="'p-5 border-primary-700 border'"
-        :datasets="customDatasets"
-        :dataset-title="title"
-        :dataset-labels="customDatasetLabels"
-      />
-    </div>
-  </div>
+    </template>
+  </a-panel>
 </template>
 
 <script lang="ts">
 import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
-import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
+import ACard from '@/components//general/ACard.vue'
+import APanel from '@/components/general/APanel.vue'
 
 export default defineComponent({
   name: 'TicketCustomFieldPanel',
 
-  components: { AStatisticsGraph },
+  components: { ACard, APanel },
 
   props: {
     tickets: {

@@ -1,5 +1,10 @@
 <template>
-  <ticket-custom-field :title="'Types'" :custom-field="'type'" :tickets="tickets" />
+  <ticket-custom-field
+    :title="'Types'"
+    :custom-field="'type'"
+    :show-undefined="false"
+    :tickets="tickets"
+  />
 </template>
 
 <script lang="ts">

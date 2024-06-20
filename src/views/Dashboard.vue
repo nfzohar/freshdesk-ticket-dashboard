@@ -1,7 +1,7 @@
 <template>
   <div
     :key="reloadToken"
-    class="flex flex-col bg-secondary-500 h-screen w-screen transition-colors"
+    class="flex flex-col transition-colors dashboard-body"
     :class="[{ 'is-loading': isLoading }, { 'cursor-none': autoHideTopBar }]"
     @mousemove="displayTopBar"
   >
@@ -24,7 +24,6 @@ import ApiCall from '@/helpers/APICallHelper'
 import ToolBar from '@/components/DashboardToolbar.vue'
 import RowsLayout from '@/components/layouts/RowsLayout.vue'
 import ColumnsLayout from '@/components/layouts/ColumnsLayout.vue'
-import { getAvailablePanelComponents } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'TheDashboard',

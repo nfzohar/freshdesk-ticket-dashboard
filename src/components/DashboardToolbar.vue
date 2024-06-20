@@ -6,11 +6,11 @@
   />
 
   <div
-    class="w-full h-20 mb-4 px-1 bg-primary-500 border-b border-primary-500 shadow-primary-500 transition-all"
-    :class="[{ 'sm:-mt-24 ': autoHide }, primaryColorIsDark ? 'text-white' : 'text-black']"
+    class="w-full h-20 mb-4 px-1 bg-secondary-500 border-b-2 border-primary-500 shadow-primary-500 transition-all"
+    :class="[{ 'sm:-mt-24 ': autoHide }, `text-${primaryColorIsDark ? 'white' : 'black'}`]"
   >
     <div class="flex flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md">
-      <div>
+      <div :class="`text-${secondaryColorIsDark ? 'white' : 'black'}`">
         <h1
           class="text-base sm:text-xl md:text-2xl font-bold w-max text-center"
           v-text="appTitle"
@@ -37,7 +37,10 @@
           @finishExport="$emit('stopLoading')"
         />
 
-        <all-tickets-list :all-tickets="allTickets" />
+        <all-tickets-list
+          :all-tickets="allTickets"
+          @showTicketDetails="(value) => (detailsTicketId = value)"
+        />
 
         <!-- <ticket-filter-modal
             @filtersApply="loadFilteredTickets()"
@@ -111,8 +114,11 @@ export default defineComponent({
     appTitle(): String {
       return import.meta.env.VITE_APP_TITLE ?? 'Freshdesk Ticket Dashboard'
     },
-    primaryColorIsDark(): Boolean{
+    primaryColorIsDark(): Boolean {
       return Boolean(colorIsDark(import.meta.env.VITE_THEME_PRIMARY_COLOR))
+    },
+    secondaryColorIsDark(): Boolean {
+      return Boolean(colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR))
     }
   },
 

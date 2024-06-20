@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen overflow-hidden bg-secondary-500">
+  <div class="dashboard-body">
     <div class="m-auto w-min align-middle mt-44 animate-spin">
       <logo-icon pt-width="300" pt-height="300" class="shadow-lg rounded-full" />
     </div>

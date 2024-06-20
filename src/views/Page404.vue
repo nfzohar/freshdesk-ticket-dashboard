@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen overflow-hidden bg-secondary-500">
+  <div class="dashboard-body">
     <div
       class="m-auto w-96 p-5 shadow-primary-500 text-center mt-52 shadow-xl border border-primary-500 rounded-xl"
     >

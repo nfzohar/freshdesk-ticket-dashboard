@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen overflow-hidden bg-secondary-500 sm:py-24">
+  <div class="dashboard-body sm:py-24">
     <div class="w-11/12 md:w-10/12 h-11/12 m-auto">
       <h1 class="text-5xl w-full text-left p-5 font-bold" v-text="'Configuration Wizard'" />
 

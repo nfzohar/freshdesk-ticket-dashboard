@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col bg-secondary-500 h-screen w-screen transition-colors">
+  <div class="flex flex-col transition-colors dashboard-body">
     <div
       class="flex flex-col m-auto text-center w-9/12 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12 shadow-lg rounded-lg p-5 mt-16 bg-none border border-primary-500"
     >
