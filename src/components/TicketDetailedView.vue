@@ -4,10 +4,10 @@
       <div
         :key="details?.id"
         class="w-11/12 md:w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-7 m-auto"
-        :class="[{ 'is-loading': isLoading }, darkBackground ? 'text-white' : 'text-black']"
+        :class="[{ 'is-loading': isLoading }, `text-${darkBackground ? 'white' : 'black'}`]"
       >
         <div class="flex items-center justify-between w-full border-primary-500 border-b pb-2">
-          <h1 class="text-3xl font-semibold" v-text="title" />
+          <h1 class="text-3xl font-semibold" v-text="`#${details?.id}: ${details?.subject}`" />
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 my-3 gap-5">
@@ -92,7 +92,6 @@
 import { format } from 'date-fns'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
-import { colorIsDark } from '@/helpers/CommonMethods'
 import ADialog from '@/components/general/ADialog.vue'
 
 export default defineComponent({
@@ -137,7 +136,7 @@ export default defineComponent({
       return this.detailsTicketId ? true : false
     },
     statuses(): Object {
-      return this.$dashboard?.statuses ?? []
+      return this.$information?.statuses ?? []
     },
     status() {
       let label = 'Undefined'
@@ -149,11 +148,8 @@ export default defineComponent({
       })
       return label
     },
-    title() {
-      return '#' + this.details?.id + ': ' + this.details?.subject
-    },
     darkBackground() {
-      return Boolean(colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR))
+      return this.$information.isSecondaryColorDark
     },
     freshdeskWebUrl() {
       return String(this.$auth.domain).replace('api/v2/', 'a/')

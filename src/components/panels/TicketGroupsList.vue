@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { groupBy, sortBy, get } from 'lodash'
+import { groupBy, sortBy } from 'lodash'
 import ApiCall from '@/helpers/APICallHelper'
 import ACard from '@/components/general/ACard.vue'
 import APanel from '@/components/general/APanel.vue'
@@ -60,29 +60,11 @@ export default defineComponent({
   },
 
   async created() {
-    await this.fetchTicketGroups()
+    this.groups = this.$information.storedGroups
+    this.getGroupTicketCounts()
   },
 
   methods: {
-    async fetchTicketGroups() {
-      if (!this.$information.storedGroups?.length) {
-        this.groups = []
-
-        await ApiCall.get('groups?per_page=100')
-          .then((response) => {
-            if (response) {
-              this.groups = response
-            }
-          })
-          .then(() => {
-            this.getGroupTicketCounts()
-          })
-          .then(() => {
-            this.$information.setGroups(this.groups)
-          })
-      }
-    },
-
     async getGroupTicketCounts() {
       this.ticketGroups = []
       let ticketsGrouped = groupBy(this.tickets, 'group_id')

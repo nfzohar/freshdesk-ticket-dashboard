@@ -2,6 +2,7 @@
   <div
     :title="'Show details'"
     class="bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 cursor-pointer"
+    :class="`text-${isPrimaryColorDark ? 'white' : 'black'}`"
     @click="$emit('openTicketDetails', id)"
   >
     <h3 class="block font-bold text-lg" v-text="`#${id}: ${subject}`" />
@@ -52,6 +53,9 @@ export default defineComponent({
     },
     tags() {
       return this.theTicket?.tags?.length ? this.theTicket?.tags?.join(', ') : 'None'
+    },
+    isPrimaryColorDark(): Boolean {
+      return this.$information.isPrimaryColorDark
     },
     status(): String {
       if (!this.theTicket?.status) {

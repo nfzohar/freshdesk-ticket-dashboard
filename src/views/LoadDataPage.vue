@@ -8,6 +8,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import ApiCall from '@/helpers/APICallHelper'
 import LogoIcon from '@/components/general/TheLogo.vue'
 
 export default defineComponent({
@@ -24,11 +25,63 @@ export default defineComponent({
   },
 
   methods: {
-    fetchAgentsFromFreshdesk() {},
+    async fetchGroupsFromFreshdesk() {
+      let groups = []
 
-    fetchGroupsFromFreshdesk() {},
+      await ApiCall.get('groups?per_page=100')
+        .then((response) => {
+          if (response) {
+            groups = Object.values(response)
+          }
+        })
+        .finally(() => {
+          this.$information.setGroups(groups)
+        })
+    },
 
-    fetchStatusesFromFreshdesk() {}
+    async fetchAgentsFromFreshdesk() {
+      let agents = []
+
+      await ApiCall.get('agents?per_page=100')
+        .then((response) => {
+          if (response) {
+            agents = Object.values(response)
+          }
+        })
+        .finally(() => {
+          this.$information.setAgents(agents)
+        })
+    },
+
+    async fetchStatusesFromFreshdesk() {},
+
+    async fetchTicketFieldOptions(filterId) {
+      await ApiCall.get('admin/ticket_fields/' + filterId + '?include=section').then((response) => {
+        let filter = response
+
+        if (filter) {
+          if (filter.name == 'agent') {
+            filter['choices'] = this.$dashboard?.storedAgents
+          }
+          if (filter.name == 'group') {
+            filter['choices'] = this.$dashboard?.storedGroups
+          }
+
+          this.filters.push(filter)
+
+          if (filter.name == 'status') {
+            this.$dashboard.statuses = filter?.choices
+
+            filter.choices = filter?.choices?.map((option) => {
+              return { label: option?.label, value: option?.id }
+            })
+          }
+
+          if (filter.name == 'ticket_type') {
+            filter.name = 'type'
+          }
+        }
+      })
   }
 })
 </script>

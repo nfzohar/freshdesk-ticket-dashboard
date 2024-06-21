@@ -6,8 +6,12 @@
   />
 
   <div
-    class="w-full h-20 mb-4 px-1 bg-secondary-500 border-b-2 border-primary-500 shadow-primary-500 transition-all"
-    :class="[{ 'sm:-mt-24 ': autoHide }, `text-${primaryColorIsDark ? 'white' : 'black'}`]"
+    class="w-full h-20 mb-4 px-1 border-b-2 border-primary-500 shadow-primary-500 transition-all"
+    :class="[
+      { 'sm:-mt-24 ': autoHide },
+      `text-${primaryColorIsDark ? 'white' : 'black'}`,
+      `bg-secondary-${secondaryColorIsDark ? '600' : '400'}`
+    ]"
   >
     <div class="flex flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md">
       <div :class="`text-${secondaryColorIsDark ? 'white' : 'black'}`">
@@ -60,7 +64,6 @@
 <script lang="ts">
 import { format } from 'date-fns'
 import { defineComponent } from 'vue'
-import { colorIsDark } from '@/helpers/CommonMethods'
 import AllTicketsList from '@/components/AllTicketsList.vue'
 import TicketFilterModal from '@/components/TicketFilters.vue'
 import TicketDetailsModal from '@/components/TicketDetailedView.vue'
@@ -115,10 +118,10 @@ export default defineComponent({
       return import.meta.env.VITE_APP_TITLE ?? 'Freshdesk Ticket Dashboard'
     },
     primaryColorIsDark(): Boolean {
-      return Boolean(colorIsDark(import.meta.env.VITE_THEME_PRIMARY_COLOR))
+      return this.$information.isPrimaryColorDark
     },
     secondaryColorIsDark(): Boolean {
-      return Boolean(colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR))
+      return this.$information.isSecondaryColorDark
     }
   },
 

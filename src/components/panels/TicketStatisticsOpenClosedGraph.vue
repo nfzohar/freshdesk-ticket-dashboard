@@ -128,12 +128,6 @@ export default defineComponent({
 
       this.openedTickets = this.buildOpenTicketsArray(ticketsOfYear)
       this.closedTickets = this.buildClosedTicketsArray(ticketsOfYear)
-
-      // console.log('opened:')
-      // console.log(this.openedTickets)
-
-      // console.log('closed:')
-      // console.log(this.closedTickets)
     },
 
     buildOpenTicketsArray(ticketsOfYear) {

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { colorIsDark } from '@/helpers/CommonMethods'
 
 const storeLocalStorageKey = 'stored_dashboard_information'
 
@@ -8,6 +9,9 @@ export const information = defineStore('information', {
     groups: [],
     filters: [],
     statuses: [],
+
+    isPrimaryColorDark: colorIsDark(import.meta.env.VITE_THEME_PRIMARY_COLOR),
+    isSecondaryColorDark: colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR),
 
     autoRefreshShortcuts: [
       {

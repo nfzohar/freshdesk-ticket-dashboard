@@ -1,5 +1,8 @@
 <template>
-  <div class="w-full h-max border-primary-600 border bg-secondary-500 rounded-md">
+  <div
+    class="w-full h-max border-primary-600 border rounded-md"
+    :class="`bg-secondary-${isSecondaryColorDark ? '600' : '400'}`"
+  >
     <div class="flex items-center justify-between py-1 px-2">
       <h1 class="text-xl font-bold mb-1 cursor-pointer" v-text="title" @click="toggleVisibility" />
 
@@ -91,6 +94,9 @@ export default defineComponent({
   computed: {
     selectedViewDefault() {
       return this.selectedView == 'default'
+    },
+    isSecondaryColorDark() {
+      return this.$information.isSecondaryColorDark
     }
   },
 

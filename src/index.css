@@ -8,8 +8,12 @@ body {
   @apply bg-secondary-100;
 }
 
-.dashboard-body{
-  @apply w-screen h-screen overflow-hidden bg-secondary-600
+.dashboard-body {
+  @apply w-screen h-screen overflow-hidden bg-secondary-500;
+}
+
+.panel-body {
+  @apply grid grid-cols-1 gap-5 items-center justify-between w-full bg-transparent p-2 rounded-md shadow-primary-600;
 }
 
 .primary-button {
@@ -22,10 +26,6 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
-}
-
-.panel-body {
-  @apply grid grid-cols-1 gap-5 items-center justify-between w-full bg-transparent p-2 rounded-md shadow-primary-600;
 }
 
 .bg-linear-gradient {

@@ -85,27 +85,11 @@ export default defineComponent({
   },
 
   mounted() {
-    this.fetchAgents()
+    this.allAgents = this.$information.storedAgents
+    this.calculateAgentStatistics()
   },
 
   methods: {
-    async fetchAgents() {
-      if (!this.$information.storedAgents?.length) {
-        await ApiCall.get('agents?per_page=100')
-          .then((response) => {
-            if (response) {
-              this.allAgents = Object.values(response)
-            }
-          })
-          .then(() => {
-            this.calculateAgentStatistics()
-          })
-          .then(() => {
-            this.$information.setAgents(this.allAgents)
-          })
-      }
-    },
-
     calculateAgentStatistics() {
       let ticketsByAgent = groupBy(this.tickets, 'responder_id')
       this.sortedAgents = []

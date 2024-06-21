@@ -25,7 +25,6 @@
               <a-ticket
                 v-if="ticket"
                 :the-ticket="ticket"
-                :statuses="statuses"
                 @click="$emit('showTicketDetails', ticket.id)"
               />
             </template>
@@ -50,11 +49,6 @@ export default defineComponent({
 
   props: {
     allTickets: {
-      type: [Array, Object],
-      required: false,
-      default: () => []
-    },
-    statuses: {
       type: [Array, Object],
       required: false,
       default: () => []
