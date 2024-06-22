@@ -4,7 +4,7 @@ const storeLocalStorageKey = 'stored_configuration'
 
 export const configuration = defineStore('configuration', {
   state: () => ({
-    agents: [],
+    visibleCounters: [],
 
     autoRefresh: {
       active: false,
@@ -39,6 +39,15 @@ export const configuration = defineStore('configuration', {
           {
             id: '1-3',
             component: 'TicketGroupsList',
+            displayType: 'default',
+            visible: true,
+            data: {}
+          }
+        ],
+        [          
+          {
+            id: '2-1',
+            component: 'TicketCounters',
             displayType: 'default',
             visible: true,
             data: {}

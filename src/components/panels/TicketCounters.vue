@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="visibleCounts.length > 0"
     :key="visibleCounts?.length"
     class="gap-5 w-full rounded-md px-10 items-center justify-between"
     :class="
@@ -9,8 +8,6 @@
   >
     <template v-for="(status, s) in allStatusLabels" :key="s">
       <div
-        v-if="visibleCounts?.includes(status)"
-        :key="tickets?.length"
         class="block mb-3 md:mb-0 rounded-md border border-primary-500 h-full shadow-primary-600 bg-primary-500 hover:bg-primary-600 py-5 px-2 w-full text-center font-bold"
       >
         <span class="block text-7xl w-full" v-text="countTicketsOfStatus(status)" />
@@ -33,11 +30,6 @@ export default defineComponent({
       required: true,
       default: () => []
     },
-    additionalData: {
-      type: [Object, Array],
-      required: true,
-      default: () => []
-    }
   },
 
   data() {
@@ -54,7 +46,7 @@ export default defineComponent({
 
   computed: {
     statuses(): any {
-      return Object.values(this.$configuration?.statuses) ?? []
+      return Object.values(this.$information?.storedStatuses) ?? []
     },
     allStatusLabels(): any {
       let labels = this.statuses.map((status) => status?.label)

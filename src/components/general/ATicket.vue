@@ -15,8 +15,20 @@
       </div>
 
       <div class="flex items-center gap-x-2 justify-between p-2 w-auto">
-        <span title="Ticket type" class="ticket-label" v-text="type" />
-        <span title="Ticket status" class="ticket-label" v-text="status" />
+        <span 
+          title="Ticket status" 
+          class="ticket-label" 
+          :class="
+            `bg-primary-${isPrimaryColorDark ? '600' : '400'} border-primary-${isPrimaryColorDark ? '600' : '400'}`"
+          v-text="status" 
+        />
+        <span 
+          title="Ticket type"
+          class="ticket-label" 
+          :class="
+            `bg-primary-${isPrimaryColorDark ? '600' : '400'} border-primary-${isPrimaryColorDark ? '600' : '400'}`" 
+          v-text="type"
+        />
       </div>
     </div>
   </div>
@@ -58,13 +70,15 @@ export default defineComponent({
       return this.$information.isPrimaryColorDark
     },
     status(): String {
-      if (!this.theTicket?.status) {
-        return 'N/A'
-      }
+      let label='N/A';
 
-      return Object.values(this.$information?.statuses).filter(
-        (status) => status?.id == this.theTicket?.status
-      )
+      Object.values(this.$information?.statuses).forEach((status) =>{
+        if(status?.id == this.theTicket?.status){
+          label = status?.label
+        }
+      })
+      
+      return label;
     }
   }
 })
@@ -72,6 +86,6 @@ export default defineComponent({
 
 <style scoped>
 .ticket-label {
-  @apply w-auto m-auto font-bold bg-primary-600 border-secondary-400 rounded-md px-2 py-1;
+  @apply w-auto m-auto font-bold border rounded-md px-2 py-1;
 }
 </style>

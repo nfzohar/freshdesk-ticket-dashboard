@@ -28,7 +28,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { groupBy, sortBy } from 'lodash'
-import ApiCall from '@/helpers/APICallHelper'
 import ACard from '@/components/general/ACard.vue'
 import APanel from '@/components/general/APanel.vue'
 

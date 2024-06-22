@@ -53,35 +53,26 @@ export default defineComponent({
         })
     },
 
-    async fetchStatusesFromFreshdesk() {},
+    async fetchStatusesFromFreshdesk() {
+      let statusFieldId = null;
 
-    async fetchTicketFieldOptions(filterId) {
-      await ApiCall.get('admin/ticket_fields/' + filterId + '?include=section').then((response) => {
-        let filter = response
-
-        if (filter) {
-          if (filter.name == 'agent') {
-            filter['choices'] = this.$dashboard?.storedAgents
-          }
-          if (filter.name == 'group') {
-            filter['choices'] = this.$dashboard?.storedGroups
-          }
-
-          this.filters.push(filter)
-
-          if (filter.name == 'status') {
-            this.$dashboard.statuses = filter?.choices
-
-            filter.choices = filter?.choices?.map((option) => {
-              return { label: option?.label, value: option?.id }
-            })
-          }
-
-          if (filter.name == 'ticket_type') {
-            filter.name = 'type'
-          }
+      await ApiCall.get('admin/ticket_fields')
+      .then((response) => {
+        if(response) {
+          Object.values(response).forEach(async (adminField) => {
+            if(adminField?.name == 'status'){
+              statusFieldId = adminField?.id
+            }
+          }) 
         }
-      })
+      });
+
+      await ApiCall.get(`admin/ticket_fields/${statusFieldId}?include=section`)
+      .then((response) => { 
+          this.$information.setStatuses(response?.choices)
+      });
+    
+    },
   }
 })
 </script>
