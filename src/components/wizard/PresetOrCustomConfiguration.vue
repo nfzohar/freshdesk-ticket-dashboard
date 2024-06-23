@@ -95,13 +95,29 @@ export default defineComponent({
           [
             {
               id: '1-1',
+              component: 'TicketCounters',
+              displayType: 'default',
+              visible: true,
+              data: {}
+            }
+          ],
+          [
+            {
+              id: '2-1',
+              component: 'TicketTypesList',
+              displayType: 'default',
+              visible: true,
+              data: {}
+            },
+            {
+              id: '2-1',
               component: 'TicketTagsList',
               displayType: 'default',
               visible: true,
               data: {}
             },
             {
-              id: '1-2',
+              id: '2-2',
               component: 'TicketGroupsList',
               displayType: 'default',
               visible: true,

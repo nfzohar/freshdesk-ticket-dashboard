@@ -89,7 +89,7 @@
             class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
             v-text="'Clear all data'"
             :title="'Logout and delete all current configuration data'"
-            @click.stop="clearAllDashboardData()"
+            @click.stop=""
           />
           <button
             class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
@@ -101,13 +101,13 @@
             class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
             v-text="'Reload'"
             :title="'Reload entire dashboard.'"
-            @click.stop="$emit('reloadDashboard')"
+            @click.stop="updateDashboardData"
           />
           <button
             class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
             v-text="'Save'"
             :title="'Save current configuration'"
-            @click.stop="savePreferencesToState()"
+            @click.stop=""
           />
         </div>
       </div>
@@ -116,7 +116,6 @@
 </template>
 
 <script lang="ts">
-import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
 import ADialog from '@/components/general/ADialog.vue'
 import ACheckbox from '@/components/general/ACheckbox.vue'
@@ -168,163 +167,13 @@ export default defineComponent({
     }
   },
 
-  watch: {
-    open() {
-      this.layout = this.buildLayoutFromStore()
-    },
-    refreshMinRate() {
-      this.refreshSwitch = false
-    },
-    refreshSwitch() {
-      if (this.refreshSwitch) {
-        if (this.refreshMinRate) {
-          this.intervalId = setInterval(
-            () => {
-              this.$emit('refreshDashboard')
-            },
-            1000 * 60 * this.refreshMinRate
-          )
-        }
-      } else {
-        clearInterval(this.intervalId)
-      }
-    }
-  },
+  watch: {},
 
-  async mounted() {
-    this.customFields = this.stateCustomFields
-    this.layout = this.buildLayoutFromStore()
-  },
+  async mounted() {},
 
   methods: {
-    buildLayoutFromStore() {
-      return {
-        tags: {
-          label: 'Tags',
-          show: this.stateLayout?.tags?.show
-        },
-        groups: {
-          label: 'Groups',
-          show: this.stateLayout?.groups?.show
-        },
-        ticket_list: {
-          label: 'Ticket list',
-          show: this.stateLayout?.ticket_list?.show
-        },
-        types: {
-          label: 'Ticket types',
-          show: this.stateLayout?.types?.show
-        },
-        ticket_open_closed_graph: {
-          label: 'Ticket open/closed graph',
-          show: this.stateLayout?.ticket_open_closed_graph?.show
-        },
-        top_requesters: {
-          label: 'Top requesters',
-          show: this.stateLayout?.top_requesters?.show,
-          settings: {
-            showTrophies: {
-              label: 'Show trophies',
-              type: 'boolean',
-              value: this.stateLayout?.top_requesters?.settings.showTrophies
-            },
-            listLentgh: {
-              label: 'Top list length',
-              type: 'number',
-              value: this.stateLayout?.top_requesters?.settings.listLentgh || 5
-            }
-          }
-        },
-        top_agents: {
-          label: 'Top agents',
-          show: this.stateLayout?.top_agents?.show,
-          settings: {
-            showTrophies: {
-              label: 'Show trophies',
-              type: 'boolean',
-              value: this.stateLayout?.top_agents?.settings.showTrophies
-            },
-            listLentgh: {
-              label: 'Top list length',
-              type: 'number',
-              value: this.stateLayout?.top_agents?.settings.listLentgh || 5
-            }
-          }
-        },
-        ticket_counts: {
-          label: 'Ticket count',
-          show: this.stateLayout?.ticket_counts?.show,
-          visibleCounts: this.ticketCountsFromStatuses()
-        }
-      }
-    },
-
-    ticketCountsFromStatuses() {
-      if (this.stateLayout?.ticket_counts?.visibleCounts) {
-        let currentTicketCounts = Object.values(this.stateLayout?.ticket_counts?.visibleCounts)
-        let visibleTicketCounts = Array()
-
-        let optionKeys = [
-          'All',
-          'Unresolved',
-          Object.values(this.statuses).map((status) => status['label'])
-        ].flat()
-
-        optionKeys?.forEach((option) => {
-          if (currentTicketCounts.includes(option)) {
-            visibleTicketCounts.push(option)
-          }
-        })
-
-        return uniq(visibleTicketCounts)
-      }
-    },
-
-    updateVisibleTicketCounts(statusLabel: String, show: false) {
-      if (show) {
-        this.layout.ticket_counts.visibleCounts.push(statusLabel)
-      } else {
-        this.layout.ticket_counts.visibleCounts = uniq(
-          Object.values(this.layout.ticket_counts.visibleCounts).filter(
-            (status) => status != statusLabel
-          )
-        )
-      }
-
-      this.$dashboard.layout.ticket_counts.visibleCounts = this.layout.ticket_counts?.visibleCounts
-    },
-
-    savePreferencesToState() {
-      this.$dashboard?.saveCustomFieldsToStore(this.customFields)
-      this.morphSectionSettingsForState()
-
-      this.layout = this.buildLayoutFromStore()
-      this.open = false
-    },
-
-    async morphSectionSettingsForState() {
-      let ticketCounts = this.$dashboard.layout.ticket_counts.visibleCounts
-      this.$dashboard.layout.ticket_counts.visibleCounts = uniq(ticketCounts)
-
-      let topRequesters = this.layout.top_requesters?.settings
-      this.layout.top_requesters.settings = {
-        showTrophies: topRequesters?.showTrophies?.value,
-        listLentgh: topRequesters?.listLentgh?.value
-      }
-
-      let topAgents = this.layout.top_agents?.settings
-      this.layout.top_agents.settings = {
-        showTrophies: topAgents?.showTrophies?.value,
-        listLentgh: topAgents?.listLentgh?.value
-      }
-
-      this.$dashboard?.saveLayoutToStore(this.layout)
-    },
-
-    clearAllDashboardData() {
-      this.$dashboard?.deleteStoreData()
-      this.$auth.resetAuth()
-      this.$router.go(0)
+    updateDashboardData() {
+      this.$router.replace('/loading')
     }
   }
 })

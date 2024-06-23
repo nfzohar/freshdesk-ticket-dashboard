@@ -4,72 +4,20 @@ const storeLocalStorageKey = 'stored_configuration'
 
 export const configuration = defineStore('configuration', {
   state: () => ({
-    visibleCounters: [],
-
     autoRefresh: {
       active: false,
       perMinutes: 0
     },
-
     leaderboards: {
       length: 5,
       showThrophies: true,
       trophyIcon: 'fa fa-trophy'
     },
-
     layout: {
       autoHideToolbar: true,
       direction: 'horizontal',
-      groups: [
-        [
-          {
-            id: '1-1',
-            component: 'TicketTypesList',
-            displayType: 'default',
-            visible: true,
-            data: {}
-          },
-          {
-            id: '1-2',
-            component: 'TicketTagsList',
-            displayType: 'default',
-            visible: true,
-            data: {}
-          },
-          {
-            id: '1-3',
-            component: 'TicketGroupsList',
-            displayType: 'default',
-            visible: true,
-            data: {}
-          }
-        ],
-        [          
-          {
-            id: '2-1',
-            component: 'TicketCounters',
-            displayType: 'default',
-            visible: true,
-            data: {}
-          }
-        ],
-        [
-          {
-            id: '3-1',
-            component: 'AgentsLeaderboard',
-            displayType: 'default',
-            visible: true,
-            data: {}
-          },
-          {
-            id: '3-2',
-            component: 'RequestersLeaderboard',
-            displayType: 'v-bar',
-            visible: true,
-            data: {}
-          }
-        ]
-      ]
+      hiddenTicketCounts: [],
+      groups: []
     }
   }),
 
@@ -97,6 +45,9 @@ export const configuration = defineStore('configuration', {
     },
     leaderboardsLength(): Number {
       return this.leaderboards?.length
+    },
+    hiddenTicketCounts(): Array {
+      return this.layout?.hiddenTicketCounts
     }
   },
 

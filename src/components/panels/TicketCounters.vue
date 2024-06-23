@@ -1,16 +1,11 @@
 <template>
   <div
-    :key="visibleCounts?.length"
-    class="gap-5 w-full rounded-md px-10 items-center justify-between"
-    :class="
-      visibleCounts?.length > 10 ? 'flex items-center justify-between' : getConditionalGridStyle()
-    "
+    :key="hiddenTicketCounters?.length"
+    class="flex gap-5 w-full rounded-md items-center justify-between"
   >
-    <template v-for="(status, s) in allStatusLabels" :key="s">
-      <div
-        class="block mb-3 md:mb-0 rounded-md border border-primary-500 h-full shadow-primary-600 bg-primary-500 hover:bg-primary-600 py-5 px-2 w-full text-center font-bold"
-      >
-        <span class="block text-7xl w-full" v-text="countTicketsOfStatus(status)" />
+    <template v-for="(status, s) in statusLabels" :key="s">
+      <div class="block rounded-md w-full h-full bg-primary-500 text-center align-middle font-bold p-5">
+        <span class="block text-7xl w-full" v-text="generateTicketCount(status)" />
         <span v-text="status" />
       </div>
     </template>
@@ -29,78 +24,61 @@ export default defineComponent({
       type: [Object, Array],
       required: true,
       default: () => []
-    },
+    }
   },
 
   data() {
     return {
-      statusGroupedTickets: []
+      groupedByStatus: []
     }
   },
 
   watch: {
     'tickets.length'() {
-      this.statusGroupedTickets = groupBy(this.tickets, 'status')
+      //this.statusGroupedTickets = groupBy(this.tickets, 'status')
     }
   },
 
   computed: {
     statuses(): any {
-      return Object.values(this.$information?.storedStatuses) ?? []
+      return Object.values(this.$information?.statuses) ?? []
     },
-    allStatusLabels(): any {
+    hiddenTicketCounters(): any {
+      return this.$configuration?.hiddenTicketCounts ?? []
+    },
+    statusGroupedTickets(): any {
+      return groupBy(this.tickets, 'status') ?? []
+    },
+    statusLabels(): any {
       let labels = this.statuses.map((status) => status?.label)
       labels.unshift('All', 'Unresolved')
       return labels
-    },
-    visibleCounts(): any {
-      return this.$configuration?.layout?.ticket_counts?.visibleCounts ?? []
     }
   },
 
-  mounted() {
-    this.statusGroupedTickets = groupBy(this.tickets, 'status')
-  },
-
   methods: {
-    countTicketsOfStatus(status: string): number {
-      if (status == 'All') {
-        return this.tickets?.length
+    generateTicketCount(status: string): number {
+      switch (status) {
+        default:
+          return this.statusGroupedTickets[this.getStatusId(status)]?.length ?? 0
+        case 'All':
+          return this.tickets?.length
+        case 'Unresolved':
+          return this.tickets?.filter(
+            (ticket) =>
+              ![this.getStatusId('Closed'), this.getStatusId('Resolved')].includes(ticket?.status)
+          ).length
       }
-
-      if (status == 'Unresolved') {
-        return this.tickets?.filter(
-          (ticket) =>
-            ![this.getStatusId('Closed'), this.getStatusId('Resolved')].includes(ticket?.status)
-        ).length
-      }
-
-      return this.statusGroupedTickets[this.getStatusId(status)]?.length ?? 0
     },
 
     getStatusId(statusLabel: string) {
+      return 0
+
       if (!this.statuses?.length) {
         return 0
       }
 
       return this.statuses?.filter((status) => status.label == statusLabel)[0].id ?? 0
-    },
-
-    getConditionalGridStyle() {
-      let count = Number(this.visibleCounts?.length)
-      let style = 'grid grid-cols-1 sm:grid-cols-2 '
-
-      if (count % 3 == 0) {
-        style += 'md:grid-cols-3'
-      }
-      if (count % 4 == 0) {
-        style += 'md:grid-cols-4'
-      }
-      if (count % 5 == 0) {
-        style += 'md:grid-cols-5'
-      }
-
-      return style
     }
   }
 })

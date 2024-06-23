@@ -6,8 +6,7 @@
     <div class="flex flex-col w-full h-full">
       <span class="font-bold" v-text="name" />
       <span v-if="subtitle" class="text-sm mb-2" v-text="subtitle" />
-
-      <span class="text-sm" v-html="`<b>${countLabel}:</B> ${count}`" />
+      <span class="text-sm font-semibold" v-html="`${countLabel}: ${count}`" />
     </div>
 
     <slot v-if="$slots['card-icon']" :name="'card-icon'" />

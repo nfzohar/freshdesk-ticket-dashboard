@@ -21,7 +21,9 @@ export default defineComponent({
     await this.fetchGroupsFromFreshdesk()
     await this.fetchStatusesFromFreshdesk()
 
-    this.$router.replace('/dashboard')
+    setTimeout(() => {
+      this.$router.replace('/dashboard')
+    }, 1000)
   },
 
   methods: {
@@ -54,25 +56,22 @@ export default defineComponent({
     },
 
     async fetchStatusesFromFreshdesk() {
-      let statusFieldId = null;
+      let statusFieldId = null
 
-      await ApiCall.get('admin/ticket_fields')
-      .then((response) => {
-        if(response) {
+      await ApiCall.get('admin/ticket_fields').then((response) => {
+        if (response) {
           Object.values(response).forEach(async (adminField) => {
-            if(adminField?.name == 'status'){
+            if (adminField?.name == 'status') {
               statusFieldId = adminField?.id
             }
-          }) 
+          })
         }
-      });
+      })
 
-      await ApiCall.get(`admin/ticket_fields/${statusFieldId}?include=section`)
-      .then((response) => { 
-          this.$information.setStatuses(response?.choices)
-      });
-    
-    },
+      await ApiCall.get(`admin/ticket_fields/${statusFieldId}?include=section`).then((response) => {
+        this.$information.setStatuses(response?.choices)
+      })
+    }
   }
 })
 </script>
