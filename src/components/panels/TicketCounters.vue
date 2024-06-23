@@ -4,11 +4,11 @@
     class="flex gap-5 w-full rounded-md items-center justify-between"
   >
     <template v-for="(status, s) in statusLabels" :key="s">
-      <div 
+      <div
         v-if="visibleTicketCounts.includes(status)"
-        class="block rounded-md w-full h-auto bg-primary-500 text-center align-middle font-bold p-5" 
-        :class="`text-${darkPrimaryColor ? 'white' : 'black'}`
-      ">
+        class="block rounded-md w-full h-auto bg-primary-500 text-center align-middle font-bold p-5"
+        :class="`text-${darkPrimaryColor ? 'white' : 'black'}`"
+      >
         <span v-text="status" />
         <span class="block text-6xl w-full" v-text="generateTicketCount(status)" />
       </div>
@@ -32,9 +32,7 @@ export default defineComponent({
   },
 
   data() {
-    return {
-      groupedByStatus: []
-    }
+    return { groupedByStatus: [] }
   },
 
   watch: {
@@ -44,36 +42,36 @@ export default defineComponent({
   },
 
   computed: {
-    statuses(): any {
-      return Object.values(this.$information?.statuses) ?? []
-    },
-    visibleTicketCounts(): any {
-      return this.$configuration.visibleTicketCounts ?? []
+    darkPrimaryColor(): Boolean {
+      return this.$information?.isPrimaryColorDark
     },
     statusGroupedTickets(): any {
       return groupBy(this.tickets, 'status') ?? []
+    },
+    visibleTicketCounts(): any {
+      return this.$configuration?.visibleTicketCounts ?? []
+    },
+    statuses(): any {
+      return Object.values(this.$information?.statuses) ?? []
     },
     statusLabels(): any {
       let labels = this.statuses.map((status) => status?.label)
       labels.unshift('All', 'Unresolved')
       return labels
-    },
-    darkPrimaryColor(): Boolean{
-      return this.$information?.isPrimaryColorDark
     }
   },
 
   methods: {
     generateTicketCount(status: string): number {
       switch (status) {
-        case 'All':{
+        case 'All': {
           return this.tickets?.length
         }
-        case 'Unresolved':{
-          let resolved=[this.getStatusId('Closed'), this.getStatusId('Resolved')]
-          return this.tickets?.filter((ticket) =>!resolved.includes(ticket?.status)).length
+        case 'Unresolved': {
+          let resolved = [this.getStatusId('Closed'), this.getStatusId('Resolved')]
+          return this.tickets?.filter((ticket) => !resolved.includes(ticket?.status)).length
         }
-        default:{
+        default: {
           let statusId = this.getStatusId(status)
           return this.statusGroupedTickets[statusId]?.length ?? 0
         }

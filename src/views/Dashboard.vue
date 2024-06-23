@@ -72,7 +72,7 @@ export default defineComponent({
     }
   },
 
-  created(){
+  created() {
     // if (!this.$auth.authenticated) {
     //   this.$router.push('/')
     // }
@@ -80,7 +80,7 @@ export default defineComponent({
 
   async mounted() {
     this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970').toISOString()
-    
+
     await this.loadTickets()
   },
 

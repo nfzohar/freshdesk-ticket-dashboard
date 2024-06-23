@@ -17,19 +17,19 @@
       <div class="flex items-center gap-x-2 justify-between p-2 w-auto">
         <span
           title="Ticket status"
-          class="ticket-label"
           :class="[
-            `bg-primary-${isPrimaryColorDark ? '600' : '400'}`,
-            `border-primary-${isPrimaryColorDark ? '400' : '600'}`
+            'ticket-label',
+            isPrimaryColorDark ? 'bg-primary-600' : 'bg-primary-400',
+            isPrimaryColorDark ? 'border-primary-400' : 'border-primary-600'
           ]"
           v-text="status"
         />
         <span
           title="Ticket type"
-          class="ticket-label"
           :class="[
-            `bg-primary-${isPrimaryColorDark ? '600' : '400'}`,
-            `border-primary-${isPrimaryColorDark ? '400' : '600'}`
+            'ticket-label',
+            isPrimaryColorDark ? 'bg-primary-600' : 'bg-primary-400',
+            isPrimaryColorDark ? 'border-primary-400' : 'border-primary-600'
           ]"
           v-text="type"
         />

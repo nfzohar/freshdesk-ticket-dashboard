@@ -57,16 +57,7 @@ export default defineComponent({
       await this.setAutorefreshPreset()
       await this.setLeaderbordsPreset()
       await this.setLayoutPanelsPreset()
-      await this.emptyDashboardStoredValues()
-
       this.$emit('usePreset')
-    },
-
-    emptyDashboardStoredValues() {
-      this.$configuration.setGroups([])
-      this.$configuration.setAgents([])
-      this.$configuration.setStatuses([])
-      this.$configuration.setFilters([])
     },
 
     setAutorefreshPreset() {
@@ -91,6 +82,7 @@ export default defineComponent({
       let layout = {
         autoHideToolbar: true,
         direction: 'horizontal',
+        visibleTicketCounts: [],
         groups: [
           [
             {
