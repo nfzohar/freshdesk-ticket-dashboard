@@ -16,7 +16,7 @@ export const configuration = defineStore('configuration', {
     layout: {
       autoHideToolbar: true,
       direction: 'horizontal',
-      hiddenTicketCounts: [],
+      visibleTicketCounts: [],
       groups: []
     }
   }),
@@ -46,28 +46,12 @@ export const configuration = defineStore('configuration', {
     leaderboardsLength(): Number {
       return this.leaderboards?.length
     },
-    hiddenTicketCounts(): Array {
-      return this.layout?.hiddenTicketCounts
+    visibleTicketCounts(): Array {
+      return this.layout?.visibleTicketCounts
     }
   },
 
   actions: {
-    setGroups(newValue: Array) {
-      this.groups = newValue
-    },
-
-    setAgents(newValue: Array) {
-      this.agents = newValue
-    },
-
-    setFilters(newValue: Array) {
-      this.filters = newValue
-    },
-
-    setStatuses(newValue: Array) {
-      this.statuses = newValue
-    },
-
     updateLayout(layout: Array) {
       this.layout = layout
       this.saveConfigurationToStore()
@@ -75,6 +59,11 @@ export const configuration = defineStore('configuration', {
 
     updateLayoutGroups(layoutGroups: Array) {
       this.layout.groups = layoutGroups
+      this.saveConfigurationToStore()
+    },
+
+    updateVisibleStatuses(visibleCounts: Array){
+      this.layout.visibleTicketCounts = visibleCounts
       this.saveConfigurationToStore()
     },
 

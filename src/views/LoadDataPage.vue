@@ -20,8 +20,9 @@ export default defineComponent({
     await this.fetchAgentsFromFreshdesk()
     await this.fetchGroupsFromFreshdesk()
     await this.fetchStatusesFromFreshdesk()
-
+    
     setTimeout(() => {
+      this.$information.saveConfigurationToStore()
       this.$router.replace('/dashboard')
     }, 1000)
   },
@@ -69,7 +70,15 @@ export default defineComponent({
       })
 
       await ApiCall.get(`admin/ticket_fields/${statusFieldId}?include=section`).then((response) => {
-        this.$information.setStatuses(response?.choices)
+        let statuses = response?.choices;
+        this.$information.setStatuses(statuses)
+
+        if(this.$configuration.visibleTicketCounts?.length){
+          let statusLabels = statuses.map(status => status?.label)
+          statusLabels.unshift('All', 'Unresolved') 
+
+          this.$configuration.updateVisibleStatuses(statusLabels)
+        }
       })
     }
   }

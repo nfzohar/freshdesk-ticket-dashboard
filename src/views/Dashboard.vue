@@ -72,15 +72,15 @@ export default defineComponent({
     }
   },
 
-  created() {
-    this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970').toISOString()
-  },
-
-  async mounted() {
+  created(){
     // if (!this.$auth.authenticated) {
     //   this.$router.push('/')
     // }
+  },
 
+  async mounted() {
+    this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970').toISOString()
+    
     await this.loadTickets()
   },
 

@@ -73,7 +73,7 @@ export function colorIsDark(color: String) {
 
     const hsp: any = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
 
-    const darkColorThreshold = 150
+    const darkColorThreshold = 155
     // return !(hsp > 127.5)
 
     return !(hsp > darkColorThreshold)
