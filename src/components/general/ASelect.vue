@@ -10,7 +10,7 @@
       <option
         v-for="(option, o) in options"
         :key="o"
-        class="bg-secondary-500 border-primary-500 hover:bg-primary-500 hover:text-secondary-500"
+        class="bg-primary-500 border-primary-500 hover:bg-primary-500 hover:font-bold hover:text-secondary-500"
         :value="valueField ? option[valueField] : option"
         v-text="labelField ? option[labelField] : option"
       />

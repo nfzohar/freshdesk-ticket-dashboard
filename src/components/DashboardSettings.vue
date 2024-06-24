@@ -12,42 +12,67 @@
         :class="'text-white'"
       >
         <div class="grid grid-cols-1 md:grid-cols-2">
-          <a-setting-section :section-title="'Manage dashboard layout'"> 
-              <a-checkbox
-                :key="refreshPerMinutes"
-                class="w-9/12 font-bold pr-2 mb-2"
-                :the-value="refreshIsActive"
-                :label="'Refresh per minutes'"
-                :title="'Toggle automatic refresh.'"
-                @changed="(value) => (refreshIsActive = value)"
-              />
-              <input
-                v-model="refreshPerMinutes"
-                type="number"
-                :disabled="!refreshIsActive"
-                :title="'Count of minutes in a refresh interval.'"
-                class="w-3/12 rounded-md text-black px-1"
-              />
+          <a-setting-section :section-title="'Manage dashboard layout'">
+            <a-checkbox
+              :key="refreshPerMinutes"
+              class="w-9/12 font-bold pr-2 mb-2"
+              :the-value="refreshIsActive"
+              :label="'Refresh per minutes'"
+              :title="'Toggle automatic refresh.'"
+              @changed="(value) => (refreshIsActive = value)"
+            />
+            <input
+              v-model="refreshPerMinutes"
+              type="number"
+              :disabled="!refreshIsActive"
+              :title="'Count of minutes in a refresh interval.'"
+              class="w-3/12 rounded-md text-black px-1"
+            />
           </a-setting-section>
 
-          <a-setting-section :section-title="'Autohide toolbar'"> 
-             <a-checkbox
-                class="w-auto font-bold pr-2 mb-2"
+          <a-setting-section :section-title="'Autohide toolbar'">
+            <a-checkbox
+              class="w-auto font-bold pr-2 mb-2"
+              :the-value="autoHideToolbar"
+              :label="'The toolbar is hidden after 10 seconds.'"
+              :title="'Toggle autohide dashboard toolbar.'"
+              @changed="(value) => (autoHideToolbar = value)"
+            />
+          </a-setting-section>
+
+          <a-setting-section :section-title="'Visible ticket counters'">
+            <span v-if="!statuses" v-text="'No statuses found. Reload information.'" />
+          </a-setting-section>
+
+          <a-setting-section :section-title="'Leaderboards settings'">
+            <div class="flex items-center flex-col gap-y-5">
+              <a-checkbox
+                class="w-full font-bold pr-2 mb-2"
                 :the-value="autoHideToolbar"
-                :label="'The toolbar is hidden after 10 seconds.'"
-                :title="'Toggle autohide dashboard toolbar.'"
+                :label="'Show trophies on leaderboars.'"
+                :title="'Toggle trophy visibility on leaderboards.'"
                 @changed="(value) => (autoHideToolbar = value)"
               />
-          </a-setting-section>
-
-          <a-setting-section :section-title="'Leaderboards settings'"> 
-
-          </a-setting-section>
-
-          <a-setting-section :section-title="'Visible ticket counters'"> 
-    
-            <span v-if="!statuses"></span>
-
+              <a-select
+                :the-value="leaderboardsTrophyIcon"
+                :label="'Trophy icon:'"
+                :options="trophyiconOptions"
+                :label-field="'label'"
+                :value-field="'value'"
+                label-class="w-full font-semibold mb-1 bg-none"
+                :input-class="`w-full capitalize text-${primaryColorDark ? 'white' : 'black'}`"
+                @changed="(value) => (leaderboardsTrophyIcon = value)"
+              />
+              <div class="flex flex-col w-full">
+                <span class="block w-full" v-text="'Leaderbords length:'" />
+                <input
+                  v-model="leaderboardslength"
+                  type="number"
+                  :title="'Count of entries, shown on the leaderbords.'"
+                  class="w-full rounded-md text-black px-1"
+                />
+              </div>
+            </div>
           </a-setting-section>
         </div>
 
@@ -55,16 +80,19 @@
           <div class="grid grid-cols-3 xl:flex items-center gap-x-5">
             <button
               class="primary-button settings-button"
+              :class="`text-${primaryColorDark ? 'white' : 'black'}`"
               v-text="'Logout'"
               @click.stop="$router.push('/logout')"
             />
             <button
               class="primary-button settings-button"
+              :class="`text-${primaryColorDark ? 'white' : 'black'}`"
               v-text="'Clear all data'"
               @click.stop="clearStoredInformation()"
             />
             <button
               class="primary-button settings-button"
+              :class="`text-${primaryColorDark ? 'white' : 'black'}`"
               v-text="'Reload information'"
               @click.stop="$router.replace('/loading')"
             />
@@ -72,6 +100,7 @@
 
           <button
             class="primary-button settings-button w-full xl:w-auto"
+            :class="`text-${primaryColorDark ? 'white' : 'black'}`"
             v-text="'Save'"
             @click.stop="open = false"
           />
@@ -83,13 +112,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import ASelect from '@/components/general/ASelect.vue'
 import ADialog from '@/components/general/ADialog.vue'
 import ACheckbox from '@/components/general/ACheckbox.vue'
 import ASettingSection from '@/components/general/ASettingSection.vue'
+
 export default defineComponent({
   name: 'DashboardSettings',
 
-  components: { ASettingSection, ACheckbox, ADialog },
+  components: { ASettingSection, ACheckbox, ADialog, ASelect },
 
   emits: ['reloadDashboard'],
 
@@ -109,37 +140,43 @@ export default defineComponent({
 
       refreshPerMinutes: 0,
       refreshIsActive: false,
-      
+
       leaderboardslength: 5,
       throphiesVisible: true,
-      leaderboardsTrophyIcon: 'fa fa-trophy',
-
+      leaderboardsTrophyIcon: 'fa fa-trophy'
     }
   },
 
   computed: {
-    statuses() {
-      return this.$information?.statuses ?? []
+    trophyiconOptions() {
+      return this.$information?.trophyIcons
     },
     visibleTicketCounters() {
       return this.$configuration?.visibleTicketCounts
+    },
+    statuses() {
+      return this.$information?.statuses ?? []
     },
     statusLabels() {
       let labels = this.statuses.map((status: { label: String }) => status?.label)
       labels.unshift('All', 'Unresolved')
       return labels
     },
-
-    refreshWatchToken(){
+    refreshWatchToken() {
       return `${this.refreshPerMinutes}${Number(this.refreshIsActive)}`
     },
-    leaderboardsWatchToken(){
-      return `${Number(this.throphiesVisible)}${this.leaderboardsTrophyIcon}${this.leaderboardslength}` 
+    leaderboardsWatchToken() {
+      return `${Number(this.throphiesVisible)}${this.leaderboardsTrophyIcon}${
+        this.leaderboardslength
+      }`
+    },
+    primaryColorDark() {
+      return this.$information?.primaryColorDark
     }
   },
 
   watch: {
-    autoHideToolbar(){
+    autoHideToolbar() {
       this.updateAutohideToolbar()
     },
     refreshWatchToken() {
@@ -147,7 +184,7 @@ export default defineComponent({
     },
     leaderboardsWatchToken() {
       this.updateLeaderboardsSettings()
-    },
+    }
   },
 
   async mounted() {
@@ -155,36 +192,36 @@ export default defineComponent({
   },
 
   methods: {
-    loadSettingsFromConfiguration(){
-      this.autoHideToolbar=this.$configuration?.autoHideToolbar
-      this.visibleStatusCounters=this.$configuration?.visibleTicketCounts
+    loadSettingsFromConfiguration() {
+      this.autoHideToolbar = this.$configuration?.autoHideToolbar
+      this.visibleStatusCounters = this.$configuration?.visibleTicketCounts
 
-      this.refreshPerMinutes=this.$configuration?.theAutoRefresh.perMinutes
-      this.refreshIsActive=this.$configuration?.theAutoRefresh.active
+      this.refreshPerMinutes = this.$configuration?.theAutoRefresh.perMinutes
+      this.refreshIsActive = this.$configuration?.theAutoRefresh.active
 
-      this.throphiesVisible=this.$configuration?.showTrophies
-      this.leaderboardsTrophyIcon=this.$configuration?.trophyIcon
-      this.leaderboardslength=this.$configuration?.leaderboardsLength
+      this.throphiesVisible = this.$configuration?.showTrophies
+      this.leaderboardsTrophyIcon = this.$configuration?.trophyIcon
+      this.leaderboardslength = this.$configuration?.leaderboardsLength
     },
 
-    updateDashboardRefresh(){
+    updateDashboardRefresh() {
       let newSettings = {
-      active: this.refreshIsActive,
-      perMinutes: this.refreshPerMinutes
-    }
+        active: this.refreshIsActive,
+        perMinutes: this.refreshPerMinutes
+      }
       this.$configuration.updateAutoRefreshSettings(newSettings)
     },
 
-    updateAutohideToolbar(){
+    updateAutohideToolbar() {
       let layout = this.$configuration.theLayout
 
-      if(layout) {
+      if (layout) {
         layout.autoHideToolbar = this.autoHideToolbar
         this.$configuration.updateLayout(layout)
       }
     },
-    
-    updateLeaderboardsSettings(){
+
+    updateLeaderboardsSettings() {
       let newSettings = {
         length: this.leaderboardslength,
         showThrophies: this.throphiesVisible,
@@ -193,16 +230,18 @@ export default defineComponent({
       this.$configuration.updateLeaderboardSettings(newSettings)
     },
 
-    clearStoredInformation(){
+    clearStoredInformation() {
       this.$configuration.deleteStoredConfiguration()
-      this.$router.push('/logout');
+      this.$information.deleteStoredConfiguration()
+
+      this.$router.push('/logout')
     }
   }
 })
 </script>
 
 <style scoped>
-.settings-button{
-  @apply text-center bg-primary-500 border-none hover:bg-primary-600 p-2 xl:py-2 xl:px-10 shadow-primary-600
+.settings-button {
+  @apply text-center bg-primary-500 border-none hover:bg-primary-600 p-2 xl:py-2 xl:px-10 shadow-primary-600;
 }
 </style>
