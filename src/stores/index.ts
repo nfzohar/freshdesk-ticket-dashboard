@@ -1,6 +1,6 @@
 import { auth } from './auth'
 import { information } from './information'
-import { configuration } from './configurationStore'
+import { configuration } from './configuration'
 
 export default {
   install: (app: any) => {

@@ -1,20 +1,13 @@
 <template>
-  <div class="dashboard-body">
-    <div class="m-auto w-min align-middle mt-44 animate-spin">
-      <logo-icon pt-width="300" pt-height="300" class="shadow-lg rounded-full" />
-    </div>
-  </div>
+  <div class="dashboard-body is-loading" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
-import LogoIcon from '@/components/general/TheLogo.vue'
 
 export default defineComponent({
   name: 'LoadDataPage',
-
-  components: { LogoIcon },
 
   async mounted() {
     await this.fetchAgentsFromFreshdesk()

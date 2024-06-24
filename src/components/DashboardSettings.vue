@@ -1,5 +1,5 @@
 <template>
-  <a-dialog :manual-open="open" custom-class="-mt-28 md:-mt-14">
+  <a-dialog :manual-open="open" custom-class="-mt-14">
     <template #trigger>
       <button class="actions-button" :title="'Settings'" @click="open = true">
         <i class="fa fa-cog" />
@@ -12,102 +12,68 @@
         :class="'text-white'"
       >
         <div class="grid grid-cols-1 md:grid-cols-2">
-          <div class="bg-secondary-500 z-100 w-full p-4">
-            <h1
-              class="w-full border-b border-primary-600 font-bold mb-2"
-              v-text="'Manage Dashboard Layout'"
-            />
-
-            <div class="flex items-center mb-5 bg-secondary-600 rounded-md px-5 py-3">
+          <a-setting-section :section-title="'Manage dashboard layout'"> 
               <a-checkbox
-                :key="refreshMinRate"
+                :key="refreshPerMinutes"
                 class="w-9/12 font-bold pr-2 mb-2"
-                :the-value="refreshSwitch"
+                :the-value="refreshIsActive"
                 :label="'Refresh per minutes'"
                 :title="'Toggle automatic refresh.'"
-                @changed="(value) => (refreshSwitch = value)"
+                @changed="(value) => (refreshIsActive = value)"
               />
               <input
-                v-model="refreshMinRate"
+                v-model="refreshPerMinutes"
                 type="number"
+                :disabled="!refreshIsActive"
                 :title="'Count of minutes in a refresh interval.'"
                 class="w-3/12 rounded-md text-black px-1"
               />
-            </div>
+          </a-setting-section>
 
-            <div v-for="(section, s) in layout" :key="s" class="w-full flex flex-col">
-              <a-checkbox
-                class="w-max font-bold pr-2 mb-2"
-                :the-value="section?.show"
-                :label="'Show ' + section?.label"
-                :title="'Toggle section visibility.'"
-                @changed="(value) => (section.show = value)"
+          <a-setting-section :section-title="'Autohide toolbar'"> 
+             <a-checkbox
+                class="w-auto font-bold pr-2 mb-2"
+                :the-value="autoHideToolbar"
+                :label="'The toolbar is hidden after 10 seconds.'"
+                :title="'Toggle autohide dashboard toolbar.'"
+                @changed="(value) => (autoHideToolbar = value)"
               />
+          </a-setting-section>
 
-              <div
-                v-if="section['show'] && section['label'] == 'Ticket count'"
-                class="grid grid-cols-1 md:grid-cols-2 items-center gap-x-8 mb-5 bg-secondary-600 rounded-md px-5 py-3"
-              >
-                <a-checkbox
-                  v-for="(count, p) in statusLabels"
-                  :key="p"
-                  class="my-2 w-full"
-                  :label="count"
-                  :the-value="visibleCounts.includes(count)"
-                  @changed="(value) => updateVisibleTicketCounts(count, value)"
-                />
-              </div>
+          <a-setting-section :section-title="'Leaderboards settings'"> 
 
-              <div
-                v-if="section?.show && section?.settings"
-                class="grid grid-cols-1 md:grid-cols-2 items-center gap-x-8 mb-5 bg-secondary-600 rounded-md px-5 py-3"
-              >
-                <template v-for="(setting, p) in section?.settings" :key="p">
-                  <a-checkbox
-                    v-if="setting.type == 'boolean'"
-                    class="my-2 w-full"
-                    :label="setting.label"
-                    :the-value="setting.value"
-                    @changed="(value) => (setting.value = value)"
-                  />
-                  <div v-if="setting.type == 'number'" class="flex-col">
-                    <label class="inline w-full 2xl:w-6/12 2xl:mx-3" v-text="setting.label" />
-                    <input
-                      type="number"
-                      class="inline w-full 2xl:w-3/12 rounded-md text-black px-1"
-                      v-model="setting.value"
-                    />
-                  </div>
-                </template>
-              </div>
-            </div>
-          </div>
+          </a-setting-section>
+
+          <a-setting-section :section-title="'Visible ticket counters'"> 
+    
+            <span v-if="!statuses"></span>
+
+          </a-setting-section>
         </div>
 
-        <div class="grid grid-cols-2 xl:grid-cols-4 w-full gap-x-10 gap-y-4">
+        <div class="flex flex-col xl:flex-row md:items-center justify-between gap-4 px-5">
+          <div class="grid grid-cols-3 xl:flex items-center gap-x-5">
+            <button
+              class="primary-button settings-button"
+              v-text="'Logout'"
+              @click.stop="$router.push('/logout')"
+            />
+            <button
+              class="primary-button settings-button"
+              v-text="'Clear all data'"
+              @click.stop="clearStoredInformation()"
+            />
+            <button
+              class="primary-button settings-button"
+              v-text="'Reload information'"
+              @click.stop="$router.replace('/loading')"
+            />
+          </div>
+
           <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
-            v-text="'Clear all data'"
-            :title="'Logout and delete all current configuration data'"
-            @click.stop=""
-          />
-          <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
-            v-text="'Logout'"
-            :title="'Logout without deleting current configuration data.'"
-            @click.stop="$router.push('/logout')"
-          />
-          <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
-            v-text="'Reload'"
-            :title="'Reload entire dashboard.'"
-            @click.stop="updateDashboardData"
-          />
-          <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-10 shadow-primary-600 h-10 w-auto"
+            class="primary-button settings-button w-full xl:w-auto"
             v-text="'Save'"
-            :title="'Save current configuration'"
-            @click.stop=""
+            @click.stop="open = false"
           />
         </div>
       </div>
@@ -119,13 +85,13 @@
 import { defineComponent } from 'vue'
 import ADialog from '@/components/general/ADialog.vue'
 import ACheckbox from '@/components/general/ACheckbox.vue'
-
+import ASettingSection from '@/components/general/ASettingSection.vue'
 export default defineComponent({
   name: 'DashboardSettings',
 
-  components: { ACheckbox, ADialog },
+  components: { ASettingSection, ACheckbox, ADialog },
 
-  emits: ['refreshDashboard', 'reloadDashboard'],
+  emits: ['reloadDashboard'],
 
   props: {
     aTicket: {
@@ -137,44 +103,106 @@ export default defineComponent({
 
   data() {
     return {
-      intervalId: null,
-      refreshSwitch: false,
-      clearInterval: Number,
-      refreshMinRate: 5,
-      customFields: {},
       open: false,
-      layout: {}
+      autoHideToolbar: false,
+      visibleStatusCounters: [],
+
+      refreshPerMinutes: 0,
+      refreshIsActive: false,
+      
+      leaderboardslength: 5,
+      throphiesVisible: true,
+      leaderboardsTrophyIcon: 'fa fa-trophy',
+
     }
   },
 
   computed: {
     statuses() {
-      return this.$dashboard?.statuses ?? []
+      return this.$information?.statuses ?? []
+    },
+    visibleTicketCounters() {
+      return this.$configuration?.visibleTicketCounts
     },
     statusLabels() {
       let labels = this.statuses.map((status: { label: String }) => status?.label)
       labels.unshift('All', 'Unresolved')
       return labels
     },
-    stateLayout(): Object {
-      return this.$dashboard?.dashboardLayout ?? []
+
+    refreshWatchToken(){
+      return `${this.refreshPerMinutes}${Number(this.refreshIsActive)}`
     },
-    stateCustomFields(): Object {
-      return this.$dashboard?.storedCustomFields ?? []
-    },
-    visibleCounts() {
-      return this.$dashboard?.layout.ticket_counts.visibleCounts
+    leaderboardsWatchToken(){
+      return `${Number(this.throphiesVisible)}${this.leaderboardsTrophyIcon}${this.leaderboardslength}` 
     }
   },
 
-  watch: {},
+  watch: {
+    autoHideToolbar(){
+      this.updateAutohideToolbar()
+    },
+    refreshWatchToken() {
+      this.updateDashboardRefresh()
+    },
+    leaderboardsWatchToken() {
+      this.updateLeaderboardsSettings()
+    },
+  },
 
-  async mounted() {},
+  async mounted() {
+    this.loadSettingsFromConfiguration()
+  },
 
   methods: {
-    updateDashboardData() {
-      this.$router.replace('/loading')
+    loadSettingsFromConfiguration(){
+      this.autoHideToolbar=this.$configuration?.autoHideToolbar
+      this.visibleStatusCounters=this.$configuration?.visibleTicketCounts
+
+      this.refreshPerMinutes=this.$configuration?.theAutoRefresh.perMinutes
+      this.refreshIsActive=this.$configuration?.theAutoRefresh.active
+
+      this.throphiesVisible=this.$configuration?.showTrophies
+      this.leaderboardsTrophyIcon=this.$configuration?.trophyIcon
+      this.leaderboardslength=this.$configuration?.leaderboardsLength
+    },
+
+    updateDashboardRefresh(){
+      let newSettings = {
+      active: this.refreshIsActive,
+      perMinutes: this.refreshPerMinutes
+    }
+      this.$configuration.updateAutoRefreshSettings(newSettings)
+    },
+
+    updateAutohideToolbar(){
+      let layout = this.$configuration.theLayout
+
+      if(layout) {
+        layout.autoHideToolbar = this.autoHideToolbar
+        this.$configuration.updateLayout(layout)
+      }
+    },
+    
+    updateLeaderboardsSettings(){
+      let newSettings = {
+        length: this.leaderboardslength,
+        showThrophies: this.throphiesVisible,
+        trophyIcon: this.leaderboardsTrophyIcon
+      }
+      this.$configuration.updateLeaderboardSettings(newSettings)
+    },
+
+    clearStoredInformation(){
+      this.$configuration.deleteStoredConfiguration()
+      this.$router.push('/logout');
     }
   }
 })
 </script>
+
+<style scoped>
+.settings-button{
+  @apply text-center bg-primary-500 border-none hover:bg-primary-600 p-2 xl:py-2 xl:px-10 shadow-primary-600
+}
+</style>

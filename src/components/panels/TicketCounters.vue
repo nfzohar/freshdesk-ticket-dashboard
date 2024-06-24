@@ -48,11 +48,11 @@ export default defineComponent({
     statusGroupedTickets(): any {
       return groupBy(this.tickets, 'status') ?? []
     },
-    visibleTicketCounts(): any {
-      return this.$configuration?.visibleTicketCounts ?? []
-    },
     statuses(): any {
       return Object.values(this.$information?.statuses) ?? []
+    },
+    visibleTicketCounts(): any {
+      return Object.values(this.$configuration?.visibleTicketCounts) ?? []
     },
     statusLabels(): any {
       let labels = this.statuses.map((status) => status?.label)

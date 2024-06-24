@@ -15,8 +15,8 @@ export const configuration = defineStore('configuration', {
     },
     layout: {
       autoHideToolbar: true,
-      direction: 'horizontal',
       visibleTicketCounts: [],
+      direction: 'horizontal',
       groups: []
     }
   }),
@@ -100,9 +100,6 @@ export const configuration = defineStore('configuration', {
     },
 
     deleteStoredConfiguration() {
-      this.agents = []
-      this.groups = []
-      this.statuses = []
       localStorage.removeItem(storeLocalStorageKey)
     }
   }
