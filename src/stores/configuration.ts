@@ -62,7 +62,7 @@ export const configuration = defineStore('configuration', {
       this.saveConfigurationToStore()
     },
 
-    updateVisibleStatuses(visibleCounts: Array){
+    updateVisibleStatuses(visibleCounts: Array) {
       this.layout.visibleTicketCounts = visibleCounts
       this.saveConfigurationToStore()
     },
@@ -83,7 +83,6 @@ export const configuration = defineStore('configuration', {
         autoRefresh: this.autoRefresh,
         leaderboards: this.leaderboards
       }
-
       localStorage.setItem(storeLocalStorageKey, JSON.stringify(storeData))
     },
 

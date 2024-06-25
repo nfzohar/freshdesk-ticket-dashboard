@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-secondary-500 z-100 w-full p-4">
+  <div class="bg-secondary-500 z-100 w-full p-4 h-full">
     <h1
       class="w-full border-b border-primary-600 font-bold mb-2 capitalize"
       v-text="sectionTitle"

@@ -41,7 +41,28 @@
           </a-setting-section>
 
           <a-setting-section :section-title="'Visible ticket counters'">
-            <span v-if="!statuses" v-text="'No statuses found. Reload information.'" />
+            <div class="flex flex-col w-full gap-y-2">
+              <div
+                class="grid grid-cols-3 gap-5 p-3 w-full overflow-y-scroll scrollbar-hide border border-primary-500 rounded-md"
+                :key="visibleStatusCounters?.length"
+              >
+                <button
+                  v-for="(status, s) in statusLabels.sort()"
+                  :key="s"
+                  :class="{ 'text-primary-500': visibleStatusCounters.includes(status) }"
+                  :title="status"
+                  v-text="status"
+                  @click="toggleVisibleStatuses(status)"
+                />
+              </div>
+
+              <span
+                class="font-bold w-full border-b border-primary-500"
+                v-text="'Visible counters:'"
+              />
+              <span v-if="visibleStatusCounters.length" v-text="visibleStatusCounters.join(', ')" />
+              <span v-else v-text="'No visible statuses found.'" />
+            </div>
           </a-setting-section>
 
           <a-setting-section :section-title="'Leaderboards settings'">
@@ -154,11 +175,10 @@ export default defineComponent({
     visibleTicketCounters() {
       return this.$configuration?.visibleTicketCounts
     },
-    statuses() {
-      return this.$information?.statuses ?? []
-    },
     statusLabels() {
-      let labels = this.statuses.map((status: { label: String }) => status?.label)
+      let statuses = Object.values(this.$information?.statuses)
+
+      let labels = statuses.map((status: { label: String }) => status?.label)
       labels.unshift('All', 'Unresolved')
       return labels
     },
@@ -228,6 +248,14 @@ export default defineComponent({
         trophyIcon: this.leaderboardsTrophyIcon
       }
       this.$configuration.updateLeaderboardSettings(newSettings)
+    },
+
+    toggleVisibleStatuses(status: String) {
+      !this.visibleStatusCounters.includes(status)
+        ? this.visibleStatusCounters.push(status)
+        : (this.visibleStatusCounters = this.visibleStatusCounters.filter((s) => s != status))
+
+      this.$configuration.updateVisibleStatuses(this.visibleStatusCounters)
     },
 
     clearStoredInformation() {
