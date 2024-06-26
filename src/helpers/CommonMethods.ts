@@ -6,7 +6,7 @@ const toast = useToast()
 export function checkAuthCredentials(username: String, password: String) {
   let authenticationSuccess = false
 
-  if (auth().$state.auth) {
+  if (auth().authenticated) {
     return
   }
 
@@ -28,7 +28,7 @@ export function checkAuthCredentials(username: String, password: String) {
 
   authenticationSuccess = username == envUsername && password == envPassword
 
-  auth().canAuthenticate(authenticationSuccess)
+  auth().setAuthState(authenticationSuccess)
 
   if (!authenticationSuccess) {
     let theError = 'Incorrect credentials. Please, try again.'
@@ -64,7 +64,7 @@ export function colorIsDark(color: String) {
       g = (colorAsHex >> 8) & 255
       b = colorAsHex & 255
     }
-}
+  }
 
   if (typeof r && g && b) {
     r = Number(r)

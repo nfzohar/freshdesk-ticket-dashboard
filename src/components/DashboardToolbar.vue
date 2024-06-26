@@ -51,11 +51,7 @@
             @filtersReset="apiCallUrl = ''"
           /> -->
 
-        <dashboard-settings-modal
-          @refreshDashboard="$emit('refresh')"
-          @reloadDashboard="$emit('reload')"
-          :a-ticket="allTickets[0]"
-        />
+        <dashboard-settings-modal @reloadDashboard="$emit('reload')" />
       </div>
     </div>
   </div>

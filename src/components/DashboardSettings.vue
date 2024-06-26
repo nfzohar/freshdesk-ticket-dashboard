@@ -58,10 +58,7 @@
               </div>
 
               <div class="flex items-center justify-between border-b border-primary-500 w-full">
-                <span
-                  class="font-bold w-full"
-                  v-text="'Visible counters:'"
-                />
+                <span class="font-bold w-full" v-text="'Visible counters:'" />
                 <button
                   class="block w-28 hover:text-primary-500"
                   :title="'Clear all visible counters.'"
@@ -69,10 +66,12 @@
                   @click="visibleStatusCounters = []"
                 />
               </div>
-              <span 
-                v-text="visibleStatusCounters.length 
-                ? visibleStatusCounters.join(', ') 
-                : 'No visible status counters found.'"
+              <span
+                v-text="
+                  visibleStatusCounters.length
+                    ? visibleStatusCounters.join(', ')
+                    : 'No visible status counters found.'
+                "
               />
             </div>
           </a-setting-section>
@@ -81,10 +80,10 @@
             <div class="flex items-center flex-col gap-y-5">
               <a-checkbox
                 class="w-full font-bold pr-2 mb-2"
-                :the-value="autoHideToolbar"
+                :the-value="throphiesVisible"
                 :label="'Show trophies on leaderboars.'"
                 :title="'Toggle trophy visibility on leaderboards.'"
-                @changed="(value) => (autoHideToolbar = value)"
+                @changed="(value) => (throphiesVisible = value)"
               />
               <a-select
                 :the-value="leaderboardsTrophyIcon"
@@ -157,14 +156,6 @@ export default defineComponent({
 
   emits: ['reloadDashboard'],
 
-  props: {
-    aTicket: {
-      type: Object,
-      required: false,
-      default: () => {}
-    }
-  },
-
   data() {
     return {
       open: false,
@@ -190,7 +181,7 @@ export default defineComponent({
     statusLabels() {
       let statuses = Object.values(this.$information?.statuses)
       let labels = statuses.map((status: { label: String }) => status?.label)
-      
+
       labels.unshift('All', 'Unresolved')
       return labels.sort()
     },

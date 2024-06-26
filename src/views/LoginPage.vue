@@ -113,9 +113,9 @@ export default defineComponent({
     apiKey() {
       this.$auth.setNewApiKey(this.apiKey)
     },
-    '$auth.$state.auth'() {
-      if (this.$auth.authenticated) {
-        this.$router.push('/setup')
+    '$auth.authenticated'() {
+      if (this.$auth?.authenticated) {
+        this.redirectAfterAuth()
       }
     }
   },
@@ -128,17 +128,17 @@ export default defineComponent({
       this.apiKey = this.freshdeskApiKey
     }
 
-    if (!this.freshdeskDomainUrl && this.$auth.domainURL) {
-      this.domainUrl = this.$auth.domainURL
+    if (!this.freshdeskDomainUrl && this.$auth?.domainURL) {
+      this.domainUrl = this.$auth?.domainURL
     }
-    if (!this.freshdeskApiKey && this.$auth.apiKey) {
-      this.apiKey = this.$auth.apiKey
+    if (!this.freshdeskApiKey && this.$auth?.apiKey) {
+      this.apiKey = this.$auth?.apiKey
     }
   },
 
   mounted() {
-    if (this.$auth.authenticated) {
-      this.$router.push('/dashboard')
+    if (this.$auth?.authenticated) {
+      this.redirectAfterAuth()
     }
   },
 
@@ -146,10 +146,16 @@ export default defineComponent({
     authenticate() {
       if (this.freshdeskDomainUrl && this.freshdeskApiKey) {
         checkAuthCredentials(this.username, this.password)
-      } else {
-        this.$auth.canAuthenticate(this.$auth?.domain && this.$auth?.api_key)
-        this.$router.push('/setup')
+        return
       }
+
+      this.$auth.setAuthState(this.$auth?.domain && this.$auth?.api_key)
+      this.redirectAfterAuth()
+    },
+
+    redirectAfterAuth() {
+      let layoutDefined = this.$configuration.theLayout?.groups.length > 0
+      this.$router.push(layoutDefined ? '/loading' : '/setup')
     }
   }
 })

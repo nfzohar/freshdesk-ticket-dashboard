@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia'
 
+const storeLocalStorageKey = 'stored_authentication'
+
 export const auth = defineStore('auth', {
   state: () => ({
     auth: false,
     domainURL: '',
-    apiKey: '',
+    apiKey: ''
   }),
 
   getters: {
@@ -16,82 +18,50 @@ export const auth = defineStore('auth', {
     },
     api_key(): String {
       return this.apiKey
-    },
+    }
   },
 
   actions: {
-    watch: {
-      domainURL(newValue: any, oldValue: any) {
-        if (newValue != oldValue) {
-          this.setNewDomainUrl(newValue)
-        }
-      },
-      apiKey(newValue: any, oldValue: any) {
-        if (newValue != oldValue) {
-          this.setNewApiKey(newValue)
-        }
-      },
-      auth(newValue: any, oldValue: any) {
-        if (newValue != oldValue) {
-          this.setAuthState(newValue)
-        }
-      },
-    },
-
-    canAuthenticate(correctCredentials: boolean) {
-      this.auth = correctCredentials
-    },
-
     setAuthState(newAuthState: boolean) {
-      this.auth = newAuthState
-      localStorage.setItem('stored_auth_state', JSON.stringify(newAuthState))
-    },
-
-    setApiFilters(newFilters: string) {
-      this.apiFilters = newFilters
-      localStorage.setItem('stored_filters', JSON.stringify(newFilters))
+      this.auth = newAuthState ? true : false
+      this.saveConfigurationToStore()
     },
 
     setNewDomainUrl(newDomainUrl: string) {
       this.domainURL = newDomainUrl
-      localStorage.setItem('stored_domain_url', JSON.stringify(newDomainUrl))
+      this.saveConfigurationToStore()
     },
 
     setNewApiKey(newApiKey: string) {
       this.apiKey = newApiKey
-      localStorage.setItem('stored_api_key', JSON.stringify(newApiKey))
+      this.saveConfigurationToStore()
     },
 
     initializeStateFromStorage() {
-      const authenticated = localStorage.getItem('stored_auth_state')
-      if (authenticated) {
-        this.auth = JSON.parse(authenticated)
-      }
+      let stateFromStore = localStorage.getItem(storeLocalStorageKey)
 
-      const domainURL = localStorage.getItem('stored_domain_url')
-      if (domainURL) {
-        this.domainURL = JSON.parse(domainURL)
-      }
+      if (stateFromStore) {
+        stateFromStore = JSON.parse(stateFromStore)
 
-      const apiKey = localStorage.getItem('stored_api_key')
-      if (apiKey) {
-        this.apiKey = JSON.parse(apiKey)
-      }
-
-      const apiFilters = localStorage.getItem('stored_filters')
-      if (apiFilters) {
-        this.apiFilters = JSON.parse(apiFilters)
+        this.auth = stateFromStore?.authenticated
+        this.apiKey = stateFromStore?.api_domain
+        this.domainURL = stateFromStore?.api_key
       }
     },
 
-    resetAuth() {
+    saveConfigurationToStore() {
+      const authState = {
+        authenticated: this.authenticated,
+        api_domain: this.domain,
+        api_key: this.api_key
+      }
+      localStorage.setItem(storeLocalStorageKey, JSON.stringify(authState))
+    },
+
+    logout() {
       this.auth = false
       this.domainURL = ''
       this.apiKey = ''
-    },
-
-    logout(){
-      this.auth = false
     }
   }
 })

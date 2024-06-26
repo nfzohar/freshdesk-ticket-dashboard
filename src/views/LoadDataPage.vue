@@ -66,11 +66,12 @@ export default defineComponent({
         let statuses = response?.choices
         this.$information.setStatuses(statuses)
 
-        // if (!this.$information.visibleTicketCounts?.length) {
-        //   this.$configuration.updateVisibleStatuses(
-        //     statuses.map((s) => s?.label).unshift('All', 'Unresolved')
-        //   )
-        // }
+        if (!this.$configuration.visibleTicketCounts?.length) {
+          let visibleStatuses = statuses.map((status) => status?.label)
+          visibleStatuses.unshift('All', 'Unresolved')
+
+          this.$configuration.updateVisibleStatuses(visibleStatuses)
+        }
       })
     }
   }
