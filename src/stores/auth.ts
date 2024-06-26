@@ -5,7 +5,6 @@ export const auth = defineStore('auth', {
     auth: false,
     domainURL: '',
     apiKey: '',
-    apiFilters: ''
   }),
 
   getters: {
@@ -18,9 +17,6 @@ export const auth = defineStore('auth', {
     api_key(): String {
       return this.apiKey
     },
-    filters(): String {
-      return this.apiFilters
-    }
   },
 
   actions: {
@@ -40,11 +36,6 @@ export const auth = defineStore('auth', {
           this.setAuthState(newValue)
         }
       },
-      filters(newValue: any, oldValue: any) {
-        if (newValue != oldValue) {
-          this.setApiFilters(newValue)
-        }
-      }
     },
 
     canAuthenticate(correctCredentials: boolean) {
@@ -97,6 +88,10 @@ export const auth = defineStore('auth', {
       this.auth = false
       this.domainURL = ''
       this.apiKey = ''
+    },
+
+    logout(){
+      this.auth = false
     }
   }
 })

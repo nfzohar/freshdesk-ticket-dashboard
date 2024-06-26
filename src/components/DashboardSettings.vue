@@ -43,12 +43,13 @@
           <a-setting-section :section-title="'Visible ticket counters'">
             <div class="flex flex-col w-full gap-y-2">
               <div
-                class="grid grid-cols-3 gap-5 p-3 w-full overflow-y-scroll scrollbar-hide border border-primary-500 rounded-md"
+                class="grid grid-cols-2 lg:grid-cols-3 gap-5 p-3 w-full overflow-y-scroll scrollbar-hide border border-primary-500 rounded-md bg-secondary-500"
                 :key="visibleStatusCounters?.length"
               >
                 <button
-                  v-for="(status, s) in statusLabels.sort()"
+                  v-for="(status, s) in statusLabels"
                   :key="s"
+                  class="hover:text-primary-500"
                   :class="{ 'text-primary-500': visibleStatusCounters.includes(status) }"
                   :title="status"
                   v-text="status"
@@ -56,12 +57,23 @@
                 />
               </div>
 
-              <span
-                class="font-bold w-full border-b border-primary-500"
-                v-text="'Visible counters:'"
+              <div class="flex items-center justify-between border-b border-primary-500 w-full">
+                <span
+                  class="font-bold w-full"
+                  v-text="'Visible counters:'"
+                />
+                <button
+                  class="block w-28 hover:text-primary-500"
+                  :title="'Clear all visible counters.'"
+                  v-text="'Clear all'"
+                  @click="visibleStatusCounters = []"
+                />
+              </div>
+              <span 
+                v-text="visibleStatusCounters.length 
+                ? visibleStatusCounters.join(', ') 
+                : 'No visible status counters found.'"
               />
-              <span v-if="visibleStatusCounters.length" v-text="visibleStatusCounters.join(', ')" />
-              <span v-else v-text="'No visible statuses found.'" />
             </div>
           </a-setting-section>
 
@@ -177,10 +189,10 @@ export default defineComponent({
     },
     statusLabels() {
       let statuses = Object.values(this.$information?.statuses)
-
       let labels = statuses.map((status: { label: String }) => status?.label)
+      
       labels.unshift('All', 'Unresolved')
-      return labels
+      return labels.sort()
     },
     refreshWatchToken() {
       return `${this.refreshPerMinutes}${Number(this.refreshIsActive)}`

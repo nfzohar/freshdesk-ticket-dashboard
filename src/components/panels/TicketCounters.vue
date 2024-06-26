@@ -1,11 +1,10 @@
 <template>
   <div
-    :key="visibleTicketCounts?.length"
+    :key="visibleCounters?.length"
     class="flex gap-5 w-full rounded-md items-center justify-between"
   >
-    <template v-for="(status, s) in statusLabels" :key="s">
+    <template v-for="(status, s) in visibleCounters" :key="(s, visibleCounters?.length)">
       <div
-        v-if="visibleTicketCounts.includes(status)"
         class="block rounded-md w-full h-auto bg-primary-500 text-center align-middle font-bold p-5"
         :class="`text-${darkPrimaryColor ? 'white' : 'black'}`"
       >
@@ -51,10 +50,10 @@ export default defineComponent({
     statuses(): any {
       return Object.values(this.$information?.statuses) ?? []
     },
-    visibleTicketCounts(): any {
+    visibleCounters(): Array{
       return Object.values(this.$configuration?.visibleTicketCounts) ?? []
-    },
-    statusLabels(): any {
+    } ,   
+    validStatuses(): any {
       let labels = this.statuses.map((status) => status?.label)
       labels.unshift('All', 'Unresolved')
       return labels
@@ -63,17 +62,19 @@ export default defineComponent({
 
   methods: {
     generateTicketCount(status: string): number {
-      switch (status) {
-        case 'All': {
-          return this.tickets?.length
-        }
-        case 'Unresolved': {
-          let resolved = [this.getStatusId('Closed'), this.getStatusId('Resolved')]
-          return this.tickets?.filter((ticket) => !resolved.includes(ticket?.status)).length
-        }
-        default: {
-          let statusId = this.getStatusId(status)
-          return this.statusGroupedTickets[statusId]?.length ?? 0
+      if(this.validStatuses.includes(status)) {
+        switch (status) {
+          case 'All': {
+            return this.tickets?.length
+          }
+          case 'Unresolved': {
+            let resolved = [this.getStatusId('Closed'), this.getStatusId('Resolved')]
+            return this.tickets?.filter((ticket) => !resolved.includes(ticket?.status)).length
+          }
+          default: {
+            let statusId = this.getStatusId(status)
+            return this.statusGroupedTickets[statusId]?.length ?? 0
+          }
         }
       }
     },
