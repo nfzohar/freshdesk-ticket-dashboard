@@ -1,38 +1,57 @@
 <template>
-  <div class="w-full">
-    <div class="w-full flex items-center justify-between py-2">
-      <h1
-        class="w-full text-xl font-bold mb-1 cursor-pointer"
-        :class="{ 'border-l-4 pl-2 border-primary-400': !showSection }"
-        v-text="'Ticket open/closed ratio'"
-        @click.stop="showSection = !showSection"
-      />
+  <a-dialog custom-class="-mt-28 md:-mt-14" :manual-open="open">
+    <template #trigger>
+      <button
+        class="actions-button"
+        :title="'Show Open/Closed statistics graph'"
+        @click="open = true"
+      >
+        <i class="fa fa-chart-line" />
+      </button>
+    </template>
 
-      <a-select
-        class="w-max"
-        :options="displayForYear"
-        :the-value="selectedYear"
-        :show-null-value="false"
-        @changed="(value) => (selectedYear = value)"
-      />
-    </div>
+    <template #content>
+      <div class="bg-secondary-600 w-11/12 h-auto m-auto rounded-md p-5 border border-primary-500">
+        <div class="w-full flex items-center justify-between mb-5">
+          <h1
+            class="w-full text-xl font-bold"
+            :class="`text-${secondaryColorIsDark ? 'white' : 'black'}`"
+            v-text="'Ticket open/closed ratio'"
+          />
+          <a-select
+            class="w-max"
+            :options="displayForYear"
+            :the-value="selectedYear"
+            :show-null-value="false"
+            @changed="(value) => (selectedYear = value)"
+          />
+        </div>
 
-    <div v-if="showSection" :key="ticketsByYear.length">
-      <a-statistics-graph :type="'line'" :datasets="datasets" :dataset-labels="labels" />
-    </div>
-  </div>
+        <div>
+          <a-statistics-graph
+            class="w-full"
+            :key="ticketsByYear.length"
+            :type="'line'"
+            :datasets="datasets"
+            :dataset-labels="labels"
+          />
+        </div>
+      </div>
+    </template>
+  </a-dialog>
 </template>
 
 <script lang="ts">
 import { groupBy } from 'lodash'
 import { defineComponent } from 'vue'
+import ADialog from '@/components/general/ADialog.vue'
 import ASelect from '@/components/general/ASelect.vue'
 import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
 
 export default defineComponent({
   name: 'TicketStatisticsOpenClosedGraph',
 
-  components: { AStatisticsGraph, ASelect },
+  components: { AStatisticsGraph, ASelect, ADialog },
 
   props: {
     tickets: {
@@ -44,8 +63,8 @@ export default defineComponent({
 
   data() {
     return {
+      open: false,
       labels: [],
-      showSection: true,
       ticketsByYear: [],
       openedTickets: [],
       closedTickets: [],
@@ -100,10 +119,13 @@ export default defineComponent({
       ].slice(new Date(this.oldestTicket).getMonth())
     },
     openStatusId(): Object {
-      return this.$configuration.statuses.filter((st) => st.value == 'Open')[0]?.id
+      return this.$information.statuses.filter((st) => st.value == 'Open')[0]?.id
     },
     closedStatusId(): Object {
-      return this.$configuration.statuses.filter((st) => st.value == 'Closed')[0]?.id
+      return this.$information.statuses.filter((st) => st.value == 'Closed')[0]?.id
+    },
+    secondaryColorIsDark() {
+      return this.$information.isSecondaryColorDark
     }
   },
 

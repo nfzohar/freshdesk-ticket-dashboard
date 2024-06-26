@@ -41,15 +41,14 @@
           @finishExport="$emit('stopLoading')"
         />
 
+        <ticket-filter-modal @filtersApply="$emit('reload')" @filtersReset="$emit('reload')" />
+
+        <open-closed-statistics-graph-modal :all-tickets="allTickets" />
+
         <all-tickets-list
           :all-tickets="allTickets"
           @showTicketDetails="(value) => (detailsTicketId = value)"
         />
-
-        <!-- <ticket-filter-modal
-            @filtersApply="loadFilteredTickets()"
-            @filtersReset="apiCallUrl = ''"
-          /> -->
 
         <dashboard-settings-modal @reloadDashboard="$emit('reload')" />
       </div>
@@ -65,6 +64,7 @@ import TicketFilterModal from '@/components/TicketFilters.vue'
 import TicketDetailsModal from '@/components/TicketDetailedView.vue'
 import TicketExcelExporter from '@/components/TicketExcelExporter.vue'
 import DashboardSettingsModal from '@/components/DashboardSettings.vue'
+import OpenClosedStatisticsGraphModal from '@/components/OpenClosedStatisticsGraphModal.vue'
 
 export default defineComponent({
   name: 'DashboardToolbar',
@@ -89,7 +89,8 @@ export default defineComponent({
     TicketFilterModal,
     TicketDetailsModal,
     TicketExcelExporter,
-    DashboardSettingsModal
+    DashboardSettingsModal,
+    OpenClosedStatisticsGraphModal
   },
 
   emits: ['reload', 'refresh', 'startLoading', 'stopLoading'],

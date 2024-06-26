@@ -2,11 +2,12 @@
   <a-dialog custom-class="-mt-28 md:-mt-14" :manual-open="showFilterSection">
     <template #trigger>
       <button
-        class="primary-button w-20 h-10 text-center bg-primary-500 hover:bg-primary-600 border-none py-2 shadow-primary-600"
-        v-text="'Filter'"
+        class="actions-button"
         :title="'Open filters modal'"
         @click="showFilterSection = true"
-      />
+      >
+        <i class="fa fa-filter" />
+      </button>
     </template>
 
     <template #content>
