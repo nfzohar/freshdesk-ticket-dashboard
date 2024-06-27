@@ -47,7 +47,10 @@ export default defineComponent({
       isLoading: false,
       keepFetching: true,
       hiddenTopBar: false,
-      timeoutId: null
+      timeoutId: null,
+
+      refreshIntervalId: null,
+
     }
   },
 
@@ -60,22 +63,32 @@ export default defineComponent({
     },
     allTickets(): Object {
       return this.tickets?.flat()
-    }
+    },
   },
 
   watch: {
     'allTickets.length'() {
       this.updateToken++
     },
-    apiCallUrl() {
-      this.loadTickets()
+    "$configuration.theAutoRefresh.active"() {
+      let autorefresh = this.$configuration?.theAutoRefresh;
+
+      if (!autorefresh?.active || autorefresh?.perMinutes <= 0) {
+        clearInterval(this.refreshIntervalId)
+        return
+      }
+
+      this.refreshIntervalId = setInterval(
+        () => { this.loadTickets() },
+        1000 * 60 * autorefresh?.perMinutes
+      ) 
     }
   },
 
   created() {
-    // if (!this.$auth.authenticated) {
-    //   this.$router.push('/')
-    // }
+    if (!this.$auth.authenticated) {
+      this.$router.push('/')
+    }
   },
 
   async mounted() {

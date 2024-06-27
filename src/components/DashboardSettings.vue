@@ -14,7 +14,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2">
           <a-setting-section :section-title="'Manage dashboard layout'">
             <a-checkbox
-              :key="refreshPerMinutes"
+              :key="Number(refreshIsActive)"
               class="w-9/12 font-bold pr-2 mb-2"
               :the-value="refreshIsActive"
               :label="'Refresh per minutes'"
@@ -27,6 +27,7 @@
               :disabled="!refreshIsActive"
               :title="'Count of minutes in a refresh interval.'"
               class="w-3/12 rounded-md text-black px-1"
+              @change="refreshIsActive=false"
             />
           </a-setting-section>
 
@@ -187,7 +188,7 @@ export default defineComponent({
           name: 'Configuration wizard',
           title: 'Rerun the configuration wizard.',
           icon: 'fa fa-hat-wizard',
-          function: () => this.$router.replace('/setup')
+          function: () => this.$router.push('/setup')
         }
       ]
     }
