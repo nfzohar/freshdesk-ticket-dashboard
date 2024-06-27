@@ -25,7 +25,7 @@
         />
       </div>
 
-      <div class="flex items-center mx-1 gap-3 justify-between w-max">
+      <div class="flex items-center mx-2 gap-3 justify-between w-max">
         <button
           class="actions-button"
           :title="'Refresh page'"

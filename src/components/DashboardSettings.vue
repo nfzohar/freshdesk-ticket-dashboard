@@ -9,7 +9,7 @@
     <template #content>
       <div
         class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
-        :class="'text-white'"
+        :class="`text-${secondaryColorDark ? 'white' : 'black'}`"
       >
         <div class="grid grid-cols-1 md:grid-cols-2">
           <a-setting-section :section-title="'Manage dashboard layout'">
@@ -111,31 +111,26 @@
         <div class="flex flex-col xl:flex-row md:items-center justify-between gap-4 px-5">
           <div class="grid grid-cols-3 xl:flex items-center gap-x-5">
             <button
-              class="primary-button settings-button"
+              v-for="(action, a) in actions"
+              :key="a"
+              :title="action.title"
+              class="flex items-center gap-x-1 primary-button settings-button"
               :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-              v-text="'Logout'"
-              @click.stop="$router.push('/logout')"
-            />
-            <button
-              class="primary-button settings-button"
-              :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-              v-text="'Clear all data'"
-              @click.stop="clearStoredInformation()"
-            />
-            <button
-              class="primary-button settings-button"
-              :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-              v-text="'Reload information'"
-              @click.stop="$router.replace('/loading')"
-            />
+              @click.stop="action.function"
+            >
+              <i :class="action.icon" />
+              <span v-text="action.name" />
+            </button>
           </div>
 
           <button
-            class="primary-button settings-button w-full xl:w-auto"
+            class="flex items-center gap-x-1 primary-button settings-button"
             :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-            v-text="'Save'"
             @click.stop="open = false"
-          />
+          >
+            <i class="fa fa-save" />
+            <span v-text="'Save'" />
+          </button>
         </div>
       </div>
     </template>
@@ -147,7 +142,7 @@ import { defineComponent } from 'vue'
 import ASelect from '@/components/general/ASelect.vue'
 import ADialog from '@/components/general/ADialog.vue'
 import ACheckbox from '@/components/general/ACheckbox.vue'
-import ASettingSection from '@/components/general/ASettingSection.vue'
+import ASettingSection from '@/components/general/ASection.vue'
 
 export default defineComponent({
   name: 'DashboardSettings',
@@ -167,7 +162,34 @@ export default defineComponent({
 
       leaderboardslength: 5,
       throphiesVisible: true,
-      leaderboardsTrophyIcon: 'fa fa-trophy'
+      leaderboardsTrophyIcon: 'fa fa-trophy',
+
+      actions: [
+        {
+          name: 'Logout',
+          title: 'Logout from the dashboard.',
+          icon: 'fa fa-sign-out-alt',
+          function: () => this.$router.push('/logout')
+        },
+        {
+          name: 'Clear all data',
+          title: 'Clear all stored information and logout.',
+          icon: 'fa fa-broom',
+          function: () => this.clearStoredInformation()
+        },
+        {
+          name: 'Reload information',
+          title: 'Reload the whole dashboard.',
+          icon: 'fa fa-redo-alt',
+          function: () => this.$router.replace('/loading')
+        },
+        {
+          name: 'Configuration wizard',
+          title: 'Rerun the configuration wizard.',
+          icon: 'fa fa-hat-wizard',
+          function: () => this.$router.replace('/setup')
+        }
+      ]
     }
   },
 
@@ -194,7 +216,10 @@ export default defineComponent({
       }`
     },
     primaryColorDark() {
-      return this.$information?.primaryColorDark
+      return this.$information?.isPrimaryColorDark
+    },
+    secondaryColorDark() {
+      return this.$information?.isSecondaryColorDark
     }
   },
 
@@ -273,6 +298,6 @@ export default defineComponent({
 
 <style scoped>
 .settings-button {
-  @apply text-center bg-primary-500 border-none hover:bg-primary-600 p-2 xl:py-2 xl:px-10 shadow-primary-600;
+  @apply text-center bg-primary-500 border-none hover:bg-primary-600 p-2 xl:py-2 xl:px-5 shadow-primary-600;
 }
 </style>

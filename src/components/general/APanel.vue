@@ -9,7 +9,7 @@
       <div class="flex items-center gap-x-2">
         <button
           v-if="!selectedViewDefault"
-          class="graph-icon"
+          class="graph-icon transition-transform hover:rotate-45"
           :title="'Generate new graph color palette'"
           @click="updateToken++"
         >

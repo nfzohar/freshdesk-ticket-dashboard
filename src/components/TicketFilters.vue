@@ -1,10 +1,10 @@
 <template>
-  <a-dialog custom-class="-mt-28 md:-mt-14" :manual-open="showFilterSection">
+  <a-dialog :manual-open="open">
     <template #trigger>
       <button
         class="actions-button"
         :title="'Open filters modal'"
-        @click="showFilterSection = true"
+        @click="open = true"
       >
         <i class="fa fa-filter" />
       </button>
@@ -18,7 +18,17 @@
         <h1 class="text-xl font-bold cursor-pointer" v-text="'Filters'" />
         <hr class="mb-3 border-t-primary-500" />
 
-        <div v-if="showFilterSection" class="flex flex-col gap-5 p-3">
+        <div class="grid grid-cols-1 md:grid-cols-2">
+          <a-filter-section :section-title="'Leaderboards settings'">
+            <span>1</span>
+          </a-filter-section>
+
+          <a-filter-section :section-title="'Leaderboards settings'">
+            <span>1</span>
+          </a-filter-section>
+        </div>
+
+        <div class="flex flex-col gap-5 p-3">
           <div class="grid grid-cols-1 lg:grid-cols-2 w-full gap-y-3 gap-x-5">
             <div class="grid grid-cols-2 gap-x-5">
               <a-date-select
@@ -107,11 +117,12 @@ import ApiCall from '@/helpers/APICallHelper'
 import ADialog from '@/components/general/ADialog.vue'
 import ASelect from '@/components/general/ASelect.vue'
 import ADateSelect from '@/components/general/ADateSelect.vue'
+import AFilterSection from '@/components/general/ASection.vue'
 
 export default defineComponent({
   name: 'TicketFilterSection',
 
-  components: { ASelect, ADialog, ADateSelect },
+  components: { AFilterSection, ASelect, ADialog, ADateSelect },
 
   emits: ['filtersApply', 'filtersReset'],
 
@@ -127,7 +138,7 @@ export default defineComponent({
       closedAtFrom: '',
       resolvedAtTo: '',
       resolvedAtFrom: '',
-      showFilterSection: true
+      open: true
     }
   },
 
@@ -163,7 +174,7 @@ export default defineComponent({
           this.filters.push(filter)
 
           if (filter.name == 'status') {
-            this.$dashboard.statuses = filter?.choices
+            this.$information.statuses = filter?.choices
 
             filter.choices = filter?.choices?.map((option) => {
               return { label: option?.label, value: option?.id }
@@ -219,13 +230,13 @@ export default defineComponent({
 
       this.$auth.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
       this.$emit('filtersApply')
-      this.showFilterSection = false
+      this.open = false
     },
 
     resetTicketFilters() {
       this.$auth.setApiFilters('')
       this.$emit('filtersReset')
-      this.showFilterSection = false
+      this.open = false
     },
 
     fdate(dateString) {

@@ -14,7 +14,7 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'ASettingSection',
+  name: 'ASection',
 
   props: {
     sectionTitle: {
