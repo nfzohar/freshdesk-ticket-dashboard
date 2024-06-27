@@ -2,9 +2,8 @@
   <div class="flex flex-col items-center text-center gap-10 m-10">
     <h2 class="w-full font-bold text-base lg:text-lg xl:text-2xl" v-text="pageTitle" />
 
-    <div class="flex flex-col items-center w-full rounded-md text-lg gap-5">
+    <div class="flex flex-col items-center w-full rounded-md text-lg gap-5" :key="(Number(autoRefreshActive), perMinutes)">
       <a-checkbox
-        :key="(Number(autoRefreshActive), perMinutes)"
         :the-value="autoRefreshActive"
         :checked="autoRefreshActive"
         class="font-bold m-auto"

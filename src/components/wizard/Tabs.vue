@@ -34,6 +34,11 @@ export default defineComponent({
       type: [Number, String],
       required: false,
       default: 1
+    },
+    selectTabOnClick: {
+      type: Boolean,
+      required: true,
+      default: true
     }
   },
 
@@ -65,7 +70,9 @@ export default defineComponent({
     },
 
     select(value: string) {
-      this.selectedTab = this.slug(value)
+      if(this.selectTabOnClick) {
+        this.selectedTab = this.slug(value)
+      }
     },
 
     isCurrent(value: string) {

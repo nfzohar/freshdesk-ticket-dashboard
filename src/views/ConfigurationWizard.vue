@@ -9,7 +9,7 @@
           @buildCustom="page = 1"
           @usePreset="page = 5"
         />
-        <tabs v-else :key="page" :tab-keywords="steps" :def-selected-tab="page">
+        <tabs v-else :key="page" :tab-keywords="steps" :def-selected-tab="page" :select-tab-on-click="false">
           <template #tab_1>
             <auto-refresh-settings />
           </template>

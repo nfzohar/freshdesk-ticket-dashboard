@@ -15,7 +15,7 @@
       </div>
 
       <a-checkbox
-        :key="showTrophies"
+        :key="Number(showTrophies)"
         :the-value="showTrophies"
         class="font-bold m-auto"
         :label="'Show trophies on leaderbords'"
@@ -34,6 +34,7 @@
           :input-class="'w-full capitalize'"
           @changed="(value) => (selectedTrophyIcon = value)"
         />
+
         <div v-if="selectedTrophyIcon" class="flex items-center justify-between">
           <i
             v-for="(color, c) in trophyColors"
@@ -71,15 +72,15 @@ export default defineComponent({
     leaderboarsSettings(): String {
       return this.$configuration.leaderboards
     },
-    trophyColors() {
-      return this.leaderboarsSettings?.trophyColors
+    trophyColors(): Array {
+      return this.$information?.trophyColors
+    },
+    trophyIconOptions(): Array {
+      return this.$information.trophyIcons
     },
     token() {
       return `${this.leaderboardLength}${Number(this.showTrophies)}${this.selectedTrophyIcon}`
     },
-    trophyIconOptions(): Array {
-      return this.$information.trophyIcons
-    }
   },
 
   watch: {
