@@ -67,7 +67,7 @@ export default defineComponent({
       return this.$configuration.theLayout.groups
     },
     textClass(): String {
-      return this.$information?.textColor
+      return this.$information?.textOnPrimaryColor
     },
     accentSecondaryBg(): String {
       return this.$information?.bgAccentSecondaryColor

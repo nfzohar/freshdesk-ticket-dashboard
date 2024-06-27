@@ -55,7 +55,7 @@ export default defineComponent({
         : this.tabKeywords[this.defSelectedTab - 1]
     },
     textClass(): String {
-      return this.$information?.textColor
+      return this.$information?.textOnPrimaryColor
     }
   },
 

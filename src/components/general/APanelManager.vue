@@ -35,7 +35,7 @@ export default defineComponent({
 
   computed: {
     textClass(): String {
-      return this.$information?.textColor
+      return this.$information?.textOnPrimaryColor
     },
     accentSecondaryBg(): String {
       return this.$information?.bgAccentSecondaryColor
