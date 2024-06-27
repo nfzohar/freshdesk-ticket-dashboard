@@ -12,9 +12,9 @@
       @stopLoading="stopLoading"
       @startLoading="startLoading"
       @refresh="loadTickets"
+      @reload="reloadToken++"
     />
-    <!-- @reload="" -->
-    <component :is="dashboardLayoutAlignment" :all-tickets="allTickets" />
+    <component :key="resizeToken" :is="dashboardLayoutAlignment" :all-tickets="allTickets" />
   </div>
 </template>
 
@@ -37,20 +37,18 @@ export default defineComponent({
   data() {
     return {
       page: 1,
-      filters: [],
       tickets: [],
       ticketsTemp: [],
       apiCallUrl: '',
-      updateToken: 0,
-      reloadToken: 0,
       startYear: null,
       isLoading: false,
       keepFetching: true,
       hiddenTopBar: false,
       timeoutId: null,
-
       refreshIntervalId: null,
-
+      updateToken: 0,
+      reloadToken: 0,
+      resizeToken: 0,
     }
   },
 
@@ -89,6 +87,8 @@ export default defineComponent({
     if (!this.$auth.authenticated) {
       this.$router.push('/')
     }
+
+    this.windowResizeListener()
   },
 
   async mounted() {
@@ -164,7 +164,7 @@ export default defineComponent({
     },
 
     loadFilteredTickets() {
-      this.apiCallUrl = 'search/tickets?query="' + this.$auth.filters + '"'
+      this.apiCallUrl = 'search/tickets?query="' + this.$information.filters + '"'
     },
 
     startLoading() {
@@ -181,7 +181,11 @@ export default defineComponent({
       this.timeoutId = setTimeout(() => {
         this.hiddenTopBar = true
       }, 10000)
-    }
+    },
+
+    windowResizeListener() {
+      window.addEventListener('resize', () => { this.resizeToken++ })
+    },
   }
 })
 </script>

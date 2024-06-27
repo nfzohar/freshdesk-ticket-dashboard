@@ -3,7 +3,7 @@
     <template #trigger>
       <button
         class="actions-button"
-        :title="'Open filters modal'"
+        :title="'Filters'"
         @click="open = true"
       >
         <i class="fa fa-filter" />

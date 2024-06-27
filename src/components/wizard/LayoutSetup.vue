@@ -14,6 +14,9 @@ export default defineComponent({
 
   computed: {},
 
-  methods: {}
+  methods: {
+
+    //this.$toast.success('Dashboard configuration was updated.')
+  }
 })
 </script>

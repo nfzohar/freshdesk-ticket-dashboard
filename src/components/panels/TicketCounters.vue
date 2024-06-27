@@ -1,7 +1,8 @@
 <template>
   <div
     :key="visibleCounters?.length"
-    class="flex gap-5 w-full rounded-md items-center justify-between"
+    class="grid grid-cols-2 sm:flex gap-5 w-full rounded-md items-center justify-between"
+    :class="layoutVertical ? 'flex-col' : 'flex-row'"
   >
     <template v-for="(status, s) in visibleCounters" :key="(s, visibleCounters?.length)">
       <div
@@ -41,6 +42,9 @@ export default defineComponent({
   },
 
   computed: {
+    layoutVertical(): Boolean {
+      return this.$configuration?.orientation == 'vertical'
+    },
     darkPrimaryColor(): Boolean {
       return this.$information?.isPrimaryColorDark
     },
@@ -57,7 +61,8 @@ export default defineComponent({
       let labels = this.statuses.map((status) => status?.label)
       labels.unshift('All', 'Unresolved')
       return labels
-    }
+    },
+
   },
 
   methods: {

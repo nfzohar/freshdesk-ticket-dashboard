@@ -44,8 +44,8 @@ export const auth = defineStore('auth', {
         stateFromStore = JSON.parse(stateFromStore)
 
         this.auth = stateFromStore?.authenticated
-        this.apiKey = stateFromStore?.api_domain
-        this.domainURL = stateFromStore?.api_key
+        this.domainURL = stateFromStore?.api_domain
+        this.apiKey = stateFromStore?.api_key
       }
     },
 

@@ -91,6 +91,7 @@ export default defineComponent({
         trophyColors: this.trophyColors
       }
       this.$configuration.updateLeaderboardSettings(updatedSettings)
+      this.$toast.success('Dashboard configuration was updated.')
     }
   },
 

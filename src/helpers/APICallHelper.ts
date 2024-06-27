@@ -6,7 +6,6 @@ const toast = useToast()
 
 export default class ApiCall {
   protected freshdeskDomainUrl = auth().domain
-
   protected freshdeskApiKey = auth().api_key
 
   get(path: string) {
@@ -48,8 +47,7 @@ export default class ApiCall {
         .then((response) => {
           return response.data
         })
-        .catch((error) => {
-          console.error(error)
+        .catch((e) => {
           toast.error('Data could not be loaded. Please try again.')
         })
 

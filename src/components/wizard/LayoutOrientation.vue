@@ -9,7 +9,7 @@
         title="Select layout"
         class="flex flex-col items-center border-4 rounded-md py-5 px-10 m-auto font-bold hover:bg-primary-600 hover:border-primary-500"
         :class="
-          isSelected(option.value)
+          currentlySelectedLayout == option.value
             ? 'bg-primary-600 border-primary-500'
             : 'border-primary-600 bg-secondary-500'
         "
@@ -55,11 +55,12 @@ export default defineComponent({
   },
 
   methods: {
-    isSelected(value: String) {
-      return this.currentlySelectedLayout == value
-    },
     setLayoutOrientation(value: String) {
-      this.$configuration.layout.direction = value
+      let newLayout = this.$configuration.theLayout
+      newLayout.direction = value
+
+      this.$configuration.updateLayout(newLayout)
+      this.$toast.success('Dashboard configuration was updated.')
     }
   }
 })

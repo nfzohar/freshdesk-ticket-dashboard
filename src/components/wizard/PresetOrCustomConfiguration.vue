@@ -66,6 +66,7 @@ export default defineComponent({
         perMinutes: 0
       }
       this.$configuration.updateAutoRefreshSettings(autoRefreshPreset)
+      this.$toast.success('Dashboard configuration was updated.')
     },
 
     setLeaderbordsPreset() {
@@ -76,6 +77,7 @@ export default defineComponent({
         trophyColors: ['text-yellow-500', 'text-gray-400', 'text-amber-900']
       }
       this.$configuration.updateLeaderboardSettings(leaderboardsPreset)
+      this.$toast.success('Dashboard configuration was updated.')
     },
 
     setLayoutPanelsPreset() {
@@ -135,6 +137,7 @@ export default defineComponent({
         ]
       }
       this.$configuration.updateLayout(layout)
+      this.$toast.success('Dashboard configuration was updated.')
     }
   }
 })

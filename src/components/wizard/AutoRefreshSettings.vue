@@ -96,6 +96,7 @@ export default defineComponent({
         perMinutes: this.perMinutes
       }
       this.$configuration.updateAutoRefreshSettings(updatedSettings)
+      this.$toast.success('Dashboard configuration was updated.')
     }
   }
 })

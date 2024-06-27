@@ -8,7 +8,7 @@
 
     <template #content>
       <div
-        class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
+        class="m-auto w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 border rounded-md h-full md:h-auto p-5 overflow-y-scroll" 
         :class="`text-${secondaryColorDark ? 'white' : 'black'}`"
       >
         <div class="grid grid-cols-1 md:grid-cols-2">
@@ -24,7 +24,6 @@
             <input
               v-model="refreshPerMinutes"
               type="number"
-              :disabled="!refreshIsActive"
               :title="'Count of minutes in a refresh interval.'"
               class="w-3/12 rounded-md text-black px-1"
               @change="refreshIsActive=false"
@@ -110,12 +109,12 @@
         </div>
 
         <div class="flex flex-col xl:flex-row md:items-center justify-between gap-4 px-5">
-          <div class="grid grid-cols-3 xl:flex items-center gap-x-5">
+          <div class="grid grid-cols-2 xl:flex items-center gap-5">
             <button
               v-for="(action, a) in actions"
               :key="a"
               :title="action.title"
-              class="flex items-center gap-x-1 primary-button settings-button"
+              class="flex items-center gap-x-1 primary-button settings-button text-center"
               :class="`text-${primaryColorDark ? 'white' : 'black'}`"
               @click.stop="action.function"
             >
@@ -125,7 +124,7 @@
           </div>
 
           <button
-            class="flex items-center gap-x-1 primary-button settings-button"
+            class="flex items-center gap-x-1 primary-button settings-button align-middle"
             :class="`text-${primaryColorDark ? 'white' : 'black'}`"
             @click.stop="open = false"
           >
@@ -186,7 +185,7 @@ export default defineComponent({
         },
         {
           name: 'Configuration wizard',
-          title: 'Rerun the configuration wizard.',
+          title: 'To edit layout, rerun the configuration wizard.',
           icon: 'fa fa-hat-wizard',
           function: () => this.$router.push('/setup')
         }
