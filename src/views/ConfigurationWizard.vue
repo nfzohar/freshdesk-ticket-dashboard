@@ -9,7 +9,13 @@
           @buildCustom="page = 1"
           @usePreset="page = 5"
         />
-        <tabs v-else :key="page" :tab-keywords="steps" :def-selected-tab="page" :select-tab-on-click="false">
+        <tabs
+          v-else
+          :key="page"
+          :tab-keywords="steps"
+          :def-selected-tab="page"
+          :select-tab-on-click="false"
+        >
           <template #tab_1>
             <auto-refresh-settings />
           </template>
@@ -27,7 +33,7 @@
 
       <div v-if="page" class="flex justify-between w-full py-5 px-3">
         <button class="wizard-navigation" v-text="'Back'" @click="page--" />
-        <button class="wizard-navigation" v-text="'Next'" @click="page++" />
+        <button class="wizard-navigation" v-text="page > 5 ? 'Next' : 'Save'" @click="page++" />
       </div>
     </div>
   </div>

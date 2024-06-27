@@ -4,7 +4,7 @@
       v-for="(tabKeyword, i) in tabKeywords"
       :key="i"
       class="capitalize rounded-md px-2 py-1 w-full h-full text-center bg-primary-500"
-      :class="{ 'bg-primary-600': isCurrent(tabKeyword) }"
+      :class="[{ 'bg-primary-600': isCurrent(tabKeyword) }, textClass]"
       @click="select(tabKeyword)"
       v-text="tabKeyword"
     />
@@ -53,6 +53,9 @@ export default defineComponent({
       return this.tabKeywords.includes(this.defSelectedTab)
         ? this.defSelectedTab
         : this.tabKeywords[this.defSelectedTab - 1]
+    },
+    textClass(): String {
+      return this.$information?.textColor
     }
   },
 
@@ -70,7 +73,7 @@ export default defineComponent({
     },
 
     select(value: string) {
-      if(this.selectTabOnClick) {
+      if (this.selectTabOnClick) {
         this.selectedTab = this.slug(value)
       }
     },

@@ -1,38 +1,57 @@
 <template>
-    <div 
-      class="w-max h-full p-2 flex gap-3 rounded-md items-start m-auto"
-      :class="`flex-${layoutVertical ? 'row' : 'col'}`"
+  <div class="flex items-center justify-between w-full my-3 p-2 bg-secondary-600">
+    <button
+      class="border border-primary-600 rounded-md py-1 px-2 bg-primary-500 hover:bg-primary-600"
+      @click="addNewGroup()"
     >
-      <div v-for="(group, g) in layoutGroups" :key="g" class="rounded-md bg-secondary-600 p-2" :class="`${layoutVertical ? 'w' : 'h'}-96`">
-        <button v-if="!group?.length" class="opacity-50" v-text="'No panels in added yet.'"  />
+      <i class="fa fa-plus mr-2" />
+      <span v-text="`Add new ${layoutVertical ? 'column' : 'row'}`" />
+    </button>
 
-        <div v-for="(panel, p) in group" :key="p">
-          <div class="flex flex-col gap-1 border p-2 rounded-md bg-white my-2">
-            <input class="border" type="text" />
-            <select>
-              <option>test</option>
-            </select>
-          </div>
-        </div>
-
-        <button class="border border-primary-600 rounded-md py-1 px-2 bg-primary-500" @click="addNewPanel(g)">
-          <i class="fa fa-plus mr-2" />
-          <span v-text="'Add new panel'" />
-        </button>
-      </div>
-
-    </div>
-    <button class="border border-primary-600 rounded-md py-1 px-2 bg-primary-500" @click="addNewGroup()">
-          <i class="fa fa-plus mr-2" />
-          <span v-text="`Add new ${layoutVertical ? 'column' : 'row'}`" />
+    <div class="flex items-center justify-between">
+      <button
+        v-for="(group, g) in layoutGroups"
+        :key="g"
+        class="border border-primary-600 rounded-md py-1 px-2 bg-primary-500 hover:bg-primary-600"
+        @click="addNewPanel(g)"
+      >
+        <i class="fa fa-plus mr-2" />
+        <span v-text="'Add new panel'" />
       </button>
+    </div>
+  </div>
+
+  <div
+    class="w-full h-full p-2 flex gap-3 rounded-md items-start m-auto"
+    :class="`flex-${layoutVertical ? 'row' : 'col'}`"
+  >
+    <div
+      v-for="(group, g) in layoutGroups"
+      :key="g"
+      class="flex flex-col gap-y-5 rounded-md p-2"
+      :class="`${layoutVertical ? 'w' : 'h'}-96`"
+    >
+      <a-panel-manager
+        v-for="(panel, p) in group"
+        :key="p"
+        :panel="panel"
+        @removePanel="(value) => value"
+        @panelUpdated="(value) => (group[g] = value)"
+      />
+
+      <button class="block bg-secondary-600" />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import APanelManager from '@/components/general/APanelManager.vue'
 
 export default defineComponent({
   name: 'LayoutOrientation',
+
+  components: { APanelManager },
 
   data() {
     return {
@@ -44,27 +63,27 @@ export default defineComponent({
     layoutVertical(): Boolean {
       return this.$configuration?.orientation == 'vertical'
     },
-    currentLayoutGroups(): Array{
+    currentLayoutGroups(): Array {
       return this.$configuration.theLayout.groups
     },
-    darkPrimaryColor(): Boolean{
-      return this.$information?.isPrimaryColorDark;
+    textClass(): String {
+      return this.$information?.textColor
     },
-    darkSecondaryColor(): Boolean{
-      return this.$information?.isSecondaryColorDark;
-    },
+    accentSecondaryBg(): String {
+      return this.$information?.bgAccentSecondaryColor
+    }
   },
 
-  mounted(){
-    this.layoutGroups = this.currentLayoutGroups 
+  mounted() {
+    this.layoutGroups = this.currentLayoutGroups
   },
 
   methods: {
-    addNewGroup(){
+    addNewGroup() {
       this.layoutGroups.push([])
     },
 
-    addNewPanel(groupdId: Number){
+    addNewPanel(groupdId: Number) {
       this.layoutGroups[groupdId].push({})
     }
 
