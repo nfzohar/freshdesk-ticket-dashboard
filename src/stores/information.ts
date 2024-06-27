@@ -85,8 +85,11 @@ export const information = defineStore('information', {
     autoRefreshTimeShortcuts(): Array {
       return this.autoRefreshShortcuts
     },
-    textColor(): String {
+    textOnPrimaryColor(): String {
       return `text-${this.isPrimaryColorDark ? 'white' : 'black'}`
+    },
+    textOnSecondaryColor(): String {
+      return `text-${this.isSecondaryColorDark ? 'white' : 'black'}`
     },
     bgAccentPrimaryColor(): String {
       return `bg-primary-${this.isPrimaryColorDark ? '600' : '400'}`
