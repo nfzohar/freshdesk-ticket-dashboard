@@ -28,8 +28,8 @@
     <div
       v-for="(group, g) in layoutGroups"
       :key="g"
-      class="flex flex-col gap-y-5 rounded-md p-2"
-      :class="`${layoutVertical ? 'w' : 'h'}-96`"
+      class="flex gap-5 rounded-md p-2"
+      :class="`flex-${layoutVertical?'col':'row'} ${layoutVertical ? 'w' : 'h'}-96`"
     >
       <a-panel-manager
         v-for="(panel, p) in group"

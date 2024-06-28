@@ -78,6 +78,10 @@ export default defineComponent({
         this.$router.replace('/loading')
       }
     }
+  },
+
+  created(){
+    this.page = this.$configuration?.layoutGroups?.length ? 1 : 0
   }
 })
 </script>
