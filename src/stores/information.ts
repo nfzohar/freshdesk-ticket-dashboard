@@ -10,6 +10,7 @@ export const information = defineStore('information', {
     filters: [],
     statuses: [],
 
+    listOfAvailableTicketFields: new Array(),
     isPrimaryColorDark: colorIsDark(import.meta.env.VITE_THEME_PRIMARY_COLOR),
     isSecondaryColorDark: colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR),
 
@@ -76,14 +77,14 @@ export const information = defineStore('information', {
     storedFilters(): Object {
       return this.filters
     },
-    trophyColors(): Array {
-      return this.leaderboardsTrophy?.colors
+    autoRefreshTimeShortcuts(): Array {
+      return this.autoRefreshShortcuts
     },
     trophyIcons(): Array {
       return this.leaderboardsTrophy?.icons
     },
-    autoRefreshTimeShortcuts(): Array {
-      return this.autoRefreshShortcuts
+    trophyColors(): Array {
+      return this.leaderboardsTrophy?.colors
     },
     textOnPrimaryColor(): String {
       return `text-${this.isPrimaryColorDark ? 'white' : 'black'}`
@@ -145,6 +146,34 @@ export const information = defineStore('information', {
       this.filters = []
       this.statuses = []
       localStorage.removeItem(storeLocalStorageKey)
+    },
+
+    saveTicketFields(ticket: Object) {
+      const ignoredFields = [
+        'id',
+        'tags',
+        'type',
+        'stats',
+        'status',
+        'due_by',
+        'subject',
+        'fr_due_by',
+        'requester',
+        'updated_at',
+        'created_at',
+        'responder_id',
+        'requester_id',
+        'custom_fields'
+      ]
+
+      if (!ticket) {
+        return
+      }
+
+      this.listOfAvailableTicketFields = [Object.keys(ticket), Object.keys(ticket?.custom_fields)]
+        .flat()
+        .filter((field) => !ignoredFields.includes(field))
+        .sort()
     }
   }
 })

@@ -1,8 +1,12 @@
 <template>
   <div
     :key="visibleCounters?.length"
-    class="grid grid-cols-2 sm:flex gap-5 w-full rounded-md items-center justify-between"
-    :class="layoutVertical ? 'flex-col' : 'flex-row'"
+    class="grid grid-cols-2 sm:flex gap-5 w-full rounded-md overflow-y-scroll scrollbar-hide"
+    :class="
+      layoutVertical
+        ? 'flex-col h-screen'
+        : 'flex-row max-w-screen-2xl items-center justify-between'
+    "
   >
     <template v-for="(status, s) in visibleCounters" :key="(s, visibleCounters?.length)">
       <div
@@ -49,25 +53,24 @@ export default defineComponent({
       return this.$information?.isPrimaryColorDark
     },
     statusGroupedTickets(): any {
-      return groupBy(this.tickets, 'status') ?? []
+      return this.tickets?.length ? groupBy(this.tickets, 'status') : []
     },
     statuses(): any {
       return Object.values(this.$information?.statuses) ?? []
     },
-    visibleCounters(): Array{
+    visibleCounters(): Array {
       return Object.values(this.$configuration?.visibleTicketCounts) ?? []
-    } ,   
+    },
     validStatuses(): any {
       let labels = this.statuses.map((status) => status?.label)
       labels.unshift('All', 'Unresolved')
       return labels
-    },
-
+    }
   },
 
   methods: {
     generateTicketCount(status: string): number {
-      if(this.validStatuses.includes(status)) {
+      if (this.validStatuses.includes(status)) {
         switch (status) {
           case 'All': {
             return this.tickets?.length

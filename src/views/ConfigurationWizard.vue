@@ -1,6 +1,6 @@
 <template>
-  <div class="dashboard-body sm:py-24">
-    <div class="w-11/12 md:w-10/12 h-11/12 m-auto">
+  <div class="dashboard-body sm:py-10">
+    <div class="w-11/12 md:w-11/12 h-11/12 m-auto">
       <h1 class="text-5xl w-full text-left p-5 font-bold" v-text="'Configuration Wizard'" />
 
       <div class="px-5" :class="{ 'border border-primary-500 rounded-md py-5 ': page }">
@@ -14,7 +14,8 @@
           :key="page"
           :tab-keywords="steps"
           :def-selected-tab="page"
-          :select-tab-on-click="false"
+          :select-tab-on-click="layoutGroupsAreDefined"
+          @selectedTabIndex="(value) => (page = value)"
         >
           <template #tab_1>
             <auto-refresh-settings />
@@ -33,7 +34,7 @@
 
       <div v-if="page" class="flex justify-between w-full py-5 px-3">
         <button class="wizard-navigation" v-text="'Back'" @click="page--" />
-        <button class="wizard-navigation" v-text="page > 5 ? 'Next' : 'Save'" @click="page++" />
+        <button class="wizard-navigation" v-text="page < 4 ? 'Next' : 'Save'" @click="page++" />
       </div>
     </div>
   </div>
@@ -72,6 +73,12 @@ export default defineComponent({
     }
   },
 
+  computed: {
+    layoutGroupsAreDefined(): Boolean {
+      return this.$configuration?.layoutGroups?.length ? true : false
+    }
+  },
+
   watch: {
     page() {
       if (this.page == 5) {
@@ -80,8 +87,8 @@ export default defineComponent({
     }
   },
 
-  created(){
-    this.page = this.$configuration?.layoutGroups?.length ? 1 : 0
+  created() {
+    this.page = this.layoutGroupsAreDefined ? 1 : 0
   }
 })
 </script>

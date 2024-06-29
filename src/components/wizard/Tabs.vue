@@ -25,6 +25,8 @@ import { toLower } from 'lodash'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
+  name: 'TheTabs',
+
   props: {
     tabKeywords: {
       type: Array,
@@ -60,11 +62,7 @@ export default defineComponent({
   },
 
   mounted() {
-    this.selectedTab = this.$route.query.tab
-      ? String(this.$route.query.tab)
-      : this.slug(this.defaultSelectedTab)
-
-    this.setUrlTab()
+    this.selectedTab = this.slug(this.defaultSelectedTab)
   },
 
   methods: {
@@ -74,20 +72,19 @@ export default defineComponent({
 
     select(value: string) {
       if (this.selectTabOnClick) {
-        this.selectedTab = this.slug(value)
+        let selectedSlug = this.slug(value)
+        this.selectedTab = selectedSlug
+
+        for (let i = 0; i < this.tabKeywords?.length; i++) {
+          if (selectedSlug == this.slug(this.tabKeywords[i])) {
+            this.$emit('selectedTabIndex', i + 1)
+          }
+        }
       }
     },
 
     isCurrent(value: string) {
       return this.selectedTab == this.slug(value)
-    },
-
-    setUrlTab() {
-      if (this.modifyUrl) {
-        this.$router.push({
-          query: { ...this.$route.query, tab: this.selectedTab }
-        })
-      }
     }
   }
 })

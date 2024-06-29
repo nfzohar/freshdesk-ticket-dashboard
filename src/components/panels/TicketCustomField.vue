@@ -1,5 +1,5 @@
 <template>
-  <a-panel :title="title" :datasets="customDatasets" :dataset-labels="customDatasetLabels">
+  <a-panel :title="customTitle" :datasets="customDatasets" :dataset-labels="customDatasetLabels">
     <template #defaultView>
       <div
         :key="uniqueFields?.length"
@@ -34,15 +34,10 @@ export default defineComponent({
       required: false,
       default: () => []
     },
-    customField: {
-      type: String,
-      required: true,
-      default: ''
-    },
-    title: {
-      type: String,
-      required: true,
-      default: 'Custom field Section'
+    additionalData: {
+      type: [Array, Object],
+      required: false,
+      default: () => []
     },
     showUndefined: {
       type: Boolean,
@@ -55,28 +50,28 @@ export default defineComponent({
     return {
       updateToken: 0,
       isLoading: true,
-      showSection: true,
-      uniqueFields: Array(),
-      selectedView: 'default',
-      views: ['default', 'v-bar', 'h-bar', 'pie', 'doughnut']
+      uniqueFields: []
     }
   },
 
   computed: {
-    customFieldIsDefined() {
-      return this.title && this.customField
+    customTitle() {
+      return this.additionalData?.custom_title ?? 'Custom field Section'
     },
-    selectedViewDefault() {
-      return this.selectedView == 'default'
+    customField() {
+      return this.additionalData?.custom_field ?? ''
+    },
+    customFieldIsDefined() {
+      return this.customTitle && this.customField
     },
     customCustomField() {
-      return this.customField.substring(0, 3) == 'cf_'
+      return this.customField.includes('cf_')
     },
     customDatasets() {
-      return Object.values(this.uniqueFields.map((field) => field.ticket_count))
+      return Object.values(this.uniqueFields.map((field) => field?.ticket_count))
     },
     customDatasetLabels() {
-      return Object.values(this.uniqueFields.map((field) => field.name))
+      return Object.values(this.uniqueFields.map((field) => field?.name))
     }
   },
 
@@ -88,7 +83,6 @@ export default defineComponent({
 
   mounted() {
     this.generateCustomFieldStatistics()
-    window.addEventListener('resize', () => this.updateToken++)
   },
 
   methods: {
@@ -102,34 +96,33 @@ export default defineComponent({
       let uniqueFieldsList = uniq(customFields)
 
       if (uniqueFieldsList.length == 1) {
-        this.uniqueFields.push({
+        let ticketList = {
           name: uniqueFieldsList[0] ?? 'Undefined',
           ticket_count: this.customFields?.length
-        })
-      } else {
-        uniqueFieldsList.forEach((uniqueCustomField) => {
-          if (uniqueCustomField) {
-            this.uniqueFields.push({
-              name: uniqueCustomField,
-              ticket_count: customFields.filter((field) => field == uniqueCustomField).length
-            })
-          }
-        })
-
-        if (this.showUndefined) {
-          this.uniqueFields.push({
-            name: 'Undefined',
-            ticket_count: customFields.filter((customField) => !customField).length
-          })
         }
+
+        this.uniqueFields.push(ticketList)
+        return
+      }
+
+      uniqueFieldsList.forEach((uniqueCustomField) => {
+        if (uniqueCustomField) {
+          let customFieldSet = {
+            name: uniqueCustomField,
+            ticket_count: customFields.filter((field) => field == uniqueCustomField)?.length
+          }
+          this.uniqueFields.push(customFieldSet)
+        }
+      })
+
+      if (this.showUndefined) {
+        this.uniqueFields.push({
+          name: 'Undefined',
+          ticket_count: customFields.filter((customField) => !customField)?.length
+        })
       }
 
       this.isLoading = false
-    },
-
-    nextView() {
-      let currentIndex = this.views.indexOf(this.selectedView) + 1
-      this.selectedView = this.views[currentIndex] ?? 'default'
     }
   }
 })

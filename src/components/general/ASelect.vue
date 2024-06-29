@@ -1,12 +1,12 @@
 <template>
   <div class="flex flex-col items-start w-full">
-    <label :class="labelClass" v-text="label" />
+    <label :class="[labelClass, textSecondaryClass]" v-text="label" />
     <select
       v-model="inputValue"
       class="rounded-md w-full bg-primary-500 border-primary-700 shadow-primary-700 p-1 cursor-pointer"
-      :class="inputClass"
+      :class="[inputClass, textPrimaryClass]"
     >
-      <option v-if="showNullValue" :value="''" v-text="'All'" />
+      <option v-if="showNullValue" :value="''" v-text="nullValueLabel" />
       <option
         v-for="(option, o) in options"
         :key="o"
@@ -64,6 +64,11 @@ export default defineComponent({
       type: Boolean,
       required: false,
       default: true
+    },
+    nullValueLabel: {
+      type: String,
+      required: false,
+      default: 'All'
     }
   },
 
@@ -78,6 +83,15 @@ export default defineComponent({
   watch: {
     inputValue() {
       this.$emit('changed', this.inputValue)
+    }
+  },
+
+  computed: {
+    textPrimaryClass(): String {
+      return this.$information?.textOnPrimaryColor
+    },
+    textSecondaryClass(): String {
+      return this.$information?.textOnSecondaryColor
     }
   },
 

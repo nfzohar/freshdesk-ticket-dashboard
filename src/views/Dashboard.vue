@@ -1,7 +1,7 @@
 <template>
   <div
     :key="reloadToken"
-    class="flex flex-col transition-colors dashboard-body"
+    class="flex flex-col transition-colors dashboard-body py-4"
     :class="[{ 'is-loading': isLoading }, { 'cursor-none': autoHideTopBar }]"
     @mousemove="displayTopBar"
   >
@@ -48,7 +48,7 @@ export default defineComponent({
       refreshIntervalId: null,
       updateToken: 0,
       reloadToken: 0,
-      resizeToken: 0,
+      resizeToken: 0
     }
   },
 
@@ -61,15 +61,15 @@ export default defineComponent({
     },
     allTickets(): Object {
       return this.tickets?.flat()
-    },
+    }
   },
 
   watch: {
     'allTickets.length'() {
       this.updateToken++
     },
-    "$configuration.theAutoRefresh.active"() {
-      let autorefresh = this.$configuration?.theAutoRefresh;
+    '$configuration.theAutoRefresh.active'() {
+      let autorefresh = this.$configuration?.theAutoRefresh
 
       if (!autorefresh?.active || autorefresh?.perMinutes <= 0) {
         clearInterval(this.refreshIntervalId)
@@ -77,9 +77,11 @@ export default defineComponent({
       }
 
       this.refreshIntervalId = setInterval(
-        () => { this.loadTickets() },
+        () => {
+          this.loadTickets()
+        },
         1000 * 60 * autorefresh?.perMinutes
-      ) 
+      )
     }
   },
 
@@ -102,12 +104,13 @@ export default defineComponent({
       this.keepFetching = true
       this.startLoading()
 
-      // Set default api call if not set
       if (!this.apiCallUrl) {
         this.apiCallUrl =
           'tickets?updated_since=' + this.startYear + '&include=requester,stats&per_page=100'
       }
+
       await this.fetchTicketsByPage()
+      this.setInformationTicketFields()
     },
 
     async fetchTicketsByPage() {
@@ -163,18 +166,6 @@ export default defineComponent({
       }, 3000)
     },
 
-    loadFilteredTickets() {
-      this.apiCallUrl = 'search/tickets?query="' + this.$information.filters + '"'
-    },
-
-    startLoading() {
-      this.isLoading = true
-    },
-
-    stopLoading() {
-      this.isLoading = false
-    },
-
     displayTopBar() {
       this.hiddenTopBar = false
       clearTimeout(this.timeoutId)
@@ -184,8 +175,22 @@ export default defineComponent({
     },
 
     windowResizeListener() {
-      window.addEventListener('resize', () => { this.resizeToken++ })
+      window.addEventListener('resize', () => {
+        this.resizeToken++
+      })
     },
+
+    setInformationTicketFields() {
+      this.$information.saveTicketFields(this.allTickets.at(1))
+    },
+
+    startLoading() {
+      this.isLoading = true
+    },
+
+    stopLoading() {
+      this.isLoading = false
+    }
   }
 })
 </script>

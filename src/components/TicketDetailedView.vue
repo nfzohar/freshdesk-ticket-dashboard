@@ -4,7 +4,7 @@
       <div
         :key="details?.id"
         class="w-11/12 md:w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-7 m-auto"
-        :class="[{ 'is-loading': isLoading }, `text-${darkBackground ? 'white' : 'black'}`]"
+        :class="[{ 'is-loading': isLoading }, textClass]"
       >
         <div class="flex items-center justify-between w-full border-primary-500 border-b pb-2">
           <h1 class="text-3xl font-semibold" v-text="`#${details?.id}: ${details?.subject}`" />
@@ -148,8 +148,8 @@ export default defineComponent({
       })
       return label
     },
-    darkBackground() {
-      return this.$information.isSecondaryColorDark
+    textClass(): String {
+      return this.$information?.textOnPrimaryColor
     },
     freshdeskWebUrl() {
       return String(this.$auth.domain).replace('api/v2/', 'a/')
