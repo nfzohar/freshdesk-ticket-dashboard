@@ -27,7 +27,7 @@ import { defineComponent } from 'vue'
 import { updatePanelInState } from '@/helpers/CommonMethods'
 
 export default defineComponent({
-  name: 'RowsLayout',
+  name: 'CarouselLayout',
 
   props: {
     allTickets: {
@@ -47,7 +47,7 @@ export default defineComponent({
   },
 
   mounted() {
-    this.rows = this.rowsFromState
+    this.rows = this.$configuration?.layoutGroups
   },
 
   methods: {

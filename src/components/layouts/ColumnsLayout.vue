@@ -14,8 +14,8 @@
           :is-open="panel.visible"
           :additional-data="panel.data"
           :display-type="panel.displayType"
-          @toggleVisibility="(value) => updatePanelState(value, panel?.id, 'visible')"
-          @updatedDisplayType="(value) => updatePanelState(value, panel?.id, 'displayType')"
+          @toggleVisibility="(value) => updatePanel(value, panel?.id, 'visible')"
+          @updatedDisplayType="(value) => updatePanel(value, panel?.id, 'displayType')"
         />
       </div>
     </template>
@@ -24,6 +24,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { updatePanelInState } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'ColumnsLayout',
@@ -39,21 +40,20 @@ export default defineComponent({
     return { columns: [] }
   },
 
+  computed: {
+    columnsFromState(): Object {
+      return this.$configuration?.layoutGroups
+    }
+  },
+
   mounted() {
-    this.columns = this.$configuration.layoutGroups
+    this.columns = this.columnsFromState
   },
 
   methods: {
-    updatePanelState(newValue: String, panelId: String, property: String) {
-      this.columns.forEach((row) => {
-        row.forEach((panel) => {
-          if (panel.id == panelId) {
-            panel[property] = newValue
-          }
-        })
-      })
-
-      this.$configuration.updateLayoutGroups(this.columns)
+    async updatePanel(newValue: String, panelId: String, property: String) {
+      await updatePanelInState(this.columns, newValue, panelId, property)
+      this.columns = this.columnsFromState
     }
   }
 })

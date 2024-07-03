@@ -71,8 +71,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import LogoIcon from '../components/general/TheLogo.vue'
-import { checkAuthCredentials } from '../helpers/CommonMethods'
+import LogoIcon from '@/components/general/TheLogo.vue'
+import { checkAuthCredentials } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'LoginPage',

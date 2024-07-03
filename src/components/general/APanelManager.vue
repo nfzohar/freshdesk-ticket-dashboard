@@ -74,6 +74,9 @@ export default defineComponent({
   },
 
   computed: {
+    availablePanelComponents() {
+      return getAvailablePanelComponents()
+    },
     textPrimaryClass(): String {
       return this.$information?.textOnPrimaryColor
     },
@@ -85,9 +88,6 @@ export default defineComponent({
     },
     selectedPanelIsCustomField() {
       return this.panelComponent == 'TicketCustomField'
-    },
-    availablePanelComponents() {
-      return getAvailablePanelComponents()
     },
     availableTicketFields() {
       return this.$information.listOfAvailableTicketFields

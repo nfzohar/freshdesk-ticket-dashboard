@@ -1,5 +1,6 @@
-import { auth } from '../stores/auth'
+import { auth } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
+import { configuration } from '@/stores/configuration'
 
 const toast = useToast()
 
@@ -80,16 +81,6 @@ export function colorIsDark(color: String) {
   }
 }
 
-// Check, if the number is even.
-export function isEven(number: number) {
-  return number % 2 === 0
-}
-
-// Check, if the number is odd.
-export function isOdd(number: number) {
-  return number % 2 !== 0
-}
-
 // Read @/components/panels folder and return a list of present components.
 export function getAvailablePanelComponents() {
   const listOfPanelComponents = new Array()
@@ -103,4 +94,34 @@ export function getAvailablePanelComponents() {
   })
 
   return listOfPanelComponents
+}
+
+export async function updatePanelInState(
+  rows: Array,
+  newValue: String,
+  panelId: String,
+  property: String
+) {
+  let tempRows = rows
+
+  tempRows.forEach((row) => {
+    row.forEach((panel) => {
+      if (panel.id == panelId) {
+        panel[property] = newValue
+      }
+    })
+  })
+
+  await configuration().updateLayoutGroups(rows)
+  return rows
+}
+
+// Check, if the number is even.
+export function isEven(number: number) {
+  return number % 2 === 0
+}
+
+// Check, if the number is odd.
+export function isOdd(number: number) {
+  return number % 2 !== 0
 }
