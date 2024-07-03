@@ -5,6 +5,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
+import { id } from 'date-fns/locale'
 
 export default defineComponent({
   name: 'LoadDataPage',
@@ -12,7 +13,7 @@ export default defineComponent({
   async mounted() {
     await this.fetchAgentsFromFreshdesk()
     await this.fetchGroupsFromFreshdesk()
-    await this.fetchStatusesFromFreshdesk()
+    await this.fetchTicketFieldsFromFreshdesk()
 
     setTimeout(() => {
       this.$information.saveConfigurationToStore()
@@ -49,19 +50,30 @@ export default defineComponent({
         })
     },
 
-    async fetchStatusesFromFreshdesk() {
+    async fetchTicketFieldsFromFreshdesk() {
       let statusFieldId = null
+      let prioritiesFieldId = null
 
       await ApiCall.get('admin/ticket_fields').then((response) => {
         if (response) {
           Object.values(response).forEach(async (adminField) => {
-            if (adminField?.name == 'status') {
-              statusFieldId = adminField?.id
+            switch (adminField?.name) {
+              case 'status':
+                statusFieldId = adminField?.id
+                break
+              case 'priority':
+                prioritiesFieldId = adminField?.id
+                break
             }
           })
         }
       })
 
+      await this.fetchStatusesFromFreshdesk(statusFieldId)
+      await this.fetchPrioritiesFromFreshdesk(prioritiesFieldId)
+    },
+
+    async fetchStatusesFromFreshdesk(statusFieldId: number) {
       await ApiCall.get(`admin/ticket_fields/${statusFieldId}?include=section`).then((response) => {
         let statuses = response?.choices
         this.$information.setStatuses(statuses)
@@ -73,6 +85,15 @@ export default defineComponent({
           this.$configuration.updateVisibleStatuses(visibleStatuses)
         }
       })
+    },
+
+    async fetchPrioritiesFromFreshdesk(prioritiesFieldId: number) {
+      await ApiCall.get(`admin/ticket_fields/${prioritiesFieldId}?include=section`).then(
+        (response) => {
+          let priorities = response?.choices
+          this.$information.setPriorities(priorities)
+        }
+      )
     }
   }
 })

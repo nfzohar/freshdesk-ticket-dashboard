@@ -9,6 +9,7 @@ export const information = defineStore('information', {
     groups: [],
     filters: [],
     statuses: [],
+    priorities: [],
 
     listOfAvailableTicketFields: new Array(),
     isPrimaryColorDark: colorIsDark(import.meta.env.VITE_THEME_PRIMARY_COLOR),
@@ -65,6 +66,9 @@ export const information = defineStore('information', {
   }),
 
   getters: {
+    storedPriorities(): Object {
+      return this.priorities
+    },
     storedStatuses(): Object {
       return this.statuses
     },
@@ -117,12 +121,17 @@ export const information = defineStore('information', {
       this.statuses = newValue
     },
 
+    setPriorities(newValue: Array) {
+      this.priorities = newValue
+    },
+
     saveConfigurationToStore() {
       const storeData = {
         agents: this.agents,
         groups: this.groups,
         filters: this.filters,
-        statuses: this.statuses
+        statuses: this.statuses,
+        priorities: this.priorities
       }
       localStorage.setItem(storeLocalStorageKey, JSON.stringify(storeData))
     },
@@ -137,6 +146,7 @@ export const information = defineStore('information', {
         this.groups = stateFromStore?.groups
         this.filters = stateFromStore?.filters
         this.statuses = stateFromStore?.statuses
+        this.priorities = stateFromStore?.priorities
       }
     },
 
@@ -144,7 +154,8 @@ export const information = defineStore('information', {
       this.agents = []
       this.groups = []
       this.filters = []
-      this.statuses = []
+      this.filters = []
+      this.priorities = []
       localStorage.removeItem(storeLocalStorageKey)
     },
 

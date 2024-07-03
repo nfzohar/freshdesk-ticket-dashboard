@@ -3,9 +3,7 @@
     :key="visibleCounters?.length"
     class="grid grid-cols-2 sm:flex gap-5 w-full rounded-md overflow-y-scroll scrollbar-hide"
     :class="
-      layoutVertical
-        ? 'flex-col h-screen'
-        : 'flex-row max-w-screen items-center justify-between'
+      layoutVertical ? 'flex-col h-screen' : 'flex-row max-w-screen items-center justify-between'
     "
   >
     <template v-for="(status, s) in visibleCounters" :key="(s, visibleCounters?.length)">

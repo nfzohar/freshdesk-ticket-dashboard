@@ -65,7 +65,7 @@ export default defineComponent({
       return this.customTitle && this.customField
     },
     customCustomField() {
-      return this.customField.includes('cf_')
+      return this.customField.substring(0, 3) == 'cf_'
     },
     customDatasets() {
       return Object.values(this.uniqueFields.map((field) => field?.ticket_count))
