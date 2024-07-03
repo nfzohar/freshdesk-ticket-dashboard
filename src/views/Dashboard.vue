@@ -1,7 +1,7 @@
 <template>
   <div
     :key="reloadToken"
-    class="flex flex-col transition-colors dashboard-body py-4"
+    class="flex flex-col transition-colors dashboard-body"
     :class="[{ 'is-loading': isLoading }, { 'cursor-none': autoHideTopBar }]"
     @mousemove="displayTopBar"
   >

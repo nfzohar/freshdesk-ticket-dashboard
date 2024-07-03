@@ -5,7 +5,7 @@
     :class="
       layoutVertical
         ? 'flex-col h-screen'
-        : 'flex-row max-w-screen-2xl items-center justify-between'
+        : 'flex-row max-w-screen items-center justify-between'
     "
   >
     <template v-for="(status, s) in visibleCounters" :key="(s, visibleCounters?.length)">

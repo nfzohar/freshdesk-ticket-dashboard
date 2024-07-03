@@ -40,7 +40,7 @@ export default defineComponent({
   },
 
   mounted() {
-    this.rows = this.$configuration.layoutGroups
+    this.rows = this.$configuration?.layoutGroups
   },
 
   methods: {
