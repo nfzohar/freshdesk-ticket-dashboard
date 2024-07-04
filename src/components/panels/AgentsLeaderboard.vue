@@ -1,7 +1,7 @@
 <template>
   <a-panel
-    :datasets="dataset"
-    :dataset-labels="datasetLabels"
+    :datasets="graph?.values"
+    :dataset-labels="graph?.labels"
     :title="`Top ${leaderboardsLength} agents`"
   >
     <template #defaultView>
@@ -59,16 +59,6 @@ export default defineComponent({
   },
 
   computed: {
-    topCountedAgents(): Object {
-      return Object.values(this.sortedAgents.slice(0, this.leaderboardsLength))
-    },
-    dataset() {
-      return this.topCountedAgents?.map((agent) => agent?.ticket_count)
-    },
-    datasetLabels() {
-      return this.topCountedAgents?.map((agent) => agent?.contact?.name)
-    },
-
     leaderboardsLength(): number {
       return this.$configuration.leaderboardsLength
     },
@@ -80,6 +70,15 @@ export default defineComponent({
     },
     trophyColors(): Array {
       return this.$information.trophyColors
+    },
+    topCountedAgents(): Object {
+      return Object.values(this.sortedAgents.slice(0, this.leaderboardsLength))
+    },
+    graph() {
+      return {
+        labels: this.topCountedAgents?.map((field) => field?.name),
+        values: this.topCountedAgents?.map((field) => field?.ticket_count)
+      }
     }
   },
 
