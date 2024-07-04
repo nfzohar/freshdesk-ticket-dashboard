@@ -14,7 +14,7 @@
       @refresh="loadTickets"
       @reload="reloadToken++"
     />
-    <component :key="resizeToken" :is="dashboardLayoutAlignment" :all-tickets="allTickets" />
+    <component :key="resizeToken" :is="dashboardLayout" :all-tickets="allTickets" />
   </div>
 </template>
 
@@ -53,8 +53,13 @@ export default defineComponent({
   },
 
   computed: {
-    dashboardLayoutAlignment() {
-      return this.$configuration?.orientation == 'vertical' ? 'columns-layout' : 'rows-layout'
+    dashboardLayout() {
+      switch(this.$configuration?.orientation){
+        case 'horizontal': return 'rows-layout'
+        case 'vertical': return 'columns-layout'
+        case 'carousel': return 'carousel-layout'
+        default: return 'columns-layout'
+      }
     },
     autoHideTopBar() {
       return this.$configuration?.autoHideToolbar && this.hiddenTopBar

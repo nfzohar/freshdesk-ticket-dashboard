@@ -12,6 +12,7 @@
         v-for="(panel, p) in group"
         :key="p"
         :panel="panel"
+        :visible-id="`${g}-${p}`"
         @panelUpdated="(value) => updateLayoutGroups(g, p, value)"
         @removePanel="(value) => removePanelFromGroup(value, g)"
       />
@@ -35,7 +36,7 @@
     >
       <span
         class="opacity-40 text-2xl font-bold"
-        v-text="`Add a new ${layoutIsCols ? 'column' : 'row'}`"
+        v-text="'Add a new panel group'"
       />
     </button>
   </div>
@@ -66,18 +67,20 @@ export default defineComponent({
     accentSecondaryBg(): String {
       return this.$information?.bgAccentSecondaryColor
     },
-    layoutIsCols(): Boolean {
-      return this.$configuration?.orientation == 'vertical'
+    layout(): String {
+      return this.$configuration?.orientation
     },
     groupGridConfig() {
-      return `auto-${this.layoutIsCols ? 'cols' : 'rows'}-auto grid-flow-${
-        this.layoutIsCols ? 'col' : 'row'
-      }`
+      if(this.layout == 'carousel') return 'grid-cols-3';
+      if(this.layout == 'vertical') return 'auto-cols-auto grid-flow-col';
+      if(this.layout == 'horizontal') return 'auto-rows-auto grid-flow-row';
+      return ''
     },
     panelGridConfig() {
-      return `auto-${this.layoutIsCols ? 'rows' : 'cols'}-auto grid-flow-${
-        this.layoutIsCols ? 'row' : 'col'
-      }`
+      if(this.layout == 'carousel') return 'grid-rows-1'
+      if(this.layout == 'vertical') return 'auto-cols-auto grid-flow-col'
+      if(this.layout == 'horizontal') return 'auto-cols-auto grid-flow-col'
+      return ''
     }
   },
 
@@ -93,7 +96,7 @@ export default defineComponent({
 
     addNewPanel(groupId: Number) {
       let newComponent = {
-        id: `${groupId}-${this.layoutGroups[groupId]?.length}`,
+        id: String(Math.random()),
         displayType: 'default',
         component: '',
         visible: true,

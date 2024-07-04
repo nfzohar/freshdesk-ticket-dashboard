@@ -43,6 +43,12 @@ export default defineComponent({
           iconClass: 'rotate-90',
           label: 'Columns',
           value: 'vertical'
+        },
+        {
+          icon: 'fa fa-square',
+          iconClass: '',
+          label: 'Carousel',
+          value: 'carousel'
         }
       ]
     }

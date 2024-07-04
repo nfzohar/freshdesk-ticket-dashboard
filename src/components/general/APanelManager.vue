@@ -7,7 +7,7 @@
       <span
         :class="`border w-auto p-1 rounded-md ${textSecondaryClass}`"
         :title="'Panel Layout ID'"
-        v-text="panel?.id"
+        v-text="visibleId"
       />
       <button
         :class="'bg-red-500 text-white py-1 px-2 rounded-md font-bold'"
@@ -58,6 +58,11 @@ export default defineComponent({
   emits: ['panelUpdated', 'removePanel'],
 
   props: {
+    visibleId: {
+      type: String,
+      required: false,
+      default: '---'
+    },
     panel: {
       type: [Array, Object],
       required: false,
