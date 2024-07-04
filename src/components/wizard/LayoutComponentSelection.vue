@@ -42,7 +42,7 @@ export default defineComponent({
           icon: 'fa fa-bars',
           iconClass: 'rotate-90',
           label: 'Columns',
-          value: 'column-layout'
+          value: 'columns-layout'
         },
         {
           icon: 'fa fa-square',

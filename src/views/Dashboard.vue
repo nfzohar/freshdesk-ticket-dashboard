@@ -158,7 +158,9 @@ export default defineComponent({
 
     async refershTicketsFromTemp() {
       this.startLoading()
-      this.tickets = this.ticketsTemp
+      if (this.ticketsTemp?.length) {
+        this.tickets = this.ticketsTemp
+      }
 
       setTimeout(async () => {
         this.ticketsTemp = []

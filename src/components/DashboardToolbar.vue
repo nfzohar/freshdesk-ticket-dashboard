@@ -6,7 +6,7 @@
   />
 
   <div
-    class="w-full h-20 mb-4 px-1 border-b-2 border-primary-500 shadow-primary-500 transition-all"
+    class="w-full h-20 mb-5 px-1 border-b-2 border-primary-500 shadow-primary-500 transition-all"
     :class="[
       { 'sm:-mt-24 ': autoHide },
       `text-${primaryColorIsDark ? 'white' : 'black'}`,

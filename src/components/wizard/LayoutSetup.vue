@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="`grid gap-3 w-full p-2 rounded-md items-start m-auto ${groupGridConfig}`"
+    :class="`grid gap-3 w-full p-3 rounded-md items-start m-auto ${groupGridConfig}`"
     style="height: 65vh"
   >
     <div
@@ -76,7 +76,7 @@ export default defineComponent({
     panelGridConfig() {
       if (this.layout == 'spin-layout') return 'grid-rows-1'
       if (this.layout == 'rows-layout') return 'auto-cols-auto grid-flow-col'
-      if (this.layout == 'columns-layout') return 'auto-cols-auto grid-flow-col'
+      if (this.layout == 'columns-layout') return 'auto-cols-auto grid-flow-row'
       return ''
     }
   },
