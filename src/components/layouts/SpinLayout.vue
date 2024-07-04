@@ -27,7 +27,7 @@ import { defineComponent } from 'vue'
 import { updatePanelInState } from '@/helpers/CommonMethods'
 
 export default defineComponent({
-  name: 'CarouselLayout',
+  name: 'SpinLayout',
 
   props: {
     allTickets: {

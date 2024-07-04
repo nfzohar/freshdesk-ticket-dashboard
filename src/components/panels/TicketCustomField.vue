@@ -37,12 +37,22 @@ export default defineComponent({
     additionalData: {
       type: [Array, Object],
       required: false,
-      default: () => []
+      default: () => {}
     },
     showUndefined: {
       type: Boolean,
       required: true,
       default: false
+    },
+    customTicketTitle: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    customTicketField: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
 
@@ -56,10 +66,14 @@ export default defineComponent({
 
   computed: {
     customTitle() {
-      return this.additionalData?.custom_title ?? 'Custom field Section'
+      return this.customTicketTitle
+        ? this.customTicketField
+        : this.additionalData?.custom_title ?? 'Custom field section'
     },
     customField() {
-      return this.additionalData?.custom_field ?? ''
+      return this.customTicketField
+        ? this.customTicketField
+        : this.additionalData?.custom_field ?? ''
     },
     customFieldIsDefined() {
       return this.customTitle && this.customField

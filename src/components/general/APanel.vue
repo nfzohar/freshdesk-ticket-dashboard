@@ -1,7 +1,11 @@
 <template>
   <div :class="`w-full h-max border-primary-600 border rounded-md ${accentSecondaryBg}`">
     <div class="flex items-center justify-between py-1 px-2">
-      <h1 class="text-xl font-bold mb-1 cursor-pointer" v-text="title" @click="toggleVisibility" />
+      <h1
+        class="text-xl font-bold mb-1 capitalize cursor-pointer"
+        v-text="title"
+        @click="toggleVisibility"
+      />
 
       <div class="flex items-center gap-x-2">
         <button

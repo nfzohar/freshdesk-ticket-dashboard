@@ -1,9 +1,9 @@
 <template>
   <ticket-custom-field
-    :title="'Types'"
-    :custom-field="'type'"
-    :show-undefined="false"
     :tickets="tickets"
+    :show-undefined="false"
+    :custom-ticket-title="'Types'"
+    :custom-ticket-field="'type'"
   />
 </template>
 
