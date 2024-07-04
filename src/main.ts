@@ -34,7 +34,7 @@ app.use(Toast, {
   showCloseButtonOnHover: false,
   closeButton: AToast,
   newestOnTop: true,
-  maxToasts: 5,
+  maxToasts: 1,
   icon: true,
   rtl: false
 })

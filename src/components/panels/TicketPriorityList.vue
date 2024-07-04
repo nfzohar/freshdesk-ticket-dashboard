@@ -1,12 +1,12 @@
 <template>
-  <a-panel :title="'Tags'" :datasets="dataset" :dataset-labels="datasetLabels">
+  <a-panel :title="'Priorities'" :datasets="dataset" :dataset-labels="datasetLabels">
     <template #defaultView>
       <div class="panel-body lg:grid-cols-2" :class="'overflow-y-scroll scrollbar-hide'">
         <a-card
-          v-for="(tag, t) in uniqueTags"
-          :key="t"
-          :name="tag?.name"
-          :count="tag?.ticket_count"
+          v-for="(priority, p) in uniquePriorities"
+          :key="p"
+          :name="priority?.name"
+          :count="priority?.ticket_count"
         />
       </div>
     </template>
@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { uniq, sortBy, get } from 'lodash'
+import { groupBy, sortBy, get } from 'lodash'
 import ACard from '@/components/general/ACard.vue'
 import APanel from '@/components/general/APanel.vue'
 
@@ -39,57 +39,47 @@ export default defineComponent({
   },
 
   computed: {
-    ticketPriorities() {
-      return this.$information.storedPriorities
+    ticketPriorities(): Array {
+      return this.$information?.storedPriorities
     },
     datasetLabels() {
-      return Object.values(this.uniqueTags?.map((field) => field?.name))
+      return Object.values(this.uniquePriorities?.map((field) => field?.name))
     },
     dataset() {
-      return Object.values(this.uniqueTags?.map((field) => field?.ticket_count))
+      return Object.values(this.uniquePriorities?.map((field) => field?.ticket_count))
     }
   },
 
   watch: {
     'tickets.length'() {
-      this.uniqueTags = []
-      this.generateTagStatistics()
+      this.generatePrioritiesStatistics()
     }
   },
 
   mounted() {
-    this.generateTagStatistics()
+    this.generatePrioritiesStatistics()
   },
 
   methods: {
-    generateTagStatistics() {
-      let uniqueTagList = uniq(this.tags.flat())
+    generatePrioritiesStatistics() {
+      this.uniquePriorities = []
 
-      if (uniqueTagList?.length <= 1) {
-        this.setSingleTagObject(uniqueTagList)
-        return
-      }
+      let ticketPrioritiesList = groupBy(this.tickets, 'priority')
 
-      uniqueTagList?.forEach((tag) => {
-        let ticketsOfTags = this.tags?.filter((aTag) => aTag?.includes(tag))
-
-        this.uniqueTags.push({
-          name: tag,
-          ticket_count: ticketsOfTags?.length
-        })
+      Object.keys(ticketPrioritiesList).forEach((priorityId) => {
+        let priority = {
+          name: this.getPriorityLabel(priorityId),
+          ticket_count: ticketPrioritiesList[priorityId].length
+        }
+        this.uniquePriorities.push(priority)
       })
 
-      this.uniqueTags = sortBy(this.uniqueTags, 'ticket_count')
-      this.uniqueTags.reverse()
+      this.uniquePriorities = sortBy(this.uniquePriorities, 'ticket_count').reverse()
     },
 
-    setSingleTagObject(uniqueTagList: Array) {
-      let tag = {
-        name: get(uniqueTagList, '[0]'),
-        ticket_count: this.tags?.length
-      }
-
-      this.uniqueTags.push(tag)
+    getPriorityLabel(priorityId: Number) {
+      let priorityObject = this.ticketPriorities.filter((priority) => priority?.value == priorityId)
+      return get(priorityObject, '[0].label')
     }
   }
 })
