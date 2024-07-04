@@ -68,13 +68,13 @@ export default defineComponent({
       return this.$information?.bgAccentSecondaryColor
     },
     groupGridConfig() {
-      if (this.layout == 'spin-layout') return 'grid-cols-3'
+      if (this.layout == 'spin-layout') return 'grid-cols-1'
       if (this.layout == 'rows-layout') return 'auto-rows-auto grid-flow-row'
       if (this.layout == 'columns-layout') return 'auto-cols-auto grid-flow-col'
       return ''
     },
     panelGridConfig() {
-      if (this.layout == 'spin-layout') return 'grid-rows-1'
+      if (this.layout == 'spin-layout') return 'grid-cols-5'
       if (this.layout == 'rows-layout') return 'auto-cols-auto grid-flow-col'
       if (this.layout == 'columns-layout') return 'auto-cols-auto grid-flow-row'
       return ''
