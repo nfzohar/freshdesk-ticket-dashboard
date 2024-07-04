@@ -1,3 +1,4 @@
+import { sortBy, get } from 'lodash'
 import { auth } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 import { configuration } from '@/stores/configuration'
@@ -114,6 +115,20 @@ export async function updatePanelInState(
 
   await configuration().updateLayoutGroups(rows)
   return rows
+}
+
+// Generate a name, ticket_count dataset for graph display
+export function generateGraphDataset(
+  valueList: Object,
+  labelField = 'name',
+  valueField = 'ticket_count'
+) {
+  const values = sortBy(Object.values(valueList), labelField)
+
+  return {
+    labels: values?.map((field) => get(field, labelField)),
+    values: values?.map((field) => get(field, valueField))
+  }
 }
 
 // Check, if the number is even.

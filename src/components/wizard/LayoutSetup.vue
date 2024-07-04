@@ -55,6 +55,9 @@ export default defineComponent({
   },
 
   computed: {
+    layout(): String {
+      return this.$configuration?.layoutComponent
+    },
     currentLayoutGroups(): Array {
       return this.$configuration.theLayout.groups
     },
@@ -63,9 +66,6 @@ export default defineComponent({
     },
     accentSecondaryBg(): String {
       return this.$information?.bgAccentSecondaryColor
-    },
-    layout(): String {
-      return this.$configuration?.layoutComponent
     },
     groupGridConfig() {
       if (this.layout == 'spin-layout') return 'grid-cols-3'

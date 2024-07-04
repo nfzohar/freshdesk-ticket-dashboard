@@ -1,10 +1,7 @@
 <template>
-  <a-panel :title="'Tags'" :datasets="dataset" :dataset-labels="datasetLabels">
+  <a-panel :title="'Tags'" :datasets="graph?.values" :dataset-labels="graph?.labels">
     <template #defaultView>
-      <div
-        class="panel-body lg:grid-cols-2"
-        :class="'overflow-y-scroll scrollbar-hide'"
-      >
+      <div class="panel-body lg:grid-cols-2" :class="'overflow-y-scroll scrollbar-hide'">
         <a-card
           v-for="(tag, t) in uniqueTags"
           :key="t"
@@ -21,6 +18,7 @@ import { defineComponent } from 'vue'
 import { uniq, sortBy, get } from 'lodash'
 import ACard from '@/components/general/ACard.vue'
 import APanel from '@/components/general/APanel.vue'
+import { generateGraphDataset } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'TicketTagStatisticsSection',
@@ -45,11 +43,8 @@ export default defineComponent({
     tags() {
       return this.tickets?.map((ticket) => ticket.tags)
     },
-    dataset() {
-      return Object.values(this.uniqueTags?.map((field) => field?.ticket_count))
-    },
-    datasetLabels() {
-      return Object.values(this.uniqueTags?.map((field) => field?.name))
+    graph() {
+      return generateGraphDataset(this.uniqueTags)
     }
   },
 

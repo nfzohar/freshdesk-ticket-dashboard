@@ -1,5 +1,5 @@
 <template>
-  <a-panel :title="'Groups'" :datasets="dataset" :dataset-labels="datasetLabels">
+  <a-panel :title="'Groups'" :datasets="graph?.values" :dataset-labels="graph?.labels">
     <template #defaultView>
       <div
         :key="ticketGroups?.length"
@@ -22,6 +22,7 @@ import { defineComponent } from 'vue'
 import { groupBy, sortBy } from 'lodash'
 import ACard from '@/components/general/ACard.vue'
 import APanel from '@/components/general/APanel.vue'
+import { generateGraphDataset } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'TicketGroupsList',
@@ -44,11 +45,8 @@ export default defineComponent({
   },
 
   computed: {
-    dataset() {
-      return Object.values(this.ticketGroups?.map((group) => group?.ticket_count))
-    },
-    datasetLabels() {
-      return Object.values(this.ticketGroups?.map((group) => group?.name))
+    graph() {
+      return generateGraphDataset(this.ticketGroups)
     }
   },
 

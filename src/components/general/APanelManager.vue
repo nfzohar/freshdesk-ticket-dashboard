@@ -104,7 +104,7 @@ export default defineComponent({
 
   watch: {
     panelComponent() {
-      if (this.selectedPanelIsCustomField) {
+      if (!this.selectedPanelIsCustomField) {
         this.customPanelTitle = ''
         this.panelCustomField = ''
       }
