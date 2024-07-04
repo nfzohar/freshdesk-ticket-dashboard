@@ -34,10 +34,7 @@
       class="block w-full h-full rounded-md p-2 bg-secondary-600 hover:bg-secondary-500 hover:border hover:border-primary-500"
       @click="addNewGroup()"
     >
-      <span
-        class="opacity-40 text-2xl font-bold"
-        v-text="'Add a new panel group'"
-      />
+      <span class="opacity-40 text-2xl font-bold" v-text="'Add a new panel group'" />
     </button>
   </div>
 </template>
@@ -68,18 +65,18 @@ export default defineComponent({
       return this.$information?.bgAccentSecondaryColor
     },
     layout(): String {
-      return this.$configuration?.orientation
+      return this.$configuration?.layoutComponent
     },
     groupGridConfig() {
-      if(this.layout == 'carousel') return 'grid-cols-3';
-      if(this.layout == 'vertical') return 'auto-cols-auto grid-flow-col';
-      if(this.layout == 'horizontal') return 'auto-rows-auto grid-flow-row';
+      if (this.layout == 'spin-layout') return 'grid-cols-3'
+      if (this.layout == 'rows-layout') return 'auto-rows-auto grid-flow-row'
+      if (this.layout == 'columns-layout') return 'auto-cols-auto grid-flow-col'
       return ''
     },
     panelGridConfig() {
-      if(this.layout == 'carousel') return 'grid-rows-1'
-      if(this.layout == 'vertical') return 'auto-cols-auto grid-flow-col'
-      if(this.layout == 'horizontal') return 'auto-cols-auto grid-flow-col'
+      if (this.layout == 'spin-layout') return 'grid-rows-1'
+      if (this.layout == 'rows-layout') return 'auto-cols-auto grid-flow-col'
+      if (this.layout == 'columns-layout') return 'auto-cols-auto grid-flow-col'
       return ''
     }
   },

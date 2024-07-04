@@ -163,7 +163,6 @@ export const information = defineStore('information', {
       const ignoredFields = [
         'id',
         'tags',
-        'type',
         'stats',
         'status',
         'due_by',

@@ -24,7 +24,7 @@
             <leaderboards-settings />
           </template>
           <template #tab_3>
-            <layout-orientation />
+            <layout-component-selection />
           </template>
           <template #tab_4>
             <layout-setup />
@@ -44,9 +44,9 @@
 import { defineComponent } from 'vue'
 import Tabs from '@/components/wizard/Tabs.vue'
 import LayoutSetup from '@/components/wizard/LayoutSetup.vue'
-import LayoutOrientation from '@/components/wizard/LayoutOrientation.vue'
 import AutoRefreshSettings from '@/components/wizard/AutoRefreshSettings.vue'
 import LeaderboardsSettings from '@/components/wizard/LeaderboardsSettings.vue'
+import LayoutComponentSelection from '@/components/wizard/LayoutComponentSelection.vue'
 import PresetOrCustomConfiguration from '@/components/wizard/PresetOrCustomConfiguration.vue'
 
 export default defineComponent({
@@ -54,9 +54,9 @@ export default defineComponent({
 
   components: {
     PresetOrCustomConfiguration,
+    LayoutComponentSelection,
     AutoRefreshSettings,
     LeaderboardsSettings,
-    LayoutOrientation,
     LayoutSetup,
     Tabs
   },

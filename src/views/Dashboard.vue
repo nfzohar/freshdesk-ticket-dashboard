@@ -53,19 +53,14 @@ export default defineComponent({
   },
 
   computed: {
+    allTickets(): Object {
+      return this.tickets?.flat()
+    },
     dashboardLayout() {
-      switch(this.$configuration?.orientation){
-        case 'horizontal': return 'rows-layout'
-        case 'vertical': return 'columns-layout'
-        case 'carousel': return 'carousel-layout'
-        default: return 'columns-layout'
-      }
+      return this.$configuration?.layoutComponent
     },
     autoHideTopBar() {
       return this.$configuration?.autoHideToolbar && this.hiddenTopBar
-    },
-    allTickets(): Object {
-      return this.tickets?.flat()
     }
   },
 

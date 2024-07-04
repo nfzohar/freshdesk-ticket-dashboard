@@ -83,7 +83,7 @@ export default defineComponent({
     setLayoutPanelsPreset() {
       let layout = {
         autoHideToolbar: true,
-        direction: 'horizontal',
+        component: 'rows-layout',
         visibleTicketCounts: [],
         groups: [
           [

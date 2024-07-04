@@ -16,7 +16,7 @@ export const configuration = defineStore('configuration', {
     layout: {
       autoHideToolbar: true,
       visibleTicketCounts: [],
-      direction: 'horizontal',
+      component: 'rows-layout',
       groups: []
     }
   }),
@@ -34,8 +34,8 @@ export const configuration = defineStore('configuration', {
     layoutGroups(): Array {
       return this.layout?.groups
     },
-    orientation(): String {
-      return this.layout?.direction
+    layoutComponent(): String {
+      return this.layout?.component
     },
     trophyIcon(): String {
       return this.leaderboards?.trophyIcon
