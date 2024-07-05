@@ -120,10 +120,20 @@ export async function updatePanelInState(
 // Generate a name, ticket_count dataset for graph display
 export function generateGraphDataset(
   valueList: Object,
+  sortProp = 'name-asc',
   labelField = 'name',
   valueField = 'ticket_count'
 ) {
-  const values = sortBy(Object.values(valueList), labelField)
+  let sortByField = 'name'
+  if (sortProp.includes('ticket_count')) {
+    sortByField = 'ticket_count'
+  }
+
+  let values = sortBy(Object.values(valueList), sortByField)
+
+  if (sortProp.includes('desc')) {
+    values = values.reverse()
+  }
 
   return {
     labels: values?.map((field) => get(field, labelField)),

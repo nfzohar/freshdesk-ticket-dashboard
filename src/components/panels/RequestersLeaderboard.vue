@@ -3,6 +3,7 @@
     :datasets="graph?.values"
     :dataset-labels="graph?.labels"
     :title="`Top ${leaderboardsLength} requesters`"
+    :is-sortable="false"
   >
     <template #defaultView>
       <div

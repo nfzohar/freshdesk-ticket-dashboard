@@ -12,8 +12,10 @@
           :tickets="allTickets"
           :is="panel.component"
           :is-open="panel.visible"
+          :sort-by="panel?.sortBy"
           :additional-data="panel.data"
           :display-type="panel.displayType"
+          @updatedGraphSort="(value) => updatePanel(value, panel?.id, 'sortBy')"
           @toggleVisibility="(value) => updatePanel(value, panel?.id, 'visible')"
           @updatedDisplayType="(value) => updatePanel(value, panel?.id, 'displayType')"
         />

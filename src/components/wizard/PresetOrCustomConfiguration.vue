@@ -92,6 +92,7 @@ export default defineComponent({
               component: 'TicketCounters',
               displayType: 'default',
               visible: true,
+              sortBy: {},
               data: {}
             }
           ],
@@ -101,6 +102,7 @@ export default defineComponent({
               component: 'TicketTypesList',
               displayType: 'default',
               visible: true,
+              sortBy: {},
               data: {}
             },
             {
@@ -108,6 +110,7 @@ export default defineComponent({
               component: 'TicketTagsList',
               displayType: 'default',
               visible: true,
+              sortBy: {},
               data: {}
             },
             {
@@ -115,6 +118,7 @@ export default defineComponent({
               component: 'TicketGroupsList',
               displayType: 'default',
               visible: true,
+              sortBy: {},
               data: {}
             }
           ],
@@ -124,6 +128,7 @@ export default defineComponent({
               component: 'AgentsLeaderboard',
               displayType: 'default',
               visible: true,
+              sortBy: {},
               data: {}
             },
             {
@@ -131,6 +136,7 @@ export default defineComponent({
               component: 'RequestersLeaderboard',
               displayType: 'v-bar',
               visible: true,
+              sortBy: {},
               data: {}
             }
           ]

@@ -1,5 +1,5 @@
 <template>
-  <a-panel :title="'Priorities'" :datasets="graph?.values" :dataset-labels="graph?.labels">
+  <a-panel :title="'Priorities'" :dataset-source="uniquePriorities">
     <template #defaultView>
       <div class="panel-body lg:grid-cols-2" :class="'overflow-y-scroll scrollbar-hide'">
         <a-card
@@ -18,7 +18,6 @@ import { defineComponent } from 'vue'
 import { groupBy, sortBy, get } from 'lodash'
 import ACard from '@/components/general/ACard.vue'
 import APanel from '@/components/general/APanel.vue'
-import { generateGraphDataset } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'TicketPriorityList',
@@ -42,9 +41,6 @@ export default defineComponent({
   computed: {
     ticketPriorities(): Array {
       return this.$information?.storedPriorities
-    },
-    graph() {
-      return generateGraphDataset(this.uniquePriorities)
     }
   },
 

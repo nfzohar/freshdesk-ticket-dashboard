@@ -1,6 +1,6 @@
 <template>
   <div class="block w-screen h-screen p-10 scrollbar-hide">
-    <ACarousel></ACarousel>
+    <!-- <ACarousel></ACarousel> -->
     <template v-for="(items, r) in rows" :key="r">
       <component
         v-for="(panel, p) in items"
@@ -9,8 +9,10 @@
         :tickets="allTickets"
         :is="panel.component"
         :is-open="panel.visible"
+        :sort-by="panel?.sortBy"
         :additional-data="panel.data"
         :display-type="panel.displayType"
+        @updatedGraphSort="(value) => updatePanel(value, panel?.id, 'sortBy')"
         @toggleVisibility="(value) => updatePanel(value, panel?.id, 'visible')"
         @updatedDisplayType="(value) => updatePanel(value, panel?.id, 'displayType')"
       />

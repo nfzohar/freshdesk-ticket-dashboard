@@ -97,6 +97,7 @@ export default defineComponent({
         displayType: 'default',
         component: '',
         visible: true,
+        sortBy: {},
         data: {}
       }
       this.layoutGroups[groupId].push(newComponent)

@@ -3,6 +3,7 @@
     :datasets="graph?.values"
     :dataset-labels="graph?.labels"
     :title="`Top ${leaderboardsLength} agents`"
+    :is-sortable="false"
   >
     <template #defaultView>
       <div :key="tickets.length" class="panel-body" :class="'overflow-y-scroll scrollbar-hide'">

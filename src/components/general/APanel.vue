@@ -8,14 +8,25 @@
       />
 
       <div class="flex items-center gap-x-2">
-        <button
-          v-if="!selectedViewDefault"
-          class="graph-icon transition-transform hover:rotate-45"
-          :title="'Generate new graph color palette'"
-          @click="updateToken++"
-        >
-          <i class="fa fa-brush" />
-        </button>
+        <template v-if="!selectedViewDefault">
+          <button
+            class="graph-icon transition-transform hover:rotate-45"
+            :title="'Generate new graph color palette'"
+            @click="updateToken++"
+          >
+            <i class="fa fa-brush" />
+          </button>
+
+          <button
+            v-if="isSortable"
+            class="graph-icon transition-transform"
+            :title="'Set graph sorting'"
+            :key="selectedSortBy"
+            @click="setSort()"
+          >
+            <i :class="`fa ${sortIcon}`" />
+          </button>
+        </template>
 
         <button class="graph-icon" :title="'Switch display type'" @click="nextView()">
           <i class="fa fa-shuffle" />
@@ -23,18 +34,18 @@
       </div>
     </div>
 
-    <div v-if="isOpen" class="w-full h-auto">
+    <div v-if="isOpen" class="w-full h-auto p-1">
       <hr class="mx-1 border border-primary-500" />
       <slot v-if="selectedViewDefault" name="defaultView" />
 
       <a-statistics-graph
         v-else
-        :key="(selectedView, updateToken)"
+        :key="(selectedView, selectedSortBy, updateToken)"
         :type="selectedView"
         :custom-class="'p-5'"
-        :datasets="datasets"
         :dataset-title="title"
-        :dataset-labels="datasetLabels"
+        :datasets="dataset?.values"
+        :dataset-labels="dataset?.labels"
       />
     </div>
   </div>
@@ -42,6 +53,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { generateGraphDataset } from '@/helpers/CommonMethods'
 import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
 
 export default defineComponent({
@@ -49,7 +61,7 @@ export default defineComponent({
 
   components: { AStatisticsGraph },
 
-  emits: ['updatedDisplayType', 'toggleVisibility', 'panelUpdated'],
+  emits: ['updatedDisplayType', 'updatedGraphSort', 'toggleVisibility', 'panelUpdated'],
 
   props: {
     id: {
@@ -61,12 +73,7 @@ export default defineComponent({
       required: true,
       default: 'Custom Section'
     },
-    datasets: {
-      type: [Array, Object],
-      required: false,
-      default: () => []
-    },
-    datasetLabels: {
+    datasetSource: {
       type: [Array, Object],
       required: false,
       default: () => []
@@ -80,6 +87,16 @@ export default defineComponent({
       type: String,
       required: false,
       default: 'default'
+    },
+    sortBy: {
+      type: String,
+      required: false,
+      default: 'name-asc'
+    },
+    isSortable: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
 
@@ -88,7 +105,9 @@ export default defineComponent({
       updateToken: 0,
       isLoading: true,
       selectedView: 'default',
-      views: ['default', 'v-bar', 'h-bar', 'pie', 'doughnut']
+      selectedSortBy: 'names-asc',
+      views: ['default', 'v-bar', 'h-bar', 'pie', 'doughnut'],
+      sorts: ['name-asc', 'name-desc', 'ticket_count-asc', 'ticket_count-desc']
     }
   },
 
@@ -100,25 +119,45 @@ export default defineComponent({
       return this.$information?.bgAccentSecondaryColor
     },
     panelBorder(): String {
-      return this.$information.conditionalBorder
+      return this.$information?.conditionalPrimaryBorder
+    },
+    dataset(): Object {
+      return generateGraphDataset(this.datasetSource, this.sortBy)
+    },
+    sortIcon(): String {
+      if (this.selectedSortBy == this.sorts[0]) return 'fa-arrow-up-a-z'
+      if (this.selectedSortBy == this.sorts[1]) return 'fa-arrow-down-a-z'
+      if (this.selectedSortBy == this.sorts[2]) return 'fa-arrow-up-1-9'
+      if (this.selectedSortBy == this.sorts[3]) return 'fa-arrow-down-1-9'
+      return 'fa-arrow-up-short-wide'
     }
   },
 
   watch: {
     selectedView() {
       this.$emit('updatedDisplayType', this.selectedView)
+    },
+    selectedSortBy() {
+      this.$emit('updatedGraphSort', this.selectedSortBy)
     }
   },
 
   mounted() {
+    this.selectedSortBy = this.sortBy
     this.selectedView = this.displayType
   },
 
   methods: {
     nextView() {
-      let currentIndex = this.views.indexOf(this.selectedView) + 1
-      this.selectedView = this.views[currentIndex] ?? 'default'
+      let currentViewIndex = this.views.indexOf(this.selectedView)
+      this.selectedView = this.views[currentViewIndex + 1] ?? 'default'
     },
+
+    setSort() {
+      let currentSortIndex = this.sorts.indexOf(this.selectedSortBy)
+      this.selectedSortBy = this.sorts[currentSortIndex + 1] ?? 'name-asc'
+    },
+
     toggleVisibility() {
       if (this.isOpen) {
         this.updateToken++
@@ -131,6 +170,6 @@ export default defineComponent({
 
 <style scoped>
 .graph-icon {
-  @apply w-7 h-7 rounded-full border border-primary-500 hover:bg-primary-500 hover:shadow-primary-600;
+  @apply w-7 h-7 rounded-full border border-primary-500 hover:bg-primary-500;
 }
 </style>

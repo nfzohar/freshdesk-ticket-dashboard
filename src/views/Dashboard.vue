@@ -14,7 +14,9 @@
       @refresh="loadTickets"
       @reload="reloadToken++"
     />
-    <component :key="resizeToken" :is="dashboardLayout" :all-tickets="allTickets" />
+    <div class="overflow-hidden scrollbar-hide min-h-screen w-screen">
+      <component :key="resizeToken" :is="dashboardLayout" :all-tickets="allTickets" />
+    </div>
   </div>
 </template>
 

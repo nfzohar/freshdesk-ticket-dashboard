@@ -102,7 +102,7 @@ export const information = defineStore('information', {
     bgAccentSecondaryColor(): String {
       return `bg-secondary-${this.isSecondaryColorDark ? '600' : '400'}`
     },
-    conditionalBorder(): String{
+    conditionalPrimaryBorder(): String {
       return this.isSecondaryColorDark ? 'border-none' : 'border border-primary-500'
     }
   },

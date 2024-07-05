@@ -1,14 +1,11 @@
 <template>
-  <div :key="type" class="w-full">
-    <h1 v-if="title" class="block text-xl font-bold mb-1" v-text="title" />
-
-    <component
-      :is="chartType"
-      :class="customClass"
-      :data="chartData"
-      :options="chartOptions"
-    />
-  </div>
+  <component
+    :key="type"
+    :is="chartType"
+    :class="customClass"
+    :data="chartData"
+    :options="chartOptions"
+  />
 </template>
 
 <script lang="ts">
@@ -50,11 +47,6 @@ export default defineComponent({
   components: { BarChart, LineChart, PieChart, DoughnutChart },
 
   props: {
-    title: {
-      type: String,
-      required: false,
-      default: ''
-    },
     datasetTitle: {
       type: String,
       required: false,
@@ -79,7 +71,7 @@ export default defineComponent({
       type: String,
       required: false,
       default:
-        'w-full p-2 border-primary-700 border bg-secondary-500 rounded-md  shadow-primary-600'
+        'w-full m-auto p-2 border-primary-700 border bg-secondary-500 rounded-md shadow-primary-600'
     }
   },
 

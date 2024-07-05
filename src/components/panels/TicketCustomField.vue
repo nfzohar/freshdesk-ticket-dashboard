@@ -1,5 +1,5 @@
 <template>
-  <a-panel :title="customTitle" :datasets="graph?.values" :dataset-labels="graph?.labels">
+  <a-panel :title="customTitle" :dataset-source="uniqueFields">
     <template #defaultView>
       <div
         :key="uniqueFields?.length"
@@ -22,7 +22,6 @@ import { uniq } from 'lodash'
 import { defineComponent } from 'vue'
 import ACard from '@/components//general/ACard.vue'
 import APanel from '@/components/general/APanel.vue'
-import { generateGraphDataset } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'TicketCustomFieldPanel',
@@ -81,9 +80,6 @@ export default defineComponent({
     },
     customCustomField() {
       return this.customField.substring(0, 3) == 'cf_'
-    },
-    graph() {
-      return generateGraphDataset(this.uniqueFields)
     }
   },
 

@@ -1,5 +1,5 @@
 <template>
-  <a-panel :title="'Tags'" :datasets="graph?.values" :dataset-labels="graph?.labels">
+  <a-panel :title="'Tags'" :dataset-source="uniqueTags">
     <template #defaultView>
       <div class="panel-body lg:grid-cols-2" :class="'overflow-y-scroll scrollbar-hide'">
         <a-card
@@ -18,7 +18,6 @@ import { defineComponent } from 'vue'
 import { uniq, sortBy, get } from 'lodash'
 import ACard from '@/components/general/ACard.vue'
 import APanel from '@/components/general/APanel.vue'
-import { generateGraphDataset } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'TicketTagStatisticsSection',
@@ -42,9 +41,6 @@ export default defineComponent({
   computed: {
     tags() {
       return this.tickets?.map((ticket) => ticket.tags)
-    },
-    graph() {
-      return generateGraphDataset(this.uniqueTags)
     }
   },
 

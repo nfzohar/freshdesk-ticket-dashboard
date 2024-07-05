@@ -11,7 +11,7 @@
         ></li>
       </ol>
     </div>
-    <div class="carousel-inner relative overflow-hidden w-full">
+    <div class="carousel-inner relative overflow-y-scroll w-full">
       <div
         v-for="(img, i) in images"
         :id="`slide-${i}`"
