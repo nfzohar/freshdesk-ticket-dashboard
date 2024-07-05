@@ -1,5 +1,5 @@
 <template>
-  <div :class="`w-full h-max border-primary-600 border rounded-md ${accentSecondaryBg}`">
+  <div :class="`w-full h-max rounded-md ${accentSecondaryBg} ${panelBorder}`">
     <div class="flex items-center justify-between py-1 px-2">
       <h1
         class="text-xl font-bold mb-1 capitalize cursor-pointer"
@@ -98,6 +98,9 @@ export default defineComponent({
     },
     accentSecondaryBg(): String {
       return this.$information?.bgAccentSecondaryColor
+    },
+    panelBorder(): String {
+      return this.$information.conditionalBorder
     }
   },
 
