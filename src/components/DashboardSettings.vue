@@ -8,7 +8,7 @@
 
     <template #content>
       <div
-        class="m-auto w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 border rounded-md h-full md:h-auto p-5 overflow-y-scroll" 
+        class="m-auto w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 border rounded-md h-full md:h-auto p-5 overflow-y-scroll"
         :class="`text-${secondaryColorDark ? 'white' : 'black'}`"
       >
         <div class="grid grid-cols-1 md:grid-cols-2">
@@ -26,7 +26,7 @@
               type="number"
               :title="'Count of minutes in a refresh interval.'"
               class="w-3/12 rounded-md text-black px-1"
-              @change="refreshIsActive=false"
+              @change="refreshIsActive = false"
             />
           </a-setting-section>
 
@@ -232,6 +232,9 @@ export default defineComponent({
     },
     leaderboardsWatchToken() {
       this.updateLeaderboardsSettings()
+    },
+    'visibleStatusCounters.length'() {
+      this.$configuration?.updateVisibleStatuses(this.visibleStatusCounters)
     }
   },
 
@@ -282,8 +285,6 @@ export default defineComponent({
       !this.visibleStatusCounters.includes(status)
         ? this.visibleStatusCounters.push(status)
         : (this.visibleStatusCounters = this.visibleStatusCounters.filter((s) => s != status))
-
-      this.$configuration.updateVisibleStatuses(this.visibleStatusCounters)
     },
 
     clearStoredInformation() {
