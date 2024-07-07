@@ -44,9 +44,7 @@
         :slide-duration-minutes="singleSlideTime"
       >
         <template v-for="(panel, p) in panels" :key="p" #[`slide_${p}`]>
-          <div
-            :class="`m-auto ${['pie', 'doughnut'].includes(panel?.displayType) ? 'w-1/2' : 'w-full'}`"
-          >
+          <div :class="`m-auto ${setGraphWidth(panel)}`">
             <component
               :id="panel.id"
               :tickets="allTickets"
@@ -133,6 +131,18 @@ export default defineComponent({
   },
 
   methods: {
+    setGraphWidth(panel: Object) {
+      let halpWidthViews = ['pie', 'doughnut']
+
+      return this.tempStop
+        ? halpWidthViews.includes(panel?.displayType)
+          ? 'w-1/3'
+          : 'w-7/12'
+        : halpWidthViews.includes(panel?.displayType)
+          ? 'w-1/2'
+          : 'w-full'
+    },
+
     async updatePanel(newValue: String, panelId: String, property: String) {
       await updatePanelInState(this.carouselItems, newValue, panelId, property)
       this.carouselItems = this.carouselItemsFromState
