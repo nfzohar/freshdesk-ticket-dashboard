@@ -1,8 +1,7 @@
 <template>
   <a-panel
-    :datasets="graph?.values"
-    :dataset-labels="graph?.labels"
     :title="`Top ${leaderboardsLength} requesters`"
+    :dataset-source="graphData"
     :is-sortable="false"
   >
     <template #defaultView>
@@ -79,7 +78,7 @@ export default defineComponent({
     topCountedRequesters(): Object {
       return Object.values(this.topRequesters.slice(0, this.leaderboardsLength))
     },
-    graph() {
+    graphData() {
       return {
         labels: this.topCountedRequesters?.map((field) => field?.name),
         values: this.topCountedRequesters?.map((field) => field?.ticket_count)

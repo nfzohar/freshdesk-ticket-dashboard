@@ -167,15 +167,9 @@ export default defineComponent({
       actions: [
         {
           name: 'Logout',
-          title: 'Logout from the dashboard.',
-          icon: 'fa fa-sign-out-alt',
-          function: () => this.$router.push('/logout')
-        },
-        {
-          name: 'Clear all data',
           title: 'Clear all stored information and logout.',
-          icon: 'fa fa-broom',
-          function: () => this.clearStoredInformation()
+          icon: 'fa fa-sign-out-alt',
+          function: () => this.logout()
         },
         {
           name: 'Reload information',
@@ -287,10 +281,9 @@ export default defineComponent({
         : (this.visibleStatusCounters = this.visibleStatusCounters.filter((s) => s != status))
     },
 
-    clearStoredInformation() {
+    logout() {
       this.$configuration.deleteStoredConfiguration()
       this.$information.deleteStoredConfiguration()
-
       this.$router.push('/logout')
     }
   }

@@ -125,7 +125,8 @@ export function generateGraphDataset(
   valueField = 'ticket_count'
 ) {
   let sortByField = 'name'
-  if (sortProp.includes('ticket_count')) {
+
+  if (sortProp?.includes('ticket_count')) {
     sortByField = 'ticket_count'
   }
 

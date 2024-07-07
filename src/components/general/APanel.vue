@@ -1,5 +1,5 @@
 <template>
-  <div :class="`w-full h-max rounded-md ${accentSecondaryBg} ${panelBorder}`">
+  <div :class="`w-full h-min rounded-md ${accentSecondaryBg} ${panelBorder}`">
     <div class="flex items-center justify-between py-1 px-2">
       <h1
         class="text-xl font-bold mb-1 capitalize cursor-pointer"
@@ -20,7 +20,7 @@
           <button
             v-if="isSortable"
             class="graph-icon transition-transform"
-            :title="'Set graph sorting'"
+            :title="sortTitle"
             :key="selectedSortBy"
             @click="setSort()"
           >
@@ -122,7 +122,9 @@ export default defineComponent({
       return this.$information?.conditionalPrimaryBorder
     },
     dataset(): Object {
-      return generateGraphDataset(this.datasetSource, this.sortBy)
+      return this.isSortable
+        ? generateGraphDataset(this.datasetSource, this.sortBy)
+        : this.datasetSource
     },
     sortIcon(): String {
       if (this.selectedSortBy == this.sorts[0]) return 'fa-arrow-up-a-z'
@@ -130,6 +132,13 @@ export default defineComponent({
       if (this.selectedSortBy == this.sorts[2]) return 'fa-arrow-up-1-9'
       if (this.selectedSortBy == this.sorts[3]) return 'fa-arrow-down-1-9'
       return 'fa-arrow-up-short-wide'
+    },
+    sortTitle() {
+      if (this.selectedSortBy == this.sorts[0]) return 'Sorted alphabeticaly, ascending.'
+      if (this.selectedSortBy == this.sorts[1]) return 'Sorted alphabeticaly, descending.'
+      if (this.selectedSortBy == this.sorts[2]) return 'Sorted by ticket count, ascending.'
+      if (this.selectedSortBy == this.sorts[3]) return 'Sorted by ticket count, descending.'
+      return 'Set graph sorting'
     }
   },
 

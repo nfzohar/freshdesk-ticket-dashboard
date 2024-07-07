@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid w-screen h-screen px-5 overflow-y-scroll scrollbar-hide gap-x-4"
+    class="grid w-screen h-screen p-3 scrollbar-hide gap-x-4"
     :class="`grid-cols-1 grid-cols-${columns?.length}`"
   >
     <template v-for="(items, r) in columns" :key="r">

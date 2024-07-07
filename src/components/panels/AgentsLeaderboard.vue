@@ -1,8 +1,7 @@
 <template>
   <a-panel
-    :datasets="graph?.values"
-    :dataset-labels="graph?.labels"
     :title="`Top ${leaderboardsLength} agents`"
+    :dataset-source="graphData"
     :is-sortable="false"
   >
     <template #defaultView>
@@ -61,21 +60,22 @@ export default defineComponent({
 
   computed: {
     leaderboardsLength(): number {
-      return this.$configuration.leaderboardsLength
-    },
-    trophyIcon(): String {
-      return this.$configuration.trophyIcon
-    },
-    showTrophies(): Boolean {
-      return this.$configuration.showTrophies
+      return this.$configuration?.leaderboardsLength
     },
     trophyColors(): Array {
-      return this.$information.trophyColors
+      return this.$information?.trophyColors
     },
+    trophyIcon(): String {
+      return this.$configuration?.trophyIcon
+    },
+    showTrophies(): Boolean {
+      return this.$configuration?.showTrophies
+    },
+
     topCountedAgents(): Object {
-      return Object.values(this.sortedAgents.slice(0, this.leaderboardsLength))
+      return Object.values(this.sortedAgents?.slice(0, this.leaderboardsLength))
     },
-    graph() {
+    graphData() {
       return {
         labels: this.topCountedAgents?.map((field) => field?.name),
         values: this.topCountedAgents?.map((field) => field?.ticket_count)

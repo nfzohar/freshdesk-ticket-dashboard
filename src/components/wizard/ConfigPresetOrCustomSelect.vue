@@ -25,7 +25,7 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'DefaultOrCustomConfiguration',
+  name: 'ConfigPresetOrCustomSelect',
 
   emits: ['usePreset', 'buildCustom'],
 
@@ -71,10 +71,9 @@ export default defineComponent({
 
     setLeaderbordsPreset() {
       let leaderboardsPreset = {
-        length: 5,
+        length: 3,
         showThrophies: false,
         trophyIcon: 'fa fa-trophy',
-        trophyColors: ['text-yellow-500', 'text-gray-400', 'text-amber-900']
       }
       this.$configuration.updateLeaderboardSettings(leaderboardsPreset)
       this.$toast.success('Dashboard configuration was updated.')
@@ -88,55 +87,55 @@ export default defineComponent({
         groups: [
           [
             {
-              id: '1-1',
+              id: String(Math.random()),
               component: 'TicketCounters',
               displayType: 'default',
               visible: true,
-              sortBy: {},
+              sortBy: '',
               data: {}
             }
           ],
           [
             {
-              id: '2-1',
+              id: String(Math.random()),
               component: 'TicketTypesList',
               displayType: 'default',
               visible: true,
-              sortBy: {},
+              sortBy: '',
               data: {}
             },
             {
-              id: '2-1',
+              id: String(Math.random()),
               component: 'TicketTagsList',
               displayType: 'default',
               visible: true,
-              sortBy: {},
+              sortBy: '',
               data: {}
             },
             {
-              id: '2-2',
+              id: String(Math.random()),
               component: 'TicketGroupsList',
               displayType: 'default',
               visible: true,
-              sortBy: {},
+              sortBy: '',
               data: {}
             }
           ],
           [
             {
-              id: '3-1',
+              id: String(Math.random()),
               component: 'AgentsLeaderboard',
               displayType: 'default',
               visible: true,
-              sortBy: {},
+              sortBy: '',
               data: {}
             },
             {
-              id: '3-2',
+              id: String(Math.random()),
               component: 'RequestersLeaderboard',
               displayType: 'v-bar',
               visible: true,
-              sortBy: {},
+              sortBy: '',
               data: {}
             }
           ]

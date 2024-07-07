@@ -4,7 +4,7 @@
     :class="`grid-cols-1 grid-rows-${rows?.length}`"
   >
     <template v-for="(items, r) in rows" :key="r">
-      <div :class="`grid w-full h-auto gap-x-5 ${panelGridlass(items?.length)}`">
+      <div :class="`grid w-full h-min gap-x-5 ${panelGridlass(items?.length)}`">
         <component
           v-for="(panel, p) in items"
           :key="p"

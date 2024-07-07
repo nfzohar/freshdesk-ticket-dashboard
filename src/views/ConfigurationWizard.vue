@@ -4,7 +4,7 @@
       <h1 class="text-5xl w-full text-left p-5 font-bold" v-text="'Configuration Wizard'" />
 
       <div class="px-5" :class="{ 'border border-primary-500 rounded-md py-5 ': page }">
-        <preset-or-custom-configuration
+        <config-preset-or-custom-select
           v-if="!page"
           @buildCustom="page = 1"
           @usePreset="page = 5"
@@ -47,13 +47,13 @@ import LayoutSetup from '@/components/wizard/LayoutSetup.vue'
 import AutoRefreshSettings from '@/components/wizard/AutoRefreshSettings.vue'
 import LeaderboardsSettings from '@/components/wizard/LeaderboardsSettings.vue'
 import LayoutComponentSelection from '@/components/wizard/LayoutComponentSelection.vue'
-import PresetOrCustomConfiguration from '@/components/wizard/PresetOrCustomConfiguration.vue'
+import ConfigPresetOrCustomSelect from '@/components/wizard/ConfigPresetOrCustomSelect.vue'
 
 export default defineComponent({
   name: 'ConfigurationWizard',
 
   components: {
-    PresetOrCustomConfiguration,
+    ConfigPresetOrCustomSelect,
     LayoutComponentSelection,
     AutoRefreshSettings,
     LeaderboardsSettings,

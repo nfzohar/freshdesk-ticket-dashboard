@@ -62,16 +62,12 @@ export default defineComponent({
       return labels
     },
     conditionalStyle() {
-      if (this.layout == 'spin-layout') {
-        return ''
-      }
-      if (this.layout == 'rows-layout') {
+      if (this.layout == 'rows-layout' || this.layout == 'spin-layout') {
         return 'sm:flex flex-row max-w-screen items-center justify-between'
       }
       if (this.layout == 'columns-layout') {
-        return `h-full ${
-          this.visibleCounters?.length > 7 ? 'grid grid-cols-2' : 'sm:flex flex-col'
-        }`
+        let grid = this.visibleCounters?.length > 7 ? 'grid grid-cols-2' : 'sm:flex flex-col'
+        return `h-full ${grid}`
       }
       return ''
     }
