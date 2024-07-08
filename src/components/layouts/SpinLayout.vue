@@ -8,9 +8,34 @@
       <ticket-counters :tickets="allTickets" />
     </div>
 
+    <div class="block m-auto w-11/12 h-auto">
+      <a-carousel
+        :slides="panelIds"
+        :spin-carousel="tempStop ? false : active"
+        :slide-duration-minutes="singleSlideTime"
+      >
+        <template v-for="(panel, p) in panels" :key="p" #[`slide_${p}`]>
+          <div :class="`m-auto ${setGraphWidth(panel)}`">
+            <component
+              :id="panel.id"
+              :tickets="allTickets"
+              :is="panel?.component"
+              :is-open="panel.visible"
+              :sort-by="panel?.sortBy"
+              :additional-data="panel?.data"
+              :display-type="panel?.displayType"
+              @updatedGraphSort="(value) => updatePanel(value, panel?.id, 'sortBy')"
+              @toggleVisibility="(value) => updatePanel(value, panel?.id, 'visible')"
+              @updatedDisplayType="(value) => updatePanel(value, panel?.id, 'displayType')"
+            />
+          </div>
+        </template>
+      </a-carousel>
+    </div>
+
     <div
       v-if="tempStop"
-      :class="`flex items-center justify-between gap-x-24 rounded-md m-auto w-11/12 p-5 mb-5 ${optionsFormStyle}`"
+      :class="`flex items-center justify-between gap-x-24 rounded-md m-auto w-11/12 p-5 -mt-10 ${optionsFormStyle}`"
     >
       <span class="block uppercase font-bold opacity-50" v-text="'Carousel options'" />
 
@@ -35,31 +60,6 @@
       <button @click="tempStop = false">
         <i class="fa fa-times" />
       </button>
-    </div>
-
-    <div class="block m-auto w-11/12 h-auto">
-      <a-carousel
-        :slides="panelIds"
-        :spin-carousel="tempStop ? false : active"
-        :slide-duration-minutes="singleSlideTime"
-      >
-        <template v-for="(panel, p) in panels" :key="p" #[`slide_${p}`]>
-          <div :class="`m-auto ${setGraphWidth(panel)}`">
-            <component
-              :id="panel.id"
-              :tickets="allTickets"
-              :is="panel?.component"
-              :is-open="panel.visible"
-              :sort-by="panel?.sortBy"
-              :additional-data="panel?.data"
-              :display-type="panel?.displayType"
-              @updatedGraphSort="(value) => updatePanel(value, panel?.id, 'sortBy')"
-              @toggleVisibility="(value) => updatePanel(value, panel?.id, 'visible')"
-              @updatedDisplayType="(value) => updatePanel(value, panel?.id, 'displayType')"
-            />
-          </div>
-        </template>
-      </a-carousel>
     </div>
   </div>
 </template>
