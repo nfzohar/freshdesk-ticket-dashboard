@@ -18,7 +18,7 @@
       </button>
     </div>
 
-    <select v-model="panelComponent" :class="`w-full p-1 rounded-md ${textSecondaryClass}`">
+    <select v-model="panelComponent" :class="`w-full p-1 rounded-md text-black`">
       <option :value="''" v-text="'Select a panel...'" />
       <option
         v-for="(panel, p) in availablePanelComponents"
@@ -32,10 +32,10 @@
       <input
         v-model="customPanelTitle"
         type="text"
-        class="w-full rounded-md p-1"
+        :class="`w-full rounded-md p-1 ${visiblePrimaryBorder} text-black`"
         :placeholder="'Add a title for the panel...'"
       />
-      <select v-model="panelCustomField" class="w-full p-1 rounded-md">
+      <select v-model="panelCustomField" :class="`w-full p-1 rounded-md text-black`">
         <option :value="''" v-text="'Select a custom ticket property...'" />
         <option
           v-for="(field, f) in availableTicketFields"
@@ -90,6 +90,9 @@ export default defineComponent({
     },
     accentSecondaryBg(): String {
       return this.$information?.bgAccentSecondaryColor
+    },
+    visiblePrimaryBorder(){
+      return this.$information?.conditionalPrimaryBorder
     },
     selectedPanelIsCustomField() {
       return this.panelComponent == 'TicketCustomField'
