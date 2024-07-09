@@ -8,7 +8,7 @@
 
     <template #content>
       <div
-        class="m-auto w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 border rounded-md h-full md:h-auto p-5 overflow-y-scroll"
+        class="m-auto w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 scrollbar-hide border rounded-md h-full md:h-auto p-5 overflow-y-scroll"
         :class="`text-${secondaryColorDark ? 'white' : 'black'}`"
       >
         <div class="grid grid-cols-1 md:grid-cols-2">
@@ -40,39 +40,54 @@
             />
           </a-setting-section>
 
-          <a-setting-section :section-title="'Visible ticket counters'">
-            <div class="flex flex-col w-full gap-y-2">
-              <div
-                class="grid grid-cols-2 lg:grid-cols-3 gap-5 p-3 w-full overflow-y-scroll scrollbar-hide border border-primary-500 rounded-md bg-secondary-500"
-                :key="visibleStatusCounters?.length"
-              >
+          <a-setting-section :section-title="'Visible ticket status counters'">
+            <div class="w-full">
+              <div class="flex items-center justify-between w-full py-1">
                 <button
-                  v-for="(status, s) in statusLabels"
-                  :key="s"
                   class="hover:text-primary-500"
-                  :class="{ 'text-primary-500': visibleStatusCounters.includes(status) }"
-                  :title="status"
-                  v-text="status"
-                  @click="toggleVisibleStatuses(status)"
-                />
-              </div>
-
-              <div class="flex items-center justify-between border-b border-primary-500 w-full">
-                <span class="font-bold w-full" v-text="'Visible counters:'" />
-                <button
-                  class="block w-28 hover:text-primary-500"
-                  :title="'Clear all visible counters.'"
                   v-text="'Clear all'"
                   @click="visibleStatusCounters = []"
                 />
+                <button
+                  class="hover:text-primary-500"
+                  v-text="'Select all'"
+                  @click="visibleStatusCounters = statusLabels"
+                />
               </div>
-              <span
-                v-text="
-                  visibleStatusCounters.length
-                    ? visibleStatusCounters.join(', ')
-                    : 'No visible status counters found.'
-                "
-              />
+
+              <div class="flex flex-row w-full gap-2">
+                <ul
+                  class="border border-primary-500 w-1/2 rounded-md p-2 bg-secondary-700 min-h-52 max-h-96 overflow-y-scroll scrollbar-hide"
+                >
+                  <li class="font-bold border-b border-primary-500" v-text="'All statuses'" />
+                  <li
+                    v-if="visibleStatusCounters?.length == statusLabels?.length"
+                    v-text="'All selected.'"
+                  />
+                  <template v-for="(status, a) in statusLabels" :key="a">
+                    <li
+                      v-if="!visibleStatusCounters?.includes(status)"
+                      class="p-1 cursor-pointer hover:text-primary-500"
+                      v-text="status"
+                      @click="toggleVisibleStatuses(status)"
+                    />
+                  </template>
+                </ul>
+
+                <ul
+                  class="border border-primary-500 w-1/2 rounded-md p-2 bg-secondary-700 min-h-52 max-h-96 overflow-y-scroll scrollbar-hide"
+                >
+                  <li class="font-bold border-b border-primary-500" v-text="'Visible statuses'" />
+                  <li v-if="!visibleStatusCounters?.length" v-text="'None selected.'" />
+                  <li
+                    v-for="(status, a) in visibleStatusCounters"
+                    :key="a"
+                    class="p-1 cursor-pointer hover:text-primary-500"
+                    v-text="status"
+                    @click="toggleVisibleStatuses(status)"
+                  />
+                </ul>
+              </div>
             </div>
           </a-setting-section>
 
@@ -120,6 +135,14 @@
             >
               <i :class="action.icon" />
               <span v-text="action.name" />
+            </button>
+
+            <button
+              :class="`primary-button settings-button text-${primaryColorDark ? 'white' : 'black'}`"
+              @click.stop="$emit('reloadDashboard')"
+              :title="'Manually reload entire dashboard.'"
+            >
+              <i class="fa fa-repeat" />
             </button>
           </div>
 
@@ -178,8 +201,8 @@ export default defineComponent({
           function: () => this.$router.push('/setup')
         },
         {
-          name: 'Reload information',
-          title: 'Reload the whole dashboard.',
+          name: 'Refresh information',
+          title: 'Refresh the whole dashboard.',
           icon: 'fa fa-redo-alt',
           function: () => this.$router.replace('/loading')
         }
@@ -188,32 +211,32 @@ export default defineComponent({
   },
 
   computed: {
-    trophyiconOptions() {
+    trophyiconOptions(): Array {
       return this.$information?.trophyIcons
     },
-    visibleTicketCounters() {
+    visibleTicketCounters(): Object {
       return this.$configuration?.visibleTicketCounts
     },
-    statusLabels() {
+    primaryColorDark(): String {
+      return this.$information?.isPrimaryColorDark
+    },
+    secondaryColorDark(): String {
+      return this.$information?.isSecondaryColorDark
+    },
+    refreshWatchToken(): String {
+      return `${this.refreshPerMinutes}${Number(this.refreshIsActive)}`
+    },
+    leaderboardsWatchToken(): String {
+      return `${Number(this.throphiesVisible)}${this.leaderboardsTrophyIcon}${
+        this.leaderboardslength
+      }`
+    },
+    statusLabels(): Array {
       let statuses = Object.values(this.$information?.statuses)
       let labels = statuses.map((status: { label: String }) => status?.label)
 
       labels.unshift('All', 'Unresolved')
       return labels.sort()
-    },
-    refreshWatchToken() {
-      return `${this.refreshPerMinutes}${Number(this.refreshIsActive)}`
-    },
-    leaderboardsWatchToken() {
-      return `${Number(this.throphiesVisible)}${this.leaderboardsTrophyIcon}${
-        this.leaderboardslength
-      }`
-    },
-    primaryColorDark() {
-      return this.$information?.isPrimaryColorDark
-    },
-    secondaryColorDark() {
-      return this.$information?.isSecondaryColorDark
     }
   },
 

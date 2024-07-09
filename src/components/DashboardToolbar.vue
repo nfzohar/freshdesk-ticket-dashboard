@@ -1,9 +1,9 @@
 <template>
-  <ticket-details-modal
+  <!-- <ticket-details-modal
     :key="Number(detailsTicketId)"
     :ticket-id="Number(detailsTicketId)"
     @modalClosed="detailsTicketId = null"
-  />
+  /> -->
 
   <div
     class="w-full h-20 mb-5 px-1 border-b-2 border-primary-500 shadow-primary-500 transition-all"
@@ -60,8 +60,8 @@
 import { format } from 'date-fns'
 import { defineComponent } from 'vue'
 import AllTicketsList from '@/components/AllTicketsList.vue'
-import TicketFilterModal from '@/components/TicketFilters.vue'
-import TicketDetailsModal from '@/components/TicketDetailedView.vue'
+// import TicketFilterModal from '@/components/TicketFilters.vue'
+// import TicketDetailsModal from '@/components/TicketDetailedView.vue'
 import TicketExcelExporter from '@/components/TicketExcelExporter.vue'
 import DashboardSettingsModal from '@/components/DashboardSettings.vue'
 import OpenClosedStatisticsGraphModal from '@/components/OpenClosedStatisticsGraphModal.vue'
@@ -86,8 +86,8 @@ export default defineComponent({
 
   components: {
     AllTicketsList,
-    TicketFilterModal,
-    TicketDetailsModal,
+    // TicketFilterModal,
+    // TicketDetailsModal,
     TicketExcelExporter,
     DashboardSettingsModal,
     OpenClosedStatisticsGraphModal
