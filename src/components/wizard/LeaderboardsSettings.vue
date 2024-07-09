@@ -10,7 +10,7 @@
           type="number"
           :placeholder="'0'"
           :title="'Count of minutes in a refresh interval.'"
-          class="w-20 h-10 rounded-md text-black text-xl px-1"
+          :class="`w-20 h-10 rounded-md text-black text-xl px-1 ${inputBorder}`"
         />
       </div>
 
@@ -31,7 +31,7 @@
           :label-field="'label'"
           :value-field="'value'"
           label-class="font-semibold mb-1 bg-none"
-          :input-class="'w-full capitalize'"
+          :input-class="`w-full capitalize ${inputBorder}`"
           @changed="(value) => (selectedTrophyIcon = value)"
         />
 
@@ -77,6 +77,9 @@ export default defineComponent({
     },
     trophyIconOptions(): Array {
       return this.$information.trophyIcons
+    },
+    inputBorder(): String {
+      return this.$information?.conditionalPrimaryBorder
     },
     token() {
       return `${this.leaderboardLength}${Number(this.showTrophies)}${this.selectedTrophyIcon}`

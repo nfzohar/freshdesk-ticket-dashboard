@@ -52,6 +52,7 @@ export default defineComponent({
 
     async fetchTicketFieldsFromFreshdesk() {
       let statusFieldId = null
+      let sourcesFieldId = null
       let prioritiesFieldId = null
 
       await ApiCall.get('admin/ticket_fields').then((response) => {
@@ -64,13 +65,21 @@ export default defineComponent({
               case 'priority':
                 prioritiesFieldId = adminField?.id
                 break
+              case 'source':
+                sourcesFieldId = adminField?.id
+                break
             }
           })
         }
       })
 
+      let priorities = await this.fetchResourceFromFreshdesk(prioritiesFieldId)
+      this.$information.setPriorities(priorities)
+
+      let sources = await this.fetchResourceFromFreshdesk(sourcesFieldId)
+      this.$information?.setSources(sources)
+
       await this.fetchStatusesFromFreshdesk(statusFieldId)
-      await this.fetchPrioritiesFromFreshdesk(prioritiesFieldId)
     },
 
     async fetchStatusesFromFreshdesk(statusFieldId: number) {
@@ -87,13 +96,15 @@ export default defineComponent({
       })
     },
 
-    async fetchPrioritiesFromFreshdesk(prioritiesFieldId: number) {
-      await ApiCall.get(`admin/ticket_fields/${prioritiesFieldId}?include=section`).then(
+    async fetchResourceFromFreshdesk(resourceFieldId: number): Array {
+      let choices = new Array()
+
+      await ApiCall.get(`admin/ticket_fields/${resourceFieldId}?include=section`).then(
         (response) => {
-          let priorities = response?.choices
-          this.$information.setPriorities(priorities)
+          choices = response?.choices
         }
       )
+      return choices;
     }
   }
 })

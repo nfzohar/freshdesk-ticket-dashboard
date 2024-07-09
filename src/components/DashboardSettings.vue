@@ -172,16 +172,16 @@ export default defineComponent({
           function: () => this.logout()
         },
         {
-          name: 'Reload information',
-          title: 'Reload the whole dashboard.',
-          icon: 'fa fa-redo-alt',
-          function: () => this.$router.replace('/loading')
-        },
-        {
           name: 'Configuration wizard',
           title: 'To edit layout, rerun the configuration wizard.',
           icon: 'fa fa-hat-wizard',
           function: () => this.$router.push('/setup')
+        },
+        {
+          name: 'Reload information',
+          title: 'Reload the whole dashboard.',
+          icon: 'fa fa-redo-alt',
+          function: () => this.$router.replace('/loading')
         }
       ]
     }

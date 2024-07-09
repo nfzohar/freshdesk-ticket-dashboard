@@ -6,10 +6,10 @@
       class="flex flex-col w-full p-5 gap-y-3 lg:p-10 border border-primary-500 rounded-md"
     >
       <h2 class="uppercase font-bold text-base lg:text-lg xl:text-2xl" v-text="option?.title" />
-      <p v-text="option?.description" />
+      <p v-text="option?.description" :class="secondaryColorText" />
       <button
         class="flex flex-col items-center border-4 border-primary-600 bg-primary-500 rounded-md py-5 px-10 m-auto font-bold"
-        :class="'hover:bg-primary-600 hover:border-primary-500'"
+        :class="`hover:bg-primary-600 hover:border-primary-500 ${primaryColorText}`"
         @mouseenter="option.animate = true"
         @mouseleave="option.animate = false"
         @click="option.function"
@@ -50,6 +50,15 @@ export default defineComponent({
         }
       ]
     }
+  },
+
+  computed: {
+    primaryColorText(): String {
+      return this.$information?.textOnPrimaryColor
+    },
+    secondaryColorText(): String {
+      return this.$information?.textOnSecondaryColor
+    },
   },
 
   methods: {

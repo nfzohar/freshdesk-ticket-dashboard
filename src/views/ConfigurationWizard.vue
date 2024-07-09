@@ -3,7 +3,7 @@
     <div class="w-11/12 md:w-11/12 h-11/12 m-auto">
       <h1 class="text-5xl w-full text-left p-5 font-bold" v-text="'Configuration Wizard'" />
 
-      <div class="px-5" :class="{ 'border border-primary-500 rounded-md py-5 ': page }">
+      <div :class="`px-5 ${secondaryColorText} ${page ? 'border border-primary-500 rounded-md py-5': ''}`">
         <config-preset-or-custom-select
           v-if="!page"
           @buildCustom="page = 1"
@@ -32,7 +32,7 @@
         </tabs>
       </div>
 
-      <div v-if="page" class="flex justify-between w-full py-5 px-3">
+      <div v-if="page" :class="`flex justify-between w-full py-5 px-3 ${primaryColorText}`">
         <button class="wizard-navigation" v-text="'Back'" @click="page--" />
         <button class="wizard-navigation" v-text="page < 4 ? 'Next' : 'Save'" @click="page++" />
       </div>
@@ -76,7 +76,13 @@ export default defineComponent({
   computed: {
     layoutGroupsAreDefined(): Boolean {
       return this.$configuration?.layoutGroups?.length ? true : false
-    }
+    },    
+    primaryColorText(): String {
+      return this.$information?.textOnPrimaryColor
+    },
+    secondaryColorText(): String {
+      return this.$information?.textOnSecondaryColor
+    },
   },
 
   watch: {

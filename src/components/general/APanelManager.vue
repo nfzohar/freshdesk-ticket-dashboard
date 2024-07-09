@@ -18,7 +18,7 @@
       </button>
     </div>
 
-    <select v-model="panelComponent" class="w-full p-1 rounded-md">
+    <select v-model="panelComponent" :class="`w-full p-1 rounded-md ${textSecondaryClass}`">
       <option :value="''" v-text="'Select a panel...'" />
       <option
         v-for="(panel, p) in availablePanelComponents"

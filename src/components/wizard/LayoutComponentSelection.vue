@@ -10,8 +10,8 @@
         class="flex flex-col items-center border-4 rounded-md py-5 px-10 m-auto font-bold hover:bg-primary-600 hover:border-primary-500"
         :class="
           currentlySelectedLayout == option.value
-            ? 'bg-primary-600 border-primary-500'
-            : 'border-primary-600 bg-secondary-500'
+            ? `bg-primary-600 border-primary-500 ${primaryColorText}`
+            : `border-primary-600 bg-secondary-500 ${secondaryColorText} hover:${primaryColorText}`
         "
         @click="setLayoutOrientation(option.value)"
       >
@@ -57,7 +57,13 @@ export default defineComponent({
   computed: {
     currentlySelectedLayout(): String {
       return this.$configuration?.layoutComponent
-    }
+    },
+    primaryColorText(): String {
+      return this.$information?.textOnPrimaryColor
+    },
+    secondaryColorText(): String {
+      return this.$information?.textOnSecondaryColor
+    },
   },
 
   methods: {

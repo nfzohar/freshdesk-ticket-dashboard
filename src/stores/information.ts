@@ -8,6 +8,7 @@ export const information = defineStore('information', {
     agents: [],
     groups: [],
     filters: [],
+    sources: [],
     statuses: [],
     priorities: [],
 
@@ -81,6 +82,9 @@ export const information = defineStore('information', {
     storedFilters(): Object {
       return this.filters
     },
+    storedSources(): Object {
+      return this.sources
+    },
     autoRefreshTimeShortcuts(): Array {
       return this.autoRefreshShortcuts
     },
@@ -126,6 +130,10 @@ export const information = defineStore('information', {
 
     setPriorities(newValue: Array) {
       this.priorities = newValue
+    },
+
+    setSources(newValue: Array) {
+      this.sources = newValue
     },
 
     saveConfigurationToStore() {
