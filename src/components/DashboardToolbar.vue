@@ -1,20 +1,10 @@
 <template>
-  <!-- <ticket-details-modal
-    :key="Number(detailsTicketId)"
-    :ticket-id="Number(detailsTicketId)"
-    @modalClosed="detailsTicketId = null"
-  /> -->
-
   <div
     class="w-full h-20 mb-5 px-1 border-b-2 border-primary-500 shadow-primary-500 transition-all"
-    :class="[
-      { 'sm:-mt-24 ': autoHide },
-      `text-${primaryColorIsDark ? 'white' : 'black'}`,
-      `bg-secondary-${secondaryColorIsDark ? '600' : '400'}`
-    ]"
+    :class="[{ 'sm:-mt-24 ': autoHide }, primaryColorText, textOnSecondaryColor]"
   >
     <div class="flex flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md">
-      <div :class="`text-${secondaryColorIsDark ? 'white' : 'black'}`">
+      <div :class="textOnSecondaryColor">
         <h1
           class="text-base sm:text-xl md:text-2xl font-bold w-max text-center"
           v-text="appTitle"
@@ -25,7 +15,7 @@
         />
       </div>
 
-      <div class="flex items-center mx-2 gap-3 justify-between w-max">
+      <div :class="`flex items-center mx-2 gap-3 justify-between w-max ${primaryColorText}`">
         <button
           class="actions-button"
           :title="'Refresh page'"
@@ -41,7 +31,7 @@
           @finishExport="$emit('stopLoading')"
         />
 
-        <ticket-filter-modal @filtersApply="$emit('reload')" @filtersReset="$emit('reload')" />
+        <!-- <ticket-filter-modal @filtersApply="$emit('reload')" @filtersReset="$emit('reload')" /> -->
 
         <open-closed-statistics-graph-modal :all-tickets="allTickets" />
 
@@ -61,7 +51,6 @@ import { format } from 'date-fns'
 import { defineComponent } from 'vue'
 import AllTicketsList from '@/components/AllTicketsList.vue'
 // import TicketFilterModal from '@/components/TicketFilters.vue'
-// import TicketDetailsModal from '@/components/TicketDetailedView.vue'
 import TicketExcelExporter from '@/components/TicketExcelExporter.vue'
 import DashboardSettingsModal from '@/components/DashboardSettings.vue'
 import OpenClosedStatisticsGraphModal from '@/components/OpenClosedStatisticsGraphModal.vue'
@@ -87,7 +76,6 @@ export default defineComponent({
   components: {
     AllTicketsList,
     // TicketFilterModal,
-    // TicketDetailsModal,
     TicketExcelExporter,
     DashboardSettingsModal,
     OpenClosedStatisticsGraphModal
@@ -114,11 +102,11 @@ export default defineComponent({
     appTitle(): String {
       return import.meta.env.VITE_APP_TITLE ?? 'Freshdesk Ticket Dashboard'
     },
-    primaryColorIsDark(): Boolean {
-      return this.$information.isPrimaryColorDark
+    primaryColorText(): Boolean {
+      return this.$information.textOnPrimaryColor
     },
-    secondaryColorIsDark(): Boolean {
-      return this.$information.isSecondaryColorDark
+    textOnSecondaryColor(): Boolean {
+      return this.$information.textOnSecondaryColor
     }
   },
 

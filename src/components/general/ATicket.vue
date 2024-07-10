@@ -2,26 +2,25 @@
   <div
     :title="'Show details'"
     :class="`bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 cursor-pointer ${primaryColorText}`"
-    @click="$emit('openTicketDetails', id)"
   >
     <h3 class="block font-bold text-lg" v-text="`#${id}: ${subject}`" />
     <hr class="my-1 border-t-2" />
 
     <div class="flex items-center justify-between">
       <div class="flex flex-col gap-y-1 w-auto text-base">
-        <span v-html="`<b>Requested by:</b> ${requester}`" />
-        <span v-html="`<b>Tags</b>: ${tags}`" />
+        <span v-html="`<b>Submitted by:</b> ${requester}`" />
+        <span v-if="tags?.length" v-html="`<b>Tags</b>: ${tags}`" />
       </div>
 
-      <div class="flex items-center gap-x-2 justify-between p-2 w-auto">
+      <div :class="`flex items-center gap-x-2 justify-between p-2 w-auto ${primaryColorText}`">
         <span
           title="Ticket status"
-          :class="`ticket-label border-primary-500 ${primaryColorAccentBackground}`"
+          :class="`ticket-label border-primary-500 ${primaryAccentedBg}`"
           v-text="status"
         />
         <span
           title="Ticket type"
-          :class="`ticket-label border-primary-500 ${primaryColorAccentBackground}`"
+          :class="`ticket-label border-primary-500 ${primaryAccentedBg}`"
           v-text="type"
         />
       </div>
@@ -30,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import {get} from 'lodash'
+import { get } from 'lodash'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
@@ -43,8 +42,6 @@ export default defineComponent({
       default: () => {}
     }
   },
-
-  emits: ['openTicketDetails'],
 
   computed: {
     id() {
@@ -62,19 +59,22 @@ export default defineComponent({
     tags() {
       return this.theTicket?.tags?.length ? this.theTicket?.tags?.join(', ') : 'None'
     },
-    primaryColorText(): Boolean {
-      return this.$information.textOnPrimaryColor
+    primaryColorDarkt(): String {
+      return this.$information?.textOnPrimaryColor
     },
-    primaryColorAccentBackground(){
-      return this.$information.bgAccentPrimaryColor
-    },
-    storedStatuses(): Array{
-      return  Object.values(this.$information?.statuses);
+    storedStatuses(): Array {
+      return Object.values(this.$information?.statuses)
     },
     status(): String {
-      let status = this.storedStatuses?.filter(status => status?.id == this.theTicket?.status)
+      let status = this.storedStatuses?.filter((status) => status?.id == this.theTicket?.status)
       return get(status, '[0].label') ?? 'N/A'
     },
+    primaryColorText(): String {
+      return `text-${this.$information?.isPrimaryColorDark ? 'white' : 'black'}`
+    },
+    primaryAccentedBg(): String {
+      return this.$information?.isPrimaryColorDark ? 'bg-primary-600' : 'bg-primary-400'
+    }
   }
 })
 </script>

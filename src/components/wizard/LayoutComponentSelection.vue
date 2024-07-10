@@ -46,7 +46,7 @@ export default defineComponent({
         },
         {
           icon: 'fa fa-square',
-          iconClass: '',
+          iconClass: 'hover:animate-spin',
           label: 'Carousel',
           value: 'spin-layout'
         }
