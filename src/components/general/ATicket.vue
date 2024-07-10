@@ -1,8 +1,7 @@
 <template>
   <div
     :title="'Show details'"
-    class="bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 cursor-pointer"
-    :class="`text-${isPrimaryColorDark ? 'white' : 'black'}`"
+    :class="`bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 cursor-pointer ${primaryColorText}`"
     @click="$emit('openTicketDetails', id)"
   >
     <h3 class="block font-bold text-lg" v-text="`#${id}: ${subject}`" />
@@ -17,20 +16,12 @@
       <div class="flex items-center gap-x-2 justify-between p-2 w-auto">
         <span
           title="Ticket status"
-          :class="[
-            'ticket-label',
-            isPrimaryColorDark ? 'bg-primary-600' : 'bg-primary-400',
-            isPrimaryColorDark ? 'border-primary-400' : 'border-primary-600'
-          ]"
+          :class="`ticket-label border-primary-500 ${primaryColorAccentBackground}`"
           v-text="status"
         />
         <span
           title="Ticket type"
-          :class="[
-            'ticket-label',
-            isPrimaryColorDark ? 'bg-primary-600' : 'bg-primary-400',
-            isPrimaryColorDark ? 'border-primary-400' : 'border-primary-600'
-          ]"
+          :class="`ticket-label border-primary-500 ${primaryColorAccentBackground}`"
           v-text="type"
         />
       </div>
@@ -39,6 +30,7 @@
 </template>
 
 <script lang="ts">
+import {get} from 'lodash'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
@@ -70,20 +62,19 @@ export default defineComponent({
     tags() {
       return this.theTicket?.tags?.length ? this.theTicket?.tags?.join(', ') : 'None'
     },
-    isPrimaryColorDark(): Boolean {
-      return this.$information.isPrimaryColorDark
+    primaryColorText(): Boolean {
+      return this.$information.textOnPrimaryColor
+    },
+    primaryColorAccentBackground(){
+      return this.$information.bgAccentPrimaryColor
+    },
+    storedStatuses(): Array{
+      return  Object.values(this.$information?.statuses);
     },
     status(): String {
-      let label = 'N/A'
-
-      Object.values(this.$information?.statuses).forEach((status) => {
-        if (status?.id == this.theTicket?.status) {
-          label = status?.label
-        }
-      })
-
-      return label
-    }
+      let status = this.storedStatuses?.filter(status => status?.id == this.theTicket?.status)
+      return get(status, '[0].label') ?? 'N/A'
+    },
   }
 })
 </script>

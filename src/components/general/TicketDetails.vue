@@ -1,14 +1,41 @@
 <template>
-  <div
-    :key="details?.id"
-    class="w-11/12 md:w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-7 m-auto"
-    :class="[{ 'is-loading': isLoading }, textClass]"
-  >
+  <div :key="theTicket?.id" :class="` w-full ${primaryTextClass} ${isLoading ? 'is-loading' : ''}`">
     <div class="flex items-center justify-between w-full border-primary-500 border-b pb-2">
-      <h1 class="text-3xl font-semibold" v-text="`#${details?.id}: ${details?.subject}`" />
+      <h1 class="text-3xl font-semibold" v-text="title" />
+      <button
+        class="primary-button py-1 px-3"
+        :class="`${primaryTextClass} border-none`"
+        @click.stop="$emit('closeDetails')"
+        v-text="'Back'"
+      />
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 my-3 gap-5">
+    <div
+      class="flex flex-col sm:flex-row-reverse items-start justify-between gap-3 overflow-y-scroll h-auto py-3"
+    >
+      <div class="flex flex-col w-full sm:w-1/3">
+        <span class="font-bold" v-text="'Ticket information'" />
+
+        <div v-if="hasCustomFields" class="flex flex-col">
+          <div class="flex flex-col bg-secondary-600 rounded-md p-3 h-full gap-y-1">
+            <template v-for="(customField, s) in customFields" :key="s">
+              <div v-if="customField?.value" class="grid grid-cols-2">
+                <span class="text-left font-semibold capitalize" v-text="customField?.label" />
+                <span class="text-right" v-text="customField?.value" />
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="block bg-white text-black w-full sm:w-2/3 h-full p-5 rounded-lg scrollbar-hide shadow-primary-500"
+        v-html="ticketDescription"
+      />
+    </div>
+  </div>
+
+  <!-- <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 my-3 gap-5">
       <div>
         <span class="block w-full font-bold capitalize" v-text="'Opened by'" />
 
@@ -23,7 +50,7 @@
       <div>
         <span class="block w-full font-bold capitalize" v-text="'Type'" />
         <div class="bg-secondary-600 rounded-md p-3 text-center">
-          <span class="w-auto text-center font-semibold" v-text="details?.type" />
+          <span class="w-auto text-center font-semibold" v-text="theTicket?.type" />
         </div>
       </div>
 
@@ -77,22 +104,22 @@
 
     <span class="text-base mb-2 font-bold" v-text="'Description:'" />
     <div
-      class="bg-white text-black p-5 rounded-lg overflow-y-scroll scrollbar-hide shadow-primary-500"
-      style="max-height: 60vh"
-      v-html="details?.description"
+      class="bg-white text-black p-5 max-h-60vh rounded-lg overflow-y-scroll scrollbar-hide shadow-primary-500"
+      v-html="ticketDescription"
     />
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts">
+import { get } from 'lodash'
 import { format } from 'date-fns'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 
 export default defineComponent({
-  name: 'TheDashboard',
+  name: 'TicketDetails',
 
-  emits: ['modalClosed'],
+  emits: ['closeDetails'],
 
   props: {
     ticketId: {
@@ -104,63 +131,58 @@ export default defineComponent({
 
   data() {
     return {
-      details: [],
-      isLoading: true,
-      detailsTicketId: null
+      theTicket: [],
+      isLoading: true
     }
   },
 
-  watch: {
-    detailsTicketId() {
+  mounted() {
+    if (this.ticketId) {
       this.fetchTicket()
     }
   },
 
   computed: {
-    requester() {
-      return this.details?.requester
+    requester(): Object {
+      return this.theTicket?.requester
     },
-    ticketTags() {
-      return this.details?.tags?.toString()
+    ticketDescription(): String {
+      return this.theTicket?.description
     },
-    showModal() {
-      return this.detailsTicketId ? true : false
+    ticketTags(): String {
+      return this.theTicket?.tags?.toString()
     },
-    statuses(): Object {
-      return this.$information?.statuses ?? []
+    title(): String {
+      return `#${this.theTicket?.id}: ${this.theTicket?.subject}`
     },
-    status() {
-      let label = 'Undefined'
+    status(): String {
+      let statuses = Object.values(this.$information?.statuses)
 
-      Object.values(this.statuses)?.forEach((status) => {
-        if (status.id == this.details?.status) {
-          label = status?.label
-        }
-      })
-      return label
+      let status = statuses?.filter((status) => status?.id == this.theTicket?.status)
+      return get(status, '[0].label') ?? 'Undefined'
     },
-    textClass(): String {
+    primaryTextClass(): String {
       return this.$information?.textOnPrimaryColor
     },
     freshdeskWebUrl() {
       return String(this.$auth.domain).replace('api/v2/', 'a/')
     },
     requesterPageUrl(): string {
-      return this.freshdeskWebUrl + 'contacts/' + this.requester?.id
+      return `${this.freshdeskWebUrl}contacts/${this.requester?.id}`
     },
     ticketUrl(): string {
-      return this.freshdeskWebUrl + 'tickets/' + this.details?.id
+      return `${this.freshdeskWebUrl}tickets/${this.theTicket?.id}`
     },
     hasCustomFields() {
-      return Object.values(this.details?.custom_fields ?? []).length > 0
+      return Object.values(this.theTicket?.custom_fields ?? []).length > 0
     },
-    customFields() {
+    customFields(): Array {
       let ticketCustomFields = Array()
 
-      Object.keys(this.details.custom_fields).forEach((customField) => {
+      Object.keys(this.theTicket.custom_fields).forEach((customField) => {
         let aCustomField = {
           label: customField.replace('cf_', '').replace('_', ' '),
-          value: this.details?.custom_fields[customField]
+          value: this.theTicket?.custom_fields[customField]
         }
 
         ticketCustomFields.push(aCustomField)
@@ -168,61 +190,60 @@ export default defineComponent({
 
       return ticketCustomFields
     },
-    stats() {
+
+    ticketFields() {
+      return [
+        {
+          label: 'Created',
+          date: this.fdate(this.theTicket?.created_at)
+        }
+      ]
+    },
+
+    stats(): Array {
       return [
         {
           show: true,
           label: 'Created',
-          date: this.fdate(this.details?.created_at)
+          date: this.fdate(this.theTicket?.created_at)
         },
         {
           show: true,
           label: 'Last update',
-          date: this.fdate(this.details?.updated_at)
+          date: this.fdate(this.theTicket?.updated_at)
         },
         {
-          show: this.details.stats?.reopened_at ? true : false,
+          show: this.theTicket.stats?.reopened_at ? true : false,
           label: 'Reopened at',
-          date: this.fdate(this.details?.stats?.reopened_at)
+          date: this.fdate(this.theTicket?.stats?.reopened_at)
         },
         {
-          show: this.details.stats?.resolved_at ? true : false,
+          show: this.theTicket.stats?.resolved_at ? true : false,
           label: 'Resolved at',
-          date: this.fdate(this.details?.stats?.resolved_at)
+          date: this.fdate(this.theTicket?.stats?.resolved_at)
         },
         {
-          show: this.details.stats?.closed_at ? true : false,
+          show: this.theTicket.stats?.closed_at ? true : false,
           label: 'Closed at',
-          date: this.fdate(this.details?.stats?.closed_at)
+          date: this.fdate(this.theTicket?.stats?.closed_at)
         }
       ]
     }
   },
 
-  async mounted() {
-    this.detailsTicketId = this.ticketId
-  },
-
   methods: {
     fetchTicket() {
-      if (this.detailsTicketId) {
-        ApiCall.get('/tickets/' + this.detailsTicketId + '?include=requester,company,stats')
-          .then((ticketDetails) => {
-            this.details = ticketDetails
-          })
-          .then(() => {
-            this.isLoading = false
-          })
-      }
+      ApiCall.get(`/tickets/${this.ticketId}?include=requester,company,stats`)
+        .then((ticketObject) => {
+          this.theTicket = ticketObject
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     },
 
     fdate(date: String) {
       return date ? format(new Date(date), 'd. M. y') : '-'
-    },
-
-    reset() {
-      this.detailsTicketId = null
-      this.$emit('modalClosed')
     }
   }
 })

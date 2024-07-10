@@ -108,7 +108,12 @@ export default defineComponent({
 
   watch: {
     domainUrl() {
-      this.$auth.setNewDomainUrl(this.domainUrl)
+      let domain = this.domainUrl
+
+      if (domain.charAt(domain.length - 1) != '/') {
+        domain.concat('/')
+      }
+      this.$auth.setNewDomainUrl(domain)
     },
     apiKey() {
       this.$auth.setNewApiKey(this.apiKey)

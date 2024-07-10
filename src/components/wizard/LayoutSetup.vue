@@ -1,8 +1,6 @@
 <template>
   <div
-    :class="`grid gap-3 w-full p-3 rounded-md items-start m-auto ${groupGridConfig}`"
-    style="height: 65vh"
-  >
+    :class="`grid gap-3 w-full h-60vh p-3 rounded-md items-start m-auto ${groupGridConfig}`">
     <div
       v-for="(group, g) in layoutGroups"
       :key="g"
