@@ -42,7 +42,7 @@ export default defineComponent({
       tickets: [],
       ticketsTemp: [],
       apiCallUrl: '',
-      startYear: null,
+      startYear: '',
       isLoading: false,
       keepFetching: true,
       hiddenTopBar: false,
@@ -58,11 +58,14 @@ export default defineComponent({
     allTickets(): Object {
       return this.tickets?.flat()
     },
-    dashboardLayout() {
+    dashboardLayout(): Object {
       return this.$configuration?.layoutComponent
     },
-    autoHideTopBar() {
+    autoHideTopBar(): Boolean {
       return this.$configuration?.autoHideToolbar && this.hiddenTopBar
+    },
+    statStartYear(): string {
+      return new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970').toISOString()
     }
   },
 
@@ -96,8 +99,7 @@ export default defineComponent({
   },
 
   async mounted() {
-    this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970').toISOString()
-
+    this.startYear = this.statStartYear
     await this.loadTickets()
   },
 
