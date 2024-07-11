@@ -8,7 +8,7 @@
       <ticket-counters :tickets="allTickets" />
     </div>
 
-    <div class="block m-auto w-11/12 h-auto">
+    <div class="block m-auto" :class="graphDimensions">
       <a-carousel
         :slides="panelIds"
         :spin-carousel="tempStop ? false : active"
@@ -108,21 +108,30 @@ export default defineComponent({
       return `${this.$information?.textOnSecondaryColor}
       ${this.$information?.conditionalPrimaryBorder}
       ${this.$information?.bgAccentSecondaryColor}`
+    },
+
+    graphDimensions(): String {
+      if (!this.$configuration.visibleStatuses?.length) {
+        return 'w-11/12 h-80vh'
+      }
+      return this.tempStop ? 'w-1/2 h-50vh' : 'w-2/3 h-70vh'
     }
   },
 
   watch: {
     tempStop() {
-      this.tempStop
-        ? this.$toast.info('When the mouse moves, the carousel stops and waits for 1 minute.', {
-            timeout: 60000
-          })
-        : useToast().clear()
+      useToast().clear()
+
+      if (this.tempStop) {
+        this.$toast.info('When the mouse moves, the carousel stops for 10 seconds.', {
+          timeout: 10000
+        })
+      }
 
       setTimeout(() => {
         this.active = true
         this.tempStop = false
-      }, 60000)
+      }, 10000)
     }
   },
 
@@ -139,8 +148,8 @@ export default defineComponent({
           ? 'w-1/3'
           : 'w-7/12'
         : halpWidthViews.includes(panel?.displayType)
-          ? 'w-1/2'
-          : 'w-full'
+        ? 'w-1/2'
+        : 'w-full'
     },
 
     async updatePanel(newValue: String, panelId: String, property: String) {

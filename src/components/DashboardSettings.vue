@@ -45,13 +45,13 @@
               <div class="flex items-center justify-between w-full py-1">
                 <button
                   class="hover:text-primary-500"
-                  v-text="'Clear all'"
-                  @click="visibleStatusCounters = []"
+                  v-text="'Select all'"
+                  @click="visibleStatusCounters = statusLabels"
                 />
                 <button
                   class="hover:text-primary-500"
-                  v-text="'Select all'"
-                  @click="visibleStatusCounters = statusLabels"
+                  v-text="'Clear all'"
+                  @click="visibleStatusCounters = []"
                 />
               </div>
 

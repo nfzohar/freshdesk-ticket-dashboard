@@ -16,6 +16,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { listenForKey } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'ACarousel',
@@ -61,6 +62,11 @@ export default defineComponent({
         this.index = 0
       }
     }
+  },
+
+  created() {
+    listenForKey('ArrowLeft', () => this.index--)
+    listenForKey('ArrowRight', () => this.index++)
   },
 
   mounted() {

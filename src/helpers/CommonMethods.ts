@@ -151,3 +151,13 @@ export function isEven(number: number) {
 export function isOdd(number: number) {
   return number % 2 !== 0
 }
+
+//Add an event listener for keystroke.
+export function listenForKey(eventKey = '', performFunction: Function) {
+  document.addEventListener('keydown', (event) => {
+    if (event?.key == eventKey) {
+      event.preventDefault()
+      performFunction()
+    }
+  })
+}

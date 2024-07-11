@@ -114,26 +114,32 @@ export const information = defineStore('information', {
   actions: {
     setGroups(newValue: Array) {
       this.groups = newValue
+      this.saveConfigurationToStore()
     },
 
     setAgents(newValue: Array) {
       this.agents = newValue
+      this.saveConfigurationToStore()
     },
 
     setFilters(newValue: Array) {
       this.filters = newValue
+      this.saveConfigurationToStore()
     },
 
     setStatuses(newValue: Array) {
       this.statuses = newValue
+      this.saveConfigurationToStore()
     },
 
     setPriorities(newValue: Array) {
       this.priorities = newValue
+      this.saveConfigurationToStore()
     },
 
     setSources(newValue: Array) {
       this.sources = newValue
+      this.saveConfigurationToStore()
     },
 
     saveConfigurationToStore() {

@@ -2,10 +2,12 @@
   <component
     :key="type"
     :is="chartType"
-    :class="customClass"
     :data="chartData"
+    :class="customClass"
     :options="chartOptions"
-  />
+  >
+    <span v-text="'Graph could not be loaded.'" />
+  </component>
 </template>
 
 <script lang="ts">
@@ -91,24 +93,37 @@ export default defineComponent({
     chartOptions() {
       return {
         responsive: true,
-        indexAxis: this.type == 'h-bar' ? 'y' : 'x'
+        indexAxis: this.graphIndexAxis,
+        plugins: {
+          legend: {
+            display: this.showGraphLegend,
+            position: 'left', // 'top', 'left', 'bottom', 'right'
+            title: {
+              display: true,
+              text: this.datasetTitle + 's', // Name of title
+              font: {
+                weight: 'bold'
+              },
+              padding: 2,
+              color: 'green'
+            }
+          }
+        }
       }
     },
+    graphIndexAxis() {
+      return this.type == 'h-bar' ? 'y' : 'x'
+    },
+    showGraphLegend() {
+      return ['pie', 'doughnut'].includes(this.type)
+    },
     chartType(): String {
-      switch (this.type) {
-        case 'v-bar':
-          return 'BarChart'
-        case 'h-bar':
-          return 'BarChart'
-        case 'line':
-          return 'LineChart'
-        case 'pie':
-          return 'PieChart'
-        case 'doughnut':
-          return 'DoughnutChart'
-        default:
-          return 'BarChart'
-      }
+      if (this.type == 'pie') return 'PieChart'
+      if (this.type == 'line') return 'LineChart'
+      if (this.type == 'v-bar') return 'BarChart'
+      if (this.type == 'h-bar') return 'BarChart'
+      if (this.type == 'doughnut') return 'DoughnutChart'
+      return 'BarChart'
     },
     datasetBackground() {
       let colors = []

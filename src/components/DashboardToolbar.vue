@@ -1,7 +1,7 @@
 <template>
   <div
     class="w-full h-20 mb-5 px-1 border-b-2 border-primary-500 shadow-primary-500 transition-all"
-    :class="[{ 'sm:-mt-24 ': autoHide }, primaryColorText, textOnSecondaryColor]"
+    :class="[{ 'sm:-mt-24 ': autoHide && !modalsOpen }, primaryColorText, textOnSecondaryColor]"
   >
     <div class="flex flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md">
       <div :class="textOnSecondaryColor">
@@ -22,7 +22,7 @@
           :key="Number(loadingState)"
           @click.stop="$emit('refresh')"
         >
-          <i class="fa fa-rotate" :class="{ loadingState: 'animate-spin' }" />
+          <i :class="`fa fa-rotate ${loadingState ? 'animate-spin' : ''}`" />
         </button>
 
         <ticket-excel-exporter
@@ -33,14 +33,21 @@
 
         <!-- <ticket-filter-modal @filtersApply="$emit('reload')" @filtersReset="$emit('reload')" /> -->
 
-        <open-closed-statistics-graph-modal :all-tickets="allTickets" />
-
-        <all-tickets-list
+        <open-closed-statistics-graph-modal
           :all-tickets="allTickets"
-          @showTicketDetails="(value) => (detailsTicketId = value)"
+          @open="modalsOpen = true"
+          @close="modalsOpen = false"
         />
-
-        <dashboard-settings-modal @reloadDashboard="$emit('reload')" />
+        <all-tickets-list
+          :tickets="allTickets"
+          @open="modalsOpen = true"
+          @close="modalsOpen = false"
+        />
+        <dashboard-settings-modal
+          @reloadDashboard="$emit('reload')"
+          @open="modalsOpen = true"
+          @close="modalsOpen = false"
+        />
       </div>
     </div>
   </div>
@@ -85,6 +92,7 @@ export default defineComponent({
 
   data() {
     return {
+      modalsOpen: false,
       detailsTicketId: null,
       loadingState: this.loading,
       lastTicketDate: new Date().toDateString(),

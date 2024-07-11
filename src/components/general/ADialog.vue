@@ -5,14 +5,16 @@
 
   <div v-if="open">
     <dialog
-      class="absolute top-16 bg-opacity-50 bg-secondary-500 w-screen h-screen"
+      class="absolute bg-opacity-50 bg-secondary-500 w-screen h-screen"
       :class="customClass"
       :open="open"
       @close="closeDialog"
-      @keydown.esc="closeDialog"
     >
-      <div class="absolute right-2 top-2 cursor-pointer" @click="closeDialog">
-        <div class="mx-5 bg-secondary-500 border border-primary-500 rounded-md">
+      <div class="absolute right-2 top-16 cursor-pointer">
+        <div
+          class="mx-5 bg-secondary-500 border border-primary-500 rounded-md"
+          @click.stop="closeDialog"
+        >
           <i class="fa fa-times text-3xl px-2 py-1 text-primary-500" />
         </div>
       </div>
@@ -26,6 +28,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { listenForKey } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'ADialog',
@@ -55,6 +58,10 @@ export default defineComponent({
     manualOpen() {
       this.open = this.manualOpen
     }
+  },
+
+  mounted() {
+    listenForKey('escKey', () => this.closeDialog())
   },
 
   methods: {
