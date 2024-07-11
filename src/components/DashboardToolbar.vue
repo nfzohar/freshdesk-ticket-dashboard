@@ -33,8 +33,8 @@
 
         <!-- <ticket-filter-modal @filtersApply="$emit('reload')" @filtersReset="$emit('reload')" /> -->
 
-        <open-closed-statistics-graph-modal
-          :all-tickets="allTickets"
+        <resolved-statistics-graph
+          :tickets="allTickets"
           @open="modalsOpen = true"
           @close="modalsOpen = false"
         />
@@ -60,7 +60,7 @@ import AllTicketsList from '@/components/AllTicketsList.vue'
 // import TicketFilterModal from '@/components/TicketFilters.vue'
 import TicketExcelExporter from '@/components/TicketExcelExporter.vue'
 import DashboardSettingsModal from '@/components/DashboardSettings.vue'
-import OpenClosedStatisticsGraphModal from '@/components/OpenClosedStatisticsGraphModal.vue'
+import ResolvedStatisticsGraph from '@/components/ResolvedStatisticsGraph.vue'
 
 export default defineComponent({
   name: 'DashboardToolbar',
@@ -85,7 +85,7 @@ export default defineComponent({
     // TicketFilterModal,
     TicketExcelExporter,
     DashboardSettingsModal,
-    OpenClosedStatisticsGraphModal
+    ResolvedStatisticsGraph
   },
 
   emits: ['reload', 'refresh', 'startLoading', 'stopLoading'],

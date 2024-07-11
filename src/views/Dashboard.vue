@@ -94,7 +94,6 @@ export default defineComponent({
     if (!this.$auth.authenticated) {
       this.$router.push('/')
     }
-
     this.windowResizeListener()
   },
 

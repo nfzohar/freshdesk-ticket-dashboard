@@ -1,24 +1,24 @@
 <template>
   <div
-    class="grid w-screen h-screen p-3 scrollbar-hide gap-x-4"
+    class="grid w-screen h-screen p-3 gap-x-4"
     :class="`grid-cols-1 grid-cols-${columns?.length}`"
   >
     <template v-for="(items, r) in columns" :key="r">
-      <div class="grid w-full h-min gap-y-5" :class="`grid-rows-${items?.length}`">
-        <component
-          v-for="(panel, p) in items"
-          :key="p"
-          :id="panel.id"
-          :tickets="allTickets"
-          :is="panel.component"
-          :is-open="panel.visible"
-          :sort-by="panel?.sortBy"
-          :additional-data="panel.data"
-          :display-type="panel.displayType"
-          @updatedGraphSort="(value) => updatePanel(value, panel?.id, 'sortBy')"
-          @toggleVisibility="(value) => updatePanel(value, panel?.id, 'visible')"
-          @updatedDisplayType="(value) => updatePanel(value, panel?.id, 'displayType')"
-        />
+      <div class="flex flex-col w-full overflow-y-scroll scrollbar-hide">
+        <div v-for="(panel, p) in items" :key="p" class="px-2 py-1">
+          <component
+            :id="panel.id"
+            :tickets="allTickets"
+            :is="panel.component"
+            :is-open="panel.visible"
+            :sort-by="panel?.sortBy"
+            :additional-data="panel.data"
+            :display-type="panel.displayType"
+            @updatedGraphSort="(value) => updatePanel(value, panel?.id, 'sortBy')"
+            @toggleVisibility="(value) => updatePanel(value, panel?.id, 'visible')"
+            @updatedDisplayType="(value) => updatePanel(value, panel?.id, 'displayType')"
+          />
+        </div>
       </div>
     </template>
   </div>

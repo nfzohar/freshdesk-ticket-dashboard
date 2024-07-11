@@ -74,14 +74,23 @@ export default defineComponent({
       required: false,
       default:
         'w-full m-auto p-2 border-primary-700 border bg-secondary-500 rounded-md shadow-primary-600'
+    },
+    datasetsThroughProp: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
 
   computed: {
     chartData() {
-      return {
+      let chartsData = {
         labels: this.datasetLabels,
-        datasets: [
+        datasets: this.datasets
+      }
+
+      if (!this.datasetsThroughProp) {
+        chartsData['datasets'] = [
           {
             label: this.datasetTitle ?? 'Info',
             backgroundColor: this.datasetBackground,
@@ -89,6 +98,7 @@ export default defineComponent({
           }
         ]
       }
+      return chartsData
     },
     chartOptions() {
       return {
@@ -97,16 +107,25 @@ export default defineComponent({
         plugins: {
           legend: {
             display: this.showGraphLegend,
-            position: 'left'
+            position: this.legendPosition
           }
         }
       }
     },
-    graphIndexAxis() {
+    legendPosition(): String {
+      if (this.type == 'pie' || this.type == 'doughnut') {
+        return 'left'
+      }
+      if (this.type == 'line') {
+        return 'bottom'
+      }
+      return ''
+    },
+    graphIndexAxis(): String {
       return this.type == 'h-bar' ? 'y' : 'x'
     },
-    showGraphLegend() {
-      return ['pie', 'doughnut'].includes(this.type)
+    showGraphLegend(): Boolean {
+      return ['line', 'pie', 'doughnut'].includes(this.type)
     },
     chartType(): String {
       if (this.type == 'pie') return 'PieChart'
@@ -120,14 +139,9 @@ export default defineComponent({
       let colors = []
 
       for (let i = 0; i < this.datasets?.length; i++) {
-        colors.push(
-          '#' +
-            Math.floor(Math.random() * 0xfffff * 1000000)
-              .toString(16)
-              .slice(0, 3)
-        )
+        let newColor = Math.floor(Math.random() * 0xfffff * 123456)
+        colors[i] = `#${newColor.toString(16).slice(0, 3)}`
       }
-
       return colors
     }
   }

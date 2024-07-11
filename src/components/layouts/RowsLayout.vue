@@ -1,10 +1,7 @@
 <template>
-  <div
-    class="grid w-full h-full scrollbar-hide p-3 gap-y-5"
-    :class="`grid-cols-1 grid-rows-${rows?.length}`"
-  >
+  <div class="flex flex-col w-full h-full scrollbar-hide p-3 gap-10">
     <template v-for="(items, r) in rows" :key="r">
-      <div :class="`grid w-full h-min gap-x-5 ${panelGridlass(items?.length)}`">
+      <div :class="`grid w-full h-min gap-x-4 ${panelGridlass(items?.length)}`">
         <component
           v-for="(panel, p) in items"
           :key="p"
