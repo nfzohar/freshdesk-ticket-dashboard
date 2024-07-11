@@ -97,16 +97,7 @@ export default defineComponent({
         plugins: {
           legend: {
             display: this.showGraphLegend,
-            position: 'left', // 'top', 'left', 'bottom', 'right'
-            title: {
-              display: true,
-              text: this.datasetTitle + 's', // Name of title
-              font: {
-                weight: 'bold'
-              },
-              padding: 2,
-              color: 'green'
-            }
+            position: 'left'
           }
         }
       }

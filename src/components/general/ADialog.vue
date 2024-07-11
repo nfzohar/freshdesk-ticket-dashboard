@@ -5,12 +5,12 @@
 
   <div v-if="open">
     <dialog
-      class="absolute bg-opacity-50 bg-secondary-500 w-screen h-screen"
+      class="absolute bg-opacity-50 bg-secondary-500 top-14 w-screen h-screen"
       :class="customClass"
       :open="open"
       @close="closeDialog"
     >
-      <div class="absolute right-2 top-16 cursor-pointer">
+      <div class="absolute right-2 top-10 cursor-pointer">
         <div
           class="mx-5 bg-secondary-500 border border-primary-500 rounded-md"
           @click.stop="closeDialog"

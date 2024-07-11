@@ -1,8 +1,8 @@
 <template>
-  <div class="flex items-center justify-between w-80vh border-primary-500 border-b pb-2">
-    <h1 class="text-3xl font-semibold" v-text="title" />
+  <div class="flex items-start justify-between w-80vh border-primary-500 border-b pb-2">
+    <h1 class="text-3xl font-semibold" v-text="`#${theTicket?.id}: ${theTicket?.subject}`" />
     <button
-      :class="`primary-button py-1 px-3 border-none ${primaryTextClass}`"
+      :class="`primary-button py-1 px-3 hover:font-bold border-none ${primaryTextClass}`"
       @click.stop="$emit('closeDetails')"
       v-text="'Back'"
     />
@@ -10,38 +10,53 @@
 
   <div
     :key="theTicket?.id"
-    :class="`w-full scrollbar-hide overflow-y-scroll h-full ${secondaryTextClass} ${
-      isLoading ? 'is-loading' : ''
-    }`"
+    :class="[
+      `w-full scrollbar-hide overflow-y-scroll h-full`,
+      { 'is-loading': isLoading },
+      secondaryTextClass
+    ]"
   >
-    <div :class="`flex md:flex-row-reverse items-start gap-5 h-full py-3 ${secondaryTextClass}`">
-      <div class="w-full sm:w-3/12 h-80vh scrollbar-hide overflow-y-scroll">
+    <div
+      :class="`flex flex-col md:flex-row-reverse items-start gap-5 h-full py-3 ${secondaryTextClass}`"
+    >
+      <div
+        class="grid grid-cols-3 gap-3 md:block w-full md:w-3/12 h-80vh scrollbar-hide overflow-y-scroll"
+      >
         <template v-for="(field, f) in ticketFields" :key="f">
           <div v-if="field?.show" class="py-1">
             <span class="block w-full font-bold capitalize" v-text="field?.label" />
+
             <div :class="`rounded-md p-3 text-center ${secondaryBgAccentColor}`">
-              <span class="w-auto text-center font-semibold" v-text="field?.value" />
+              <span class="w-auto text-center font-semibold" v-text="field?.value ?? 'N/A'" />
+              <a
+                v-if="field?.url"
+                :class="'mx-2 hover:text-primary-500'"
+                :href="field?.url"
+                :target="'_blank'"
+              >
+                <i class="fa fa-external-link" />
+              </a>
             </div>
           </div>
         </template>
 
         <div v-for="(field, f) in customFields" :key="f" class="py-1">
-          <span class="block w-full font-bold capitalize" v-text="field?.label" />
+          <span class="w-full font-bold capitalize" v-text="field?.label" />
           <div :class="`rounded-md p-3 text-center ${secondaryBgAccentColor}`">
-            <span class="w-auto text-center font-semibold" v-text="field?.value" />
+            <span class="w-auto text-center font-semibold" v-text="field?.value ?? 'N/A'" />
           </div>
         </div>
-
         <a
+          class="block w-full text-center hover:text-primary-500 hover:font-bold mt-5 text-base px-1"
           :href="ticketUrl"
           :target="'_blank'"
-          :class="`block w-full text-center primary-button my-2 py-1 px-3 border-none ${primaryTextClass}`"
-          v-text="'Open in Freshdesk'"
+          :title="'For more information, open this ticket in your Freshdesk.'"
+          v-html="`View ticket in Freshdesk <i class='fa fa-external-link' />`"
         />
       </div>
 
       <div
-        class="block bg-white text-black w-full h-80vh scrollbar-hide overflow-y-scroll sm:w-9/12 p-5 rounded-lg scrollbar-hide shadow-primary-500"
+        class="block bg-white text-black w-full h-80vh scrollbar-hide overflow-y-scroll md:w-9/12 p-5 rounded-lg scrollbar-hide"
         v-html="ticketDescription"
       />
     </div>
@@ -84,25 +99,6 @@ export default defineComponent({
     ticketDescription(): String {
       return this.theTicket?.description
     },
-    title(): String {
-      return `#${this.theTicket?.id}: ${this.theTicket?.subject}`
-    },
-    status(): String {
-      return this.findValueOf(
-        this.$information?.storedStatuses,
-        this.theTicket?.status,
-        'label',
-        'id'
-      )
-    },
-    source(): String {
-      return this.findValueOf(
-        this.$information?.storedSources,
-        this.theTicket?.source,
-        'label',
-        'id'
-      )
-    },
     primaryTextClass(): String {
       return this.$information?.textOnPrimaryColor
     },
@@ -115,28 +111,46 @@ export default defineComponent({
     freshdeskWebUrl() {
       return String(this.$auth.domain).replace('api/v2/', 'a/')
     },
-    allTicketsOfRequesterPageUrl(): string {
-      return `${this.freshdeskWebUrl}contacts/${this.theTicket?.requester?.id}`
-    },
     ticketUrl(): string {
       return `${this.freshdeskWebUrl}tickets/${this.theTicket?.id}`
     },
-    ticketFields() {
+    status(): String {
+      let statuses = this.$information?.storedStatuses
+      return this.findValueOf(statuses, this.theTicket?.status, 'label')
+    },
+    source(): String {
+      let sources = this.$information?.storedSources
+      return this.findValueOf(sources, this.theTicket?.source, 'label')
+    },
+    priority(): String {
+      let prorities = this.$information?.storedPriorities
+      return this.findValueOf(prorities, this.theTicket?.priority, 'label', 'value')
+    },
+    customFields(): Array {
+      let customFieldsList = new Array()
+
+      if (this.theTicket?.custom_fields) {
+        customFieldsList = Object.keys(this.theTicket?.custom_fields)?.map((field) => {
+          return {
+            label: field.replace('cf_', '').replace('_', ' '),
+            value: this.theTicket?.custom_fields[field]
+          }
+        })
+      }
+      return customFieldsList
+    },
+    ticketFields(): Array {
       return [
         {
           show: true,
-          label: 'Type',
-          value: this.theTicket?.requester?.name
-        },
-        {
-          show: true,
           label: 'Requester',
-          value: this.theTicket?.requester?.name
+          value: this.theTicket?.requester?.name,
+          url: `${this.freshdeskWebUrl}contacts/${this.theTicket?.requester?.id}`
         },
         {
           show: true,
-          label: 'Tags',
-          value: this.theTicket?.tags?.toString()
+          label: 'Type',
+          value: this.theTicket?.type
         },
         {
           show: true,
@@ -145,8 +159,18 @@ export default defineComponent({
         },
         {
           show: true,
+          label: 'Priority',
+          value: this.priority
+        },
+        {
+          show: true,
           label: 'Source',
           value: this.source
+        },
+        {
+          show: true,
+          label: 'Tags',
+          value: this.theTicket?.tags?.toString()
         },
         {
           show: true,
@@ -155,7 +179,7 @@ export default defineComponent({
         },
         {
           show: true,
-          label: 'Last update',
+          label: 'Last updated',
           value: this.fdate(this.theTicket?.updated_at)
         },
         {
@@ -174,19 +198,6 @@ export default defineComponent({
           value: this.fdate(this.theTicket?.stats?.closed_at)
         }
       ]
-    },
-    customFields(): Array {
-      let customFieldsList = []
-
-      if (this.theTicket?.custom_fields) {
-        customFieldsList = Object.keys(this.theTicket?.custom_fields)?.map((field) => {
-          return {
-            label: field.replace('cf_', '').replace('_', ' '),
-            value: this.theTicket?.custom_fields[field] ?? 'N/A'
-          }
-        })
-      }
-      return customFieldsList
     }
   },
 
@@ -196,23 +207,23 @@ export default defineComponent({
         .then((ticketObject) => {
           this.theTicket = ticketObject
         })
-        .finally(() => {
-          this.isLoading = false
-        })
         .catch((e) => {
           this.$emit('closeDetails')
         })
+        .finally(() => {
+          this.isLoading = false
+        })
     },
 
-    fdate(date: String, dateFormat = 'd. M. y') {
-      return date ? format(new Date(date), dateFormat) : '-'
+    fdate(date: String) {
+      return date ? format(new Date(date), 'd. M. y - HH:mm') : '-'
     },
 
     findValueOf(
       listOfValues: Object,
       searchValue: String,
       returnvalue: String,
-      compareValue = 'value'
+      compareValue = 'id'
     ) {
       let all = Object.values(listOfValues)
       let result = all?.filter((item) => item[compareValue] == searchValue)

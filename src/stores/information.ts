@@ -146,6 +146,7 @@ export const information = defineStore('information', {
       const storeData = {
         agents: this.agents,
         groups: this.groups,
+        sources: this.sources,
         filters: this.filters,
         statuses: this.statuses,
         priorities: this.priorities
@@ -162,6 +163,7 @@ export const information = defineStore('information', {
         this.agents = stateFromStore?.agents
         this.groups = stateFromStore?.groups
         this.filters = stateFromStore?.filters
+        this.sources = stateFromStore?.sources
         this.statuses = stateFromStore?.statuses
         this.priorities = stateFromStore?.priorities
       }
