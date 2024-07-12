@@ -58,7 +58,7 @@ export default defineComponent({
     },
     secondaryColorText(): String {
       return this.$information?.textOnSecondaryColor
-    },
+    }
   },
 
   methods: {
@@ -82,7 +82,7 @@ export default defineComponent({
       let leaderboardsPreset = {
         length: 3,
         showThrophies: false,
-        trophyIcon: 'fa fa-trophy',
+        trophyIcon: 'fa fa-trophy'
       }
       this.$configuration.updateLeaderboardSettings(leaderboardsPreset)
       this.$toast.success('Dashboard configuration was updated.')
@@ -108,7 +108,7 @@ export default defineComponent({
             {
               id: String(Math.random()),
               component: 'TicketTypesList',
-              displayType: 'default',
+              displayType: 'v-bar',
               visible: true,
               sortBy: '',
               data: {}
@@ -116,7 +116,7 @@ export default defineComponent({
             {
               id: String(Math.random()),
               component: 'TicketTagsList',
-              displayType: 'default',
+              displayType: 'h-bar',
               visible: true,
               sortBy: '',
               data: {}
@@ -142,7 +142,7 @@ export default defineComponent({
             {
               id: String(Math.random()),
               component: 'RequestersLeaderboard',
-              displayType: 'v-bar',
+              displayType: 'default',
               visible: true,
               sortBy: '',
               data: {}
