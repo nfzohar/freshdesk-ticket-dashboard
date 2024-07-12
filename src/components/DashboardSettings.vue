@@ -126,24 +126,27 @@
           </a-setting-section>
         </div>
 
-        <div class="flex flex-col xl:flex-row-reverse md:items-center gap-4 px-5">
+        <div class="flex flex-col xl:flex-row justify-between md:items-center gap-4 px-5">
+          <div class="flex gap-3">
+            <button
+              v-for="(action, a) in actions"
+              :key="a"
+              :title="action.title"
+              class="flex items-center gap-x-1 primary-button settings-button text-center"
+              :class="`text-${primaryColorDark ? 'white' : 'black'}`"
+              @click.stop="action.function"
+            >
+              <i :class="action.icon" />
+              <span v-text="action.name" />
+            </button>
+          </div>
+
           <button
             class="primary-button settings-button text-center"
             :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-            @click="$emit('reloadDashboard')"
+            @click="open = false"
             v-text="'Save'"
           />
-          <button
-            v-for="(action, a) in actions"
-            :key="a"
-            :title="action.title"
-            class="flex items-center gap-x-1 primary-button settings-button text-center"
-            :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-            @click.stop="action.function"
-          >
-            <i :class="action.icon" />
-            <span v-text="action.name" />
-          </button>
         </div>
       </div>
     </template>
@@ -179,16 +182,10 @@ export default defineComponent({
 
       actions: [
         {
-          name: 'Refresh information',
-          title: 'Refresh the whole dashboard.',
-          icon: 'fa fa-redo-alt',
-          function: () => this.$router.replace('/loading')
-        },
-        {
-          name: 'Reload',
-          title: 'Manually reload entire dashboard.',
-          icon: 'fa fa-repeat',
-          function: () => this.$emit('reloadDashboard')
+          name: 'Logout',
+          title: 'Clear all stored information and logout.',
+          icon: 'fa fa-sign-out-alt',
+          function: () => this.logout()
         },
         {
           name: 'Configuration wizard',
@@ -197,10 +194,16 @@ export default defineComponent({
           function: () => this.$router.push('/setup')
         },
         {
-          name: 'Logout',
-          title: 'Clear all stored information and logout.',
-          icon: 'fa fa-sign-out-alt',
-          function: () => this.logout()
+          name: 'Refresh information',
+          title: 'Refresh the whole page.',
+          icon: 'fa fa-redo-alt',
+          function: () => this.$router.replace('/loading')
+        },
+        {
+          name: 'Reload',
+          title: 'Manually reload entire dashboard.',
+          icon: 'fa fa-repeat',
+          function: () => this.$emit('reloadDashboard')
         }
       ]
     }

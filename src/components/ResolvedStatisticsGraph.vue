@@ -13,20 +13,22 @@
     <template #content>
       <div
         :key="updateToken"
-        class="bg-secondary-600 w-10/12 m-auto rounded-md p-7 border border-primary-500"
+        class="flex flex-col 2xl:flex-row bg-secondary-600 gap-5 h-80vh w-max m-auto p-4 rounded-md border border-primary-500"
       >
-        <div class="w-full flex items-center justify-between mb-5">
+        <div class="w-full flex flex-col 2xl">
           <h1
             :class="`w-full text-xl font-bold ${textOnSecondaryColor}`"
             v-text="'Ticket open/closed ratio'"
           />
+          <hr class="border-primary-500 my-2" />
 
-          <div class="flex items-center justify-between gap-5 w-1/2">
+          <div class="flex flex-col items-center justify-between gap-5">
             <a-select
               class="w-full px-1"
               :options="yearsFromTickets"
               :show-null-value="false"
               :the-value="selectedYear"
+              :label="'Show ticket for year:'"
               @changed="(value) => (selectedYear = value)"
             />
             <a-select
@@ -36,20 +38,19 @@
               :value-field="'value'"
               :the-value="selectedMonth"
               :null-value-label="'All months'"
+              :label="`Show ticket for month in ${selectedYear}:`"
               @changed="(value) => (selectedMonth = value)"
             />
           </div>
         </div>
 
-        <div class="w-full">
-          <a-statistics-graph
-            :type="'line'"
-            :class="'w-full h-full'"
-            :datasets-through-prop="true"
-            :dataset-labels="datasetLabels"
-            :datasets="datasets"
-          />
-        </div>
+        <a-statistics-graph
+          :type="'line'"
+          :class="'w-full h-full'"
+          :datasets-through-prop="true"
+          :dataset-labels="datasetLabels"
+          :datasets="datasets"
+        />
       </div>
     </template>
   </a-dialog>
@@ -149,6 +150,9 @@ export default defineComponent({
     },
     resolvedStatusId(): Object {
       return this.statuses?.filter((st) => st?.value == 'Resolved')[0]?.id
+    },
+    ticketStatuses(): Object {
+      return this.$information?.storedStatuses
     }
   },
 
