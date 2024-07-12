@@ -1,7 +1,12 @@
 <template>
   <div
     class="w-full h-20 mb-5 px-1 border-b-2 border-primary-500 shadow-primary-500 transition-all"
-    :class="[{ 'sm:-mt-24 ': autoHide && !modalsOpen }, primaryColorText, textOnSecondaryColor]"
+    :class="[
+      primaryColorText,
+      textOnSecondaryColor,
+      { 'sm:-mt-24 ': autoHide && !modalsOpen && !toolbarShow }
+    ]"
+    @mouseleave="hideTopBar"
   >
     <div class="flex flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md">
       <div :class="textOnSecondaryColor">
@@ -51,6 +56,8 @@
       </div>
     </div>
   </div>
+
+  <div v-if="autoHide" class="absolute h-5 w-full bg-none" @mouseenter="toolbarShow = true" />
 </template>
 
 <script lang="ts">
@@ -73,10 +80,6 @@ export default defineComponent({
     loading: {
       type: Boolean,
       required: true
-    },
-    autoHide: {
-      type: Boolean,
-      required: true
     }
   },
 
@@ -92,8 +95,9 @@ export default defineComponent({
 
   data() {
     return {
+      timeoutId: '',
       modalsOpen: false,
-      detailsTicketId: null,
+      toolbarShow: false,
       loadingState: this.loading,
       lastTicketDate: new Date().toDateString(),
       firstTicketDate: new Date().toDateString()
@@ -103,18 +107,24 @@ export default defineComponent({
   watch: {
     'allTickets.length'() {
       this.findTicketCreationDates()
+    },
+    autoHide() {
+      this.autoHide ? this.hideTopBar() : (this.toolbarShow = true)
     }
   },
 
   computed: {
-    appTitle(): String {
-      return import.meta.env.VITE_APP_TITLE ?? 'Freshdesk Ticket Dashboard'
+    autoHide(): Boolean {
+      return this.$configuration?.autoHideToolbar
     },
     primaryColorText(): Boolean {
       return this.$information.textOnPrimaryColor
     },
     textOnSecondaryColor(): Boolean {
       return this.$information.textOnSecondaryColor
+    },
+    appTitle(): String {
+      return import.meta.env.VITE_APP_TITLE ?? 'Freshdesk Ticket Dashboard'
     }
   },
 
@@ -141,6 +151,13 @@ export default defineComponent({
 
     epochDateForm(date: Date) {
       return (date.getTime() - date.getMilliseconds()) / 1000
+    },
+
+    hideTopBar() {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(() => {
+        this.toolbarShow = false
+      }, 5000)
     }
   }
 })

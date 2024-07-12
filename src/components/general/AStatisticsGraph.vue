@@ -107,19 +107,18 @@ export default defineComponent({
         plugins: {
           legend: {
             display: this.showGraphLegend,
-            position: this.legendPosition
+            position: this.legendPosition,
+            title: 'Tickets'
           }
         }
       }
     },
     legendPosition(): String {
-      if (this.type == 'pie' || this.type == 'doughnut') {
-        return 'left'
-      }
-      if (this.type == 'line') {
-        return 'bottom'
-      }
-      return ''
+      return this.type == 'line'
+        ? 'bottom'
+        : this.type == 'pie' || this.type == 'doughnut'
+        ? 'left'
+        : ''
     },
     graphIndexAxis(): String {
       return this.type == 'h-bar' ? 'y' : 'x'
@@ -139,7 +138,7 @@ export default defineComponent({
       let colors = []
 
       for (let i = 0; i < this.datasets?.length; i++) {
-        let newColor = Math.floor(Math.random() * 0xfffff * 123456)
+        let newColor = Math.floor(Math.random() * 0xfffff * 100000 * 3.14)
         colors[i] = `#${newColor.toString(16).slice(0, 3)}`
       }
       return colors

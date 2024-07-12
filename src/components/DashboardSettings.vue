@@ -34,7 +34,7 @@
             <a-checkbox
               class="w-auto font-bold pr-2 mb-2"
               :the-value="autoHideToolbar"
-              :label="'The toolbar is hidden after 10 seconds.'"
+              :label="'Automatically hide the toolbar after a few seconds.'"
               :title="'Toggle autohide dashboard toolbar.'"
               @changed="(value) => (autoHideToolbar = value)"
             />
@@ -59,7 +59,7 @@
                 <ul
                   class="border border-primary-500 w-1/2 rounded-md p-2 bg-secondary-700 min-h-52 max-h-96 overflow-y-scroll scrollbar-hide"
                 >
-                  <li class="font-bold border-b border-primary-500" v-text="'All statuses'" />
+                  <li class="font-bold border-b border-primary-500 mb-1" v-text="'All statuses'" />
                   <li
                     v-if="visibleStatusCounters?.length == statusLabels?.length"
                     v-text="'All selected.'"
@@ -77,7 +77,10 @@
                 <ul
                   class="border border-primary-500 w-1/2 rounded-md p-2 bg-secondary-700 min-h-52 max-h-96 overflow-y-scroll scrollbar-hide"
                 >
-                  <li class="font-bold border-b border-primary-500" v-text="'Visible statuses'" />
+                  <li
+                    class="font-bold border-b border-primary-500 mb-1"
+                    v-text="'Visible statuses'"
+                  />
                   <li v-if="!visibleStatusCounters?.length" v-text="'None selected.'" />
                   <li
                     v-for="(status, a) in visibleStatusCounters"
@@ -123,36 +126,23 @@
           </a-setting-section>
         </div>
 
-        <div class="flex flex-col xl:flex-row md:items-center justify-between gap-4 px-5">
-          <div class="grid grid-cols-2 xl:flex items-center gap-5">
-            <button
-              v-for="(action, a) in actions"
-              :key="a"
-              :title="action.title"
-              class="flex items-center gap-x-1 primary-button settings-button text-center"
-              :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-              @click.stop="action.function"
-            >
-              <i :class="action.icon" />
-              <span v-text="action.name" />
-            </button>
-
-            <button
-              :class="`primary-button settings-button text-${primaryColorDark ? 'white' : 'black'}`"
-              @click.stop="$emit('reloadDashboard')"
-              :title="'Manually reload entire dashboard.'"
-            >
-              <i class="fa fa-repeat" />
-            </button>
-          </div>
-
+        <div class="flex flex-col xl:flex-row-reverse md:items-center gap-4 px-5">
           <button
-            class="flex items-center gap-x-1 primary-button settings-button align-middle"
+            class="primary-button settings-button text-center"
             :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-            @click.stop="open = false"
+            @click="$emit('reloadDashboard')"
+            v-text="'Save'"
+          />
+          <button
+            v-for="(action, a) in actions"
+            :key="a"
+            :title="action.title"
+            class="flex items-center gap-x-1 primary-button settings-button text-center"
+            :class="`text-${primaryColorDark ? 'white' : 'black'}`"
+            @click.stop="action.function"
           >
-            <i class="fa fa-save" />
-            <span v-text="'Save'" />
+            <i :class="action.icon" />
+            <span v-text="action.name" />
           </button>
         </div>
       </div>
@@ -189,10 +179,16 @@ export default defineComponent({
 
       actions: [
         {
-          name: 'Logout',
-          title: 'Clear all stored information and logout.',
-          icon: 'fa fa-sign-out-alt',
-          function: () => this.logout()
+          name: 'Refresh information',
+          title: 'Refresh the whole dashboard.',
+          icon: 'fa fa-redo-alt',
+          function: () => this.$router.replace('/loading')
+        },
+        {
+          name: 'Reload',
+          title: 'Manually reload entire dashboard.',
+          icon: 'fa fa-repeat',
+          function: () => this.$emit('reloadDashboard')
         },
         {
           name: 'Configuration wizard',
@@ -201,10 +197,10 @@ export default defineComponent({
           function: () => this.$router.push('/setup')
         },
         {
-          name: 'Refresh information',
-          title: 'Refresh the whole dashboard.',
-          icon: 'fa fa-redo-alt',
-          function: () => this.$router.replace('/loading')
+          name: 'Logout',
+          title: 'Clear all stored information and logout.',
+          icon: 'fa fa-sign-out-alt',
+          function: () => this.logout()
         }
       ]
     }

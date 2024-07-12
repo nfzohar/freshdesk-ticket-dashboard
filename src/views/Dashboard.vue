@@ -2,13 +2,12 @@
   <div
     :key="reloadToken"
     class="flex flex-col transition-colors dashboard-body"
-    :class="[{ 'is-loading': isLoading }, { 'cursor-none': autoHideTopBar }]"
-    @mousemove="displayTopBar"
+    :class="[{ 'is-loading': isLoading }, { 'cursor-none': hiddenCursor }]"
+    @mousemove="hideCursor"
   >
     <tool-bar
       :loading="isLoading"
       :all-tickets="allTickets"
-      :auto-hide="autoHideTopBar"
       @stopLoading="stopLoading"
       @startLoading="startLoading"
       @refresh="loadTickets"
@@ -43,10 +42,10 @@ export default defineComponent({
       ticketsTemp: [],
       apiCallUrl: '',
       startYear: '',
-      isLoading: false,
-      keepFetching: true,
-      hiddenTopBar: false,
       timeoutId: null,
+      isLoading: false,
+      hiddenCursor: false,
+      keepFetching: true,
       refreshIntervalId: null,
       updateToken: 0,
       reloadToken: 0,
@@ -60,9 +59,6 @@ export default defineComponent({
     },
     dashboardLayout(): Object {
       return this.$configuration?.layoutComponent
-    },
-    autoHideTopBar(): Boolean {
-      return this.$configuration?.autoHideToolbar && this.hiddenTopBar
     },
     statStartYear(): string {
       return new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970').toISOString()
@@ -171,14 +167,6 @@ export default defineComponent({
       }, 3000)
     },
 
-    displayTopBar() {
-      this.hiddenTopBar = false
-      clearTimeout(this.timeoutId)
-      this.timeoutId = setTimeout(() => {
-        this.hiddenTopBar = true
-      }, 10000)
-    },
-
     windowResizeListener() {
       window.addEventListener('resize', () => {
         this.resizeToken++
@@ -187,6 +175,14 @@ export default defineComponent({
 
     setInformationTicketFields() {
       this.$information.saveTicketFields(this.allTickets.at(1))
+    },
+
+    hideCursor() {
+      this.hiddenCursor = false
+      clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(() => {
+        this.hiddenCursor = true
+      }, 10000)
     },
 
     startLoading() {

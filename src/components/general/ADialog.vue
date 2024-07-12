@@ -56,7 +56,7 @@ export default defineComponent({
 
   watch: {
     manualOpen() {
-      this.open = this.manualOpen
+      this.manualOpen ? this.openDialog() : this.closeDialog()
     }
   },
 
