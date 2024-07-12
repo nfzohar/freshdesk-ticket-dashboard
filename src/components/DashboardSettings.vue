@@ -44,12 +44,14 @@
             <div class="w-full">
               <div class="flex items-center justify-between w-full py-1">
                 <button
-                  class="hover:text-primary-500"
+                  class="hover:text-primary-500 hover:underline"
+                  :title="'Set all statuses as visible.'"
                   v-text="'Select all'"
                   @click="visibleStatusCounters = statusLabels"
                 />
                 <button
-                  class="hover:text-primary-500"
+                  class="hover:text-primary-500 hover:underline"
+                  :title="'Remove all visible statuses.'"
                   v-text="'Clear all'"
                   @click="visibleStatusCounters = []"
                 />
