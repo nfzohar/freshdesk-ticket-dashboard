@@ -5,11 +5,11 @@
   >
     <template v-for="(status, s) in visibleCounters" :key="(s, visibleCounters?.length)">
       <div
-        class="block rounded-md w-full h-auto bg-primary-500 text-center align-middle font-bold p-5"
+        class="block rounded-md w-full h-full bg-primary-500 text-center align-middle font-bold p-5"
         :class="`text-${darkPrimaryColor ? 'white' : 'black'}`"
       >
+        <span class="block text-6xl w-full h-16" v-text="generateTicketCount(status)" />
         <span v-text="status" />
-        <span class="block text-6xl w-full" v-text="generateTicketCount(status)" />
       </div>
     </template>
   </div>
@@ -41,20 +41,20 @@ export default defineComponent({
   },
 
   computed: {
-    layout() {
+    layout(): String {
       return this.$configuration?.layoutComponent
     },
     darkPrimaryColor(): Boolean {
       return this.$information?.isPrimaryColorDark
     },
+    statuses(): any {
+      return Object.values(this.$information?.statuses ?? [])
+    },
     statusGroupedTickets(): any {
       return this.tickets?.length ? groupBy(this.tickets, 'status') : []
     },
-    statuses(): any {
-      return Object.values(this.$information?.statuses) ?? []
-    },
     visibleCounters(): Array {
-      return Object.values(this.$configuration?.visibleTicketCounts) ?? []
+      return Object.values(this.$configuration?.visibleTicketCounts ?? [])
     },
     validStatuses(): any {
       let labels = this.statuses.map((status) => status?.label)
@@ -93,10 +93,9 @@ export default defineComponent({
     },
 
     getStatusId(statusLabel: string) {
-      if (!this.statuses?.length) {
-        return 0
-      }
-      return this.statuses?.filter((status) => status.label == statusLabel)[0].id ?? 0
+      return this.statuses?.length
+        ? this.statuses?.filter((status) => status.label == statusLabel)[0].id ?? 0
+        : 0
     }
   }
 })

@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col w-full h-full scrollbar-hide p-3 gap-10">
+  <div class="flex flex-col w-100p h-100vh p-3 gap-5 overflow-y-scroll scrollbar-hide">
     <template v-for="(items, r) in rows" :key="r">
-      <div :class="`grid w-full h-min gap-x-4 ${panelGridlass(items?.length)}`">
+      <div :class="`grid h-min w-full xl:w-95p gap-5 m-auto ${panelGridlass(items?.length)}`">
         <component
           v-for="(panel, p) in items"
           :key="p"
@@ -55,6 +55,7 @@ export default defineComponent({
       await updatePanelInState(this.rows, newValue, panelId, property)
       this.rows = this.rowsFromState
     },
+
     panelGridlass(panelLength: number) {
       if (panelLength == 4) return 'grid-cols-4'
       return `grid-cols-${panelLength}`

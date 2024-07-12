@@ -88,6 +88,10 @@ export default defineComponent({
       this.$toast.success('Dashboard configuration was updated.')
     },
 
+    generateNewPanelId(): String {
+      return String(Math.random() * 10000).split('.')[0]
+    },
+
     setLayoutPanelsPreset() {
       let layout = {
         autoHideToolbar: true,
@@ -96,7 +100,7 @@ export default defineComponent({
         groups: [
           [
             {
-              id: String(Math.random()),
+              id: this.generateNewPanelId(),
               component: 'TicketCounters',
               displayType: 'default',
               visible: true,
@@ -106,7 +110,7 @@ export default defineComponent({
           ],
           [
             {
-              id: String(Math.random()),
+              id: this.generateNewPanelId(),
               component: 'TicketTypesList',
               displayType: 'v-bar',
               visible: true,
@@ -114,7 +118,7 @@ export default defineComponent({
               data: {}
             },
             {
-              id: String(Math.random()),
+              id: this.generateNewPanelId(),
               component: 'TicketTagsList',
               displayType: 'h-bar',
               visible: true,
@@ -122,7 +126,7 @@ export default defineComponent({
               data: {}
             },
             {
-              id: String(Math.random()),
+              id: this.generateNewPanelId(),
               component: 'TicketGroupsList',
               displayType: 'default',
               visible: true,
@@ -132,7 +136,7 @@ export default defineComponent({
           ],
           [
             {
-              id: String(Math.random()),
+              id: this.generateNewPanelId(),
               component: 'AgentsLeaderboard',
               displayType: 'default',
               visible: true,
@@ -140,7 +144,7 @@ export default defineComponent({
               data: {}
             },
             {
-              id: String(Math.random()),
+              id: this.generateNewPanelId(),
               component: 'RequestersLeaderboard',
               displayType: 'default',
               visible: true,

@@ -12,7 +12,7 @@ export const information = defineStore('information', {
     statuses: [],
     priorities: [],
 
-    listOfAvailableTicketFields: new Array(),
+    ticketFields: new Array(),
     isPrimaryColorDark: colorIsDark(import.meta.env.VITE_THEME_PRIMARY_COLOR),
     isSecondaryColorDark: colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR),
 
@@ -63,7 +63,22 @@ export const information = defineStore('information', {
           value: 'fa fa-star'
         }
       ]
-    }
+    },
+
+    months: [
+      { value: 1, days: 31, label: 'January' },
+      { value: 2, days: 28, label: 'February' },
+      { value: 3, days: 31, label: 'March' },
+      { value: 4, days: 30, label: 'April' },
+      { value: 5, days: 31, label: 'May' },
+      { value: 6, days: 30, label: 'June' },
+      { value: 7, days: 31, label: 'July' },
+      { value: 8, days: 31, label: 'August' },
+      { value: 9, days: 30, label: 'September' },
+      { value: 10, days: 31, label: 'October' },
+      { value: 11, days: 30, label: 'November' },
+      { value: 12, days: 31, label: 'December' }
+    ]
   }),
 
   getters: {
@@ -87,6 +102,9 @@ export const information = defineStore('information', {
     },
     autoRefreshTimeShortcuts(): Array {
       return this.autoRefreshShortcuts
+    },
+    listOfAvailableTicketFields(): Array {
+      return this.ticketFields
     },
     trophyIcons(): Array {
       return this.leaderboardsTrophy?.icons
@@ -149,7 +167,8 @@ export const information = defineStore('information', {
         sources: this.sources,
         filters: this.filters,
         statuses: this.statuses,
-        priorities: this.priorities
+        priorities: this.priorities,
+        ticketFields: this.ticketFields
       }
       localStorage.setItem(storeLocalStorageKey, JSON.stringify(storeData))
     },
@@ -166,6 +185,7 @@ export const information = defineStore('information', {
         this.sources = stateFromStore?.sources
         this.statuses = stateFromStore?.statuses
         this.priorities = stateFromStore?.priorities
+        this.ticketFields = stateFromStore?.ticketFields
       }
     },
 
@@ -173,17 +193,20 @@ export const information = defineStore('information', {
       this.agents = []
       this.groups = []
       this.filters = []
-      this.filters = []
+      this.sources = []
       this.priorities = []
+      this.ticketFields = []
       localStorage.removeItem(storeLocalStorageKey)
     },
 
     saveTicketFields(ticket: Object) {
       const ignoredFields = [
         'id',
+        'type',
         'tags',
         'stats',
         'status',
+        'source',
         'due_by',
         'subject',
         'fr_due_by',
@@ -199,10 +222,12 @@ export const information = defineStore('information', {
         return
       }
 
-      this.listOfAvailableTicketFields = [Object.keys(ticket), Object.keys(ticket?.custom_fields)]
+      this.ticketFields = [Object.keys(ticket), Object.keys(ticket?.custom_fields)]
         .flat()
         .filter((field) => !ignoredFields.includes(field))
         .sort()
+
+      this.saveConfigurationToStore()
     }
   }
 })

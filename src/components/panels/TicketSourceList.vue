@@ -39,7 +39,7 @@ export default defineComponent({
 
   computed: {
     ticketSources(): Array {
-      return this.$information?.storedSources
+      return this.$information?.storedSources ?? []
     }
   },
 

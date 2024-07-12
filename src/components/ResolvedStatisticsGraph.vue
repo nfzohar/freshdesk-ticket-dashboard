@@ -13,44 +13,33 @@
     <template #content>
       <div
         :key="updateToken"
-        class="flex flex-col 2xl:flex-row bg-secondary-600 gap-5 h-80vh w-max m-auto p-4 rounded-md border border-primary-500"
+        class="flex flex-col bg-secondary-600 gap-5 w-95p xl:w-80p m-auto p-5 rounded-md border border-primary-500"
       >
-        <div class="w-full flex flex-col 2xl">
-          <h1
-            :class="`w-full text-xl font-bold ${textOnSecondaryColor}`"
-            v-text="'Ticket open/closed ratio'"
+        <div class="w-full flex items-end justify-between">
+          <a-select
+            :class="'w-max'"
+            :options="yearsFromTickets"
+            :show-null-value="false"
+            :the-value="selectedYear"
+            :label="'Show ticket of year:'"
+            @changed="(value) => (selectedYear = value)"
           />
-          <hr class="border-primary-500 my-2" />
 
-          <div class="flex flex-col items-center justify-between gap-5">
-            <a-select
-              class="w-full px-1"
-              :options="yearsFromTickets"
-              :show-null-value="false"
-              :the-value="selectedYear"
-              :label="'Show ticket for year:'"
-              @changed="(value) => (selectedYear = value)"
-            />
-            <a-select
-              class="w-full px-1"
-              :options="months"
-              :label-field="'label'"
-              :value-field="'value'"
-              :the-value="selectedMonth"
-              :null-value-label="'All months'"
-              :label="`Show ticket for month in ${selectedYear}:`"
-              @changed="(value) => (selectedMonth = value)"
-            />
-          </div>
+          <span
+            :class="`bg-secondary-500 p-3 w-auto h-full rounded-md ${textOnSecondaryColor}`"
+            v-html="`<b>Date range:</b> ${firstTicketDate} - ${lastTicketDate}`"
+          />
         </div>
 
-        <a-statistics-graph
-          :type="'line'"
-          :class="'w-full h-full'"
-          :datasets-through-prop="true"
-          :dataset-labels="datasetLabels"
-          :datasets="datasets"
-        />
+        <div :class="'w-100p m-auto'">
+          <a-statistics-graph
+            :type="'line'"
+            :class="'w-full h-full'"
+            :datasets-through-prop="true"
+            :dataset-labels="datasetLabels"
+            :datasets="datasets"
+          />
+        </div>
       </div>
     </template>
   </a-dialog>
@@ -58,9 +47,8 @@
 
 <script lang="ts">
 import { groupBy } from 'lodash'
-import { defineComponent } from 'vue'
 import { format } from 'date-fns'
-
+import { defineComponent } from 'vue'
 import ADialog from '@/components/general/ADialog.vue'
 import ASelect from '@/components/general/ASelect.vue'
 import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
@@ -75,6 +63,16 @@ export default defineComponent({
       type: [Object, Array],
       required: false,
       default: () => []
+    },
+    lastTicketDate: {
+      type: Date,
+      required: false,
+      default: new Date()
+    },
+    firstTicketDate: {
+      type: Date,
+      required: false,
+      default: new Date()
     }
   },
 
@@ -82,26 +80,14 @@ export default defineComponent({
     return {
       open: false,
       updateToken: 0,
+      selectedDay: '',
       selectedYear: '',
       selectedMonth: '',
+
+      ticketsByYear: [],
       openedTickets: [],
       closedTickets: [],
-      ticketsByYear: [],
-      yearsFromTickets: [],
-      months: [
-        { value: 1, label: 'January' },
-        { value: 2, label: 'February' },
-        { value: 3, label: 'March' },
-        { value: 4, label: 'April' },
-        { value: 5, label: 'May' },
-        { value: 6, label: 'June' },
-        { value: 7, label: 'July' },
-        { value: 8, label: 'August' },
-        { value: 9, label: 'September' },
-        { value: 10, label: 'October' },
-        { value: 11, label: 'November' },
-        { value: 12, label: 'December' }
-      ]
+      yearsFromTickets: []
     }
   },
 
@@ -120,39 +106,34 @@ export default defineComponent({
     datasets() {
       return [
         {
-          label: 'Opened tickets',
-          data: this.openedTickets,
           borderColor: 'red',
-          backgroundColor: 'red'
+          backgroundColor: 'red',
+          label: 'Opened tickets',
+          data: this.openedTickets
         },
         {
-          label: 'Closed/Resolved tickets',
-          data: this.closedTickets,
+          label: 'Closed/resolved tickets',
           borderColor: 'green',
-          backgroundColor: 'green'
+          backgroundColor: 'green',
+          data: this.closedTickets
         }
       ]
     },
-    datasetLabels() {
+    datasetLabels(): String {
       return this.months?.map((month) => month?.label)
     },
-    textOnSecondaryColor() {
-      return this.$information.textOnSecondaryColor
+    textOnSecondaryColor(): String {
+      return this.$information?.textOnSecondaryColor
     },
     statuses(): Array {
-      return Object.values(this.$information?.statuses)
+      return Object.values(this.$information?.statuses ?? [])
     },
-    openStatusId(): Object {
-      return this.statuses?.filter((st) => st?.value == 'Open')[0]?.id
+    selectedIsLeapYear(): Boolean {
+      let year = Number(this.selectedYear)
+      return (0 == year % 4 && 0 != year % 100) || 0 == year % 400
     },
-    closedStatusId(): Object {
-      return this.statuses?.filter((st) => st?.value == 'Closed')[0]?.id
-    },
-    resolvedStatusId(): Object {
-      return this.statuses?.filter((st) => st?.value == 'Resolved')[0]?.id
-    },
-    ticketStatuses(): Object {
-      return this.$information?.storedStatuses
+    months(): Array {
+      return this.$information?.months
     }
   },
 
@@ -172,7 +153,6 @@ export default defineComponent({
       this.ticketsByYear = groupBy(this.tickets, (ticket) =>
         format(new Date(ticket?.created_at), 'y')
       )
-
       this.yearsFromTickets = Object.keys(this.ticketsByYear)
       this.selectedYear = this.yearsFromTickets[0]
     },
@@ -180,49 +160,37 @@ export default defineComponent({
     ticketStatisticsForYear() {
       let ticketsOfSelectedYear = this.ticketsByYear[this.selectedYear] ?? []
 
-      this.openedTickets = this.buildOpenTicketsArray(ticketsOfSelectedYear)
-      this.closedTickets = this.buildClosedTicketsArray(ticketsOfSelectedYear)
+      let closedStatusIds = [this.findStatusId('Closed'), this.findStatusId('Resolved')]
+      this.closedTickets = this.buildTicketsArray(
+        ticketsOfSelectedYear,
+        closedStatusIds,
+        'updated_at'
+      )
+
+      let openStatusId = [this.findStatusId('Open')]
+      this.openedTickets = this.buildTicketsArray(ticketsOfSelectedYear, openStatusId, 'created_at')
     },
 
-    // TO DO: add a general function for buiding ticket counts
-
-    buildOpenTicketsArray(ticketsOfYear) {
-      let ticketsOfStatus = ticketsOfYear.filter(
-        (yearsTicket) => yearsTicket.status == this.openStatusId
+    buildTicketsArray(ticketsOfYear, statusIds, dateField: String) {
+      let ticketsOfStatus = ticketsOfYear.filter((yearsTicket) =>
+        statusIds.includes(yearsTicket.status)
       )
 
       ticketsOfStatus.forEach((ticket) => {
-        ticket['created_month'] = Number(new Date(ticket['created_at']).getMonth()) + 1
+        ticket['sorting_index'] = Number(new Date(ticket[dateField]).getMonth()) + 1
       })
-
-      ticketsOfStatus = groupBy(ticketsOfStatus, 'created_month')
+      ticketsOfStatus = groupBy(ticketsOfStatus, 'sorting_index')
 
       for (let month = 1; month <= 12; month++) {
         if (!ticketsOfStatus[month]) {
           ticketsOfStatus[month] = []
         }
       }
-
       return Object.values(ticketsOfStatus).map((month) => month?.length)
     },
 
-    buildClosedTicketsArray(ticketsOfYear: [Object, Array]) {
-      let ticketsOfStatus = ticketsOfYear?.filter((yearsTicket) =>
-        [this.closedStatusId, this.resolvedStatusId].includes(yearsTicket.status)
-      )
-
-      ticketsOfStatus?.map(
-        (ticket) => (ticket['closed_in_month'] = format(new Date(ticket['updated_at']), 'M'))
-      )
-      ticketsOfStatus = groupBy(ticketsOfStatus, 'closed_in_month')
-
-      for (let month = 1; month <= 12; month++) {
-        if (!ticketsOfStatus[month]) {
-          ticketsOfStatus[month] = []
-        }
-      }
-
-      return Object.values(ticketsOfStatus).map((month) => month?.length)
+    findStatusId(label: String) {
+      return this.statuses?.filter((status) => status?.value == label)[0]?.id
     }
   }
 })

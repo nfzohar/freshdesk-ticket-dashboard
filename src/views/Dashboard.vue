@@ -55,13 +55,14 @@ export default defineComponent({
 
   computed: {
     allTickets(): Object {
-      return this.tickets?.flat()
+      return this.tickets?.flat() ?? []
     },
     dashboardLayout(): Object {
       return this.$configuration?.layoutComponent
     },
     statStartYear(): string {
-      return new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970').toISOString()
+      let year = import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970'
+      return new Date(year).toISOString()
     }
   },
 
@@ -129,29 +130,32 @@ export default defineComponent({
         if (response) {
           this.ticketsTemp[this.page] = Object.values(response.results ?? response)
         }
-
+/*
         this.refershTicketsFromTemp()
         this.keepFetching = this.isLoading = !true
         return
+*/
 
-        // if (!this.ticketsTemp[this.page]?.length) {
-        //   this.keepFetching = false
+        ////-----------------------------------------------------
+         if (!this.ticketsTemp[this.page]?.length) {
+          this.keepFetching = false
 
-        //   if (this.ticketsTemp?.length) {
-        //     this.refershTicketsFromTemp()
-        //   } else {
-        //     this.$toast.clear()
-        //     this.$toast.error('No tickets to display found.')
-        //     this.stopLoading()
-        //   }
-        // }
+           if (this.ticketsTemp?.length) {
+             this.refershTicketsFromTemp()
+           } else {
+             this.$toast.clear()
+             this.$toast.error('No tickets to display found.')
+             this.stopLoading()
+           }
+         }
 
-        // if (this.keepFetching) {
-        //   this.page++
-        //   setTimeout(() => {
-        //     this.fetchTickets()
-        //   }, 6000)
-        // }
+        if (this.keepFetching) {
+          this.page++
+          setTimeout(() => {
+            this.fetchTickets()
+          }, 6000)
+        }
+        //-----------------------------------------------------
       })
     },
 
@@ -174,7 +178,7 @@ export default defineComponent({
     },
 
     setInformationTicketFields() {
-      this.$information.saveTicketFields(this.allTickets.at(1))
+      this.$information?.saveTicketFields(this.allTickets?.at(1))
     },
 
     hideCursor() {

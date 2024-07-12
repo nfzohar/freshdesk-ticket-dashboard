@@ -1,6 +1,5 @@
 <template>
-  <div
-    :class="`grid gap-3 w-full h-60vh p-3 rounded-md items-start m-auto ${groupGridConfig}`">
+  <div :class="`grid gap-3 w-full h-60vh p-3 rounded-md items-start m-auto ${groupGridConfig}`">
     <div
       v-for="(group, g) in layoutGroups"
       :key="g"
@@ -10,7 +9,6 @@
         v-for="(panel, p) in group"
         :key="p"
         :panel="panel"
-        :visible-id="`${g}-${p}`"
         @panelUpdated="(value) => updateLayoutGroups(g, p, value)"
         @removePanel="(value) => removePanelFromGroup(value, g)"
       />
@@ -42,7 +40,7 @@ import { defineComponent } from 'vue'
 import APanelManager from '@/components/general/APanelManager.vue'
 
 export default defineComponent({
-  name: 'LayoutOrientation',
+  name: 'LayoutSelection',
 
   components: { APanelManager },
 
@@ -64,6 +62,9 @@ export default defineComponent({
     },
     accentSecondaryBg(): String {
       return this.$information?.bgAccentSecondaryColor
+    },
+    existingPanelIds(): Array {
+      return this.currentLayoutGroups?.flat()?.map((p) => p.id)
     },
     groupGridConfig() {
       if (this.layout == 'spin-layout') return 'grid-cols-1'
@@ -89,9 +90,14 @@ export default defineComponent({
       this.addNewPanel(this.layoutGroups.length - 1)
     },
 
+    generateNewPanelId(): String {
+      let newId = String(Math.random() * 10000).split('.')[0]
+      return !this.existingPanelIds.includes(newId) ? newId : this.generateNewPanelId()
+    },
+
     addNewPanel(groupId: Number) {
       let newComponent = {
-        id: String(Math.random()),
+        id: this.generateNewPanelId(),
         displayType: 'default',
         component: '',
         visible: true,
@@ -107,9 +113,11 @@ export default defineComponent({
     },
 
     removePanelFromGroup(componentId: String, groupId: number) {
-      this.layoutGroups[groupId] = this.layoutGroups[groupId]?.filter(
+      let filteredGroups = this.layoutGroups[groupId]?.filter(
         (component) => component?.id != componentId
       )
+
+      this.layoutGroups[groupId] = filteredGroups
 
       if (!this.layoutGroups[groupId]?.length) {
         this.layoutGroups.splice(groupId, 1)
@@ -118,8 +126,7 @@ export default defineComponent({
     },
 
     groupIncludesComponent(groupId: number, component: String = 'TicketCounters') {
-      let componentInGroup = this.layoutGroups[groupId].map((group) => group.component)
-      return componentInGroup.includes(component)
+      return this.layoutGroups[groupId].map((group) => group.component)?.includes(component)
     }
   }
 })

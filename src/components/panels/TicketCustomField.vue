@@ -41,7 +41,7 @@ export default defineComponent({
     },
     showUndefined: {
       type: Boolean,
-      required: true,
+      required: false,
       default: false
     },
     customTicketTitle: {

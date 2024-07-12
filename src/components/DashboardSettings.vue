@@ -216,7 +216,7 @@ export default defineComponent({
       return this.$information?.trophyIcons
     },
     visibleTicketCounters(): Object {
-      return this.$configuration?.visibleTicketCounts
+      return this.$configuration?.visibleTicketCounts ?? []
     },
     primaryColorDark(): String {
       return this.$information?.isPrimaryColorDark
@@ -233,7 +233,7 @@ export default defineComponent({
       }`
     },
     statusLabels(): Array {
-      let statuses = Object.values(this.$information?.statuses)
+      let statuses = Object.values(this.$information?.statuses ?? [])
       let labels = statuses.map((status: { label: String }) => status?.label)
 
       labels.unshift('All', 'Unresolved')

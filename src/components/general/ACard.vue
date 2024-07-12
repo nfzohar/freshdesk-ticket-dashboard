@@ -4,9 +4,13 @@
     :class="`text-${primaryColorIsDark ? 'white' : 'black'}`"
   >
     <div class="flex flex-col w-full h-full">
-      <span class="font-bold" v-text="name" />
+      <span class="font-bold" v-text="name ?? 'N/A'" />
       <span v-if="subtitle" class="text-sm mb-2" v-text="subtitle" />
-      <span class="text-sm" :class="{'font-semibold' : subtitle}" v-html="`${countLabel}: ${count}`" />
+      <span
+        class="text-sm"
+        :class="{ 'font-semibold': subtitle }"
+        v-text="`${countLabel}: ${count}`"
+      />
     </div>
 
     <slot v-if="$slots['card-icon']" :name="'card-icon'" />

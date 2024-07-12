@@ -40,6 +40,8 @@
 
         <resolved-statistics-graph
           :tickets="allTickets"
+          :last-ticket-date="lastTicketDate"
+          :first-ticket-date="firstTicketDate"
           @open="modalsOpen = true"
           @close="modalsOpen = false"
         />
@@ -126,6 +128,10 @@ export default defineComponent({
     appTitle(): String {
       return import.meta.env.VITE_APP_TITLE ?? 'Freshdesk Ticket Dashboard'
     }
+  },
+
+  mounted() {
+    this.hideTopBar()
   },
 
   methods: {

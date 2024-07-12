@@ -40,7 +40,7 @@ export default defineComponent({
 
   computed: {
     ticketPriorities(): Array {
-      return this.$information?.storedPriorities
+      return this.$information?.storedPriorities ?? []
     }
   },
 
