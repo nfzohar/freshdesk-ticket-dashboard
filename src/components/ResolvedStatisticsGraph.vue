@@ -15,7 +15,7 @@
         :key="updateToken"
         class="flex flex-col bg-secondary-600 gap-5 w-95p xl:w-80p m-auto p-5 rounded-md border border-primary-500"
       >
-        <div class="w-full flex items-end justify-between">
+        <div class="w-full flex items-center justify-between">
           <a-select
             :class="'w-max'"
             :options="yearsFromTickets"
@@ -25,16 +25,31 @@
             @changed="(value) => (selectedYear = value)"
           />
 
-          <span
-            :class="`bg-secondary-500 p-3 w-auto h-full rounded-md ${textOnSecondaryColor}`"
-            v-html="`<b>Date range:</b> ${firstTicketDate} - ${lastTicketDate}`"
+          <div
+            :class="`flex flex-col text-center bg-secondary-500 p-3 w-auto h-full rounded-md ${textOnSecondaryColor}`"
+            :title="`Viewing graph for tickets, created between ${firstTicketDate} and ${lastTicketDate}.`"
+          >
+            <b v-text="`Tickets date range:`" />
+            <span v-text="`${firstTicketDate} - ${lastTicketDate}`" />
+          </div>
+
+          <a-select
+            :class="'w-max'"
+            :options="graphTypes"
+            :show-null-value="false"
+            :the-value="selectedGraphType"
+            :label="'Graph type:'"
+            :value-field="'value'"
+            :label-field="'label'"
+            @changed="(value) => (selectedGraphType = value)"
           />
         </div>
 
-        <div :class="'w-100p m-auto'">
+        <div :class="'w-100p m-auto h-80p'">
           <a-statistics-graph
-            :type="'line'"
             :class="'w-full h-full'"
+            :type="selectedGraphType"
+            :display-graph-legend="true"
             :datasets-through-prop="true"
             :dataset-labels="datasetLabels"
             :datasets="datasets"
@@ -46,8 +61,8 @@
 </template>
 
 <script lang="ts">
-import { groupBy } from 'lodash'
 import { format } from 'date-fns'
+import { groupBy, get } from 'lodash'
 import { defineComponent } from 'vue'
 import ADialog from '@/components/general/ADialog.vue'
 import ASelect from '@/components/general/ASelect.vue'
@@ -83,6 +98,7 @@ export default defineComponent({
       selectedDay: '',
       selectedYear: '',
       selectedMonth: '',
+      selectedGraphType: 'line',
 
       ticketsByYear: [],
       openedTickets: [],
@@ -113,6 +129,18 @@ export default defineComponent({
         },
         {
           label: 'Closed/resolved tickets',
+          borderColor: 'blue',
+          backgroundColor: 'blue',
+          data: this.closedTickets
+        },
+        {
+          label: 'Closed tickets',
+          borderColor: 'green',
+          backgroundColor: 'green',
+          data: this.closedTickets
+        },
+        {
+          label: 'Resolved tickets',
           borderColor: 'green',
           backgroundColor: 'green',
           data: this.closedTickets
@@ -134,6 +162,12 @@ export default defineComponent({
     },
     months(): Array {
       return this.$information?.months
+    },
+    graphTypes() {
+      let allGraphTypesFromStore = this.$information?.graphTypes ?? []
+      let excludedGraphTypes = ['pie', 'doughnut']
+
+      return allGraphTypesFromStore?.filter((chart) => !excludedGraphTypes.includes(chart.value))
     }
   },
 
@@ -150,9 +184,7 @@ export default defineComponent({
 
   methods: {
     splitTicketsByYear() {
-      this.ticketsByYear = groupBy(this.tickets, (ticket) =>
-        format(new Date(ticket?.created_at), 'y')
-      )
+      this.ticketsByYear = groupBy(this.tickets, (ticket) => this.fdate(ticket?.created_at, 'y'))
       this.yearsFromTickets = Object.keys(this.ticketsByYear)
       this.selectedYear = this.yearsFromTickets[0]
     },
@@ -164,7 +196,7 @@ export default defineComponent({
       this.closedTickets = this.buildTicketsArray(
         ticketsOfSelectedYear,
         closedStatusIds,
-        'updated_at'
+        'resolved_at'
       )
 
       let openStatusId = [this.findStatusId('Open')]
@@ -177,7 +209,7 @@ export default defineComponent({
       )
 
       ticketsOfStatus.forEach((ticket) => {
-        ticket['sorting_index'] = Number(new Date(ticket[dateField]).getMonth()) + 1
+        ticket['sorting_index'] = Number(this.fdate(get(ticket, dateField), 'M'))
       })
       ticketsOfStatus = groupBy(ticketsOfStatus, 'sorting_index')
 
@@ -191,6 +223,10 @@ export default defineComponent({
 
     findStatusId(label: String) {
       return this.statuses?.filter((status) => status?.value == label)[0]?.id
+    },
+
+    fdate(date: String, dateFormat) {
+      return date ? format(new Date(date), dateFormat) : '-'
     }
   }
 })

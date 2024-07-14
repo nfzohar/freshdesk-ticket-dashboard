@@ -130,24 +130,24 @@ export default defineComponent({
         if (response) {
           this.ticketsTemp[this.page] = Object.values(response.results ?? response)
         }
-/*
+        /*
         this.refershTicketsFromTemp()
         this.keepFetching = this.isLoading = !true
         return
 */
 
         ////-----------------------------------------------------
-         if (!this.ticketsTemp[this.page]?.length) {
+        if (!this.ticketsTemp[this.page]?.length) {
           this.keepFetching = false
 
-           if (this.ticketsTemp?.length) {
-             this.refershTicketsFromTemp()
-           } else {
-             this.$toast.clear()
-             this.$toast.error('No tickets to display found.')
-             this.stopLoading()
-           }
-         }
+          if (this.ticketsTemp?.length) {
+            this.refershTicketsFromTemp()
+          } else {
+            this.$toast.clear()
+            this.$toast.error('No tickets to display found.')
+            this.stopLoading()
+          }
+        }
 
         if (this.keepFetching) {
           this.page++

@@ -106,7 +106,6 @@ export default defineComponent({
       isLoading: true,
       selectedView: 'default',
       selectedSortBy: 'names-asc',
-      views: ['default', 'v-bar', 'h-bar', 'pie', 'doughnut'],
       sorts: ['name-asc', 'name-desc', 'ticket_count-asc', 'ticket_count-desc']
     }
   },
@@ -139,6 +138,10 @@ export default defineComponent({
       if (this.selectedSortBy == this.sorts[2]) return 'Sorted by ticket count, ascending.'
       if (this.selectedSortBy == this.sorts[3]) return 'Sorted by ticket count, descending.'
       return 'Set graph sorting'
+    },
+    views() {
+      let arrayTypesFromStore = this.$information?.graphTypes.map((type) => type?.value)
+      return ['default'].concat(arrayTypesFromStore)
     }
   },
 

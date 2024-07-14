@@ -69,11 +69,15 @@ export default defineComponent({
       required: false,
       default: () => []
     },
+    displayGraphLegend: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     customClass: {
       type: String,
       required: false,
-      default:
-        'w-full m-auto p-2 border-primary-700 border bg-secondary-500 rounded-md shadow-primary-600'
+      default: 'w-full m-auto p-2 border-primary-700 border bg-secondary-500 rounded-md'
     },
     datasetsThroughProp: {
       type: Boolean,
@@ -114,17 +118,15 @@ export default defineComponent({
       }
     },
     legendPosition(): String {
-      return this.type == 'line'
-        ? 'bottom'
-        : this.type == 'pie' || this.type == 'doughnut'
-        ? 'left'
-        : ''
+      if (this.type == 'line') return 'bottom'
+      if (this.type == 'pie' || this.type == 'doughnut') return 'left'
+      return 'top'
     },
     graphIndexAxis(): String {
       return this.type == 'h-bar' ? 'y' : 'x'
     },
     showGraphLegend(): Boolean {
-      return ['line', 'pie', 'doughnut'].includes(this.type)
+      return this.displayGraphLegend || ['line', 'pie', 'doughnut'].includes(this.type)
     },
     chartType(): String {
       if (this.type == 'pie') return 'PieChart'

@@ -78,6 +78,14 @@ export const information = defineStore('information', {
       { value: 10, days: 31, label: 'October' },
       { value: 11, days: 30, label: 'November' },
       { value: 12, days: 31, label: 'December' }
+    ],
+
+    graphTypes: [
+      { value: 'v-bar', label: 'Vertical bar charts' },
+      { value: 'h-bar', label: 'Horizontal bar charts' },
+      { value: 'pie', label: 'Pie chart' },
+      { value: 'doughnut', label: 'Doughnut chart' },
+      { value: 'line', label: 'Line chart' }
     ]
   }),
 
