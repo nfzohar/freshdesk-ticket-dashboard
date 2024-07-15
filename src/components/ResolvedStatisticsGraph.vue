@@ -124,28 +124,30 @@ export default defineComponent({
     datasets() {
       return [
         {
-          borderColor: 'red',
-          backgroundColor: 'red',
+          borderColor: '#ff0000',
+          backgroundColor: '#ff0000',
           label: 'Opened tickets',
           data: this.openedTickets
         },
         {
           label: 'Closed/resolved tickets',
-          borderColor: 'blue',
-          backgroundColor: 'blue',
+          borderColor: '#00ff77',
+          backgroundColor: '#00ff77',
           data: this.finishedTickets
         },
         {
           label: 'Closed tickets',
-          borderColor: 'lime',
-          backgroundColor: 'lime',
-          data: this.closedTickets
+          borderColor: '#007d06',
+          backgroundColor: '#007d06',
+          data: this.closedTickets,
+          hidden: true
         },
         {
           label: 'Resolved tickets',
-          borderColor: 'green',
-          backgroundColor: 'green',
-          data: this.resolvedTickets
+          borderColor: '#00ff11',
+          backgroundColor: '#00ff11',
+          data: this.resolvedTickets,
+          hidden: true
         }
       ]
     },
@@ -167,7 +169,7 @@ export default defineComponent({
     },
     graphTypes() {
       let allGraphTypesFromStore = this.$information?.graphTypes ?? []
-      let excludedGraphTypes = ['pie', 'doughnut']
+      let excludedGraphTypes = ['pie', 'doughnut', 'polar-area']
 
       return allGraphTypesFromStore?.filter((chart) => !excludedGraphTypes.includes(chart.value))
     }

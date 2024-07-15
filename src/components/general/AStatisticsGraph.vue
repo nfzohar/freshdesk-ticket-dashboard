@@ -101,6 +101,7 @@ export default defineComponent({
           {
             label: this.datasetTitle ?? 'Info',
             backgroundColor: this.datasetBackground,
+            borderColor: this.graphBorderColor,
             data: this.datasets
           }
         ]
@@ -123,7 +124,7 @@ export default defineComponent({
       }
     },
     legendPosition(): String {
-      if (this.type == 'line') return 'bottom'
+      if (['bezier-line', 'line'].includes(this.type)) return 'bottom'
       if (['pie', 'doughnut', 'polar-area'].includes(this.type)) return 'left'
       return 'top'
     },
@@ -134,7 +135,15 @@ export default defineComponent({
       return this.type == 'bezier-line' ? 0.5 : 0
     },
     showGraphLegend(): Boolean {
-      return this.displayGraphLegend || ['line', 'pie', 'doughnut'].includes(this.type)
+      return (
+        this.displayGraphLegend ||
+        ['bezier-line', 'line', 'pie', 'doughnut', 'polar-area'].includes(this.type)
+      )
+    },
+    graphBorderColor(): Any {
+      let lineColor = this.$information?.isSecondaryColorDark ? '#ffffff' : '#000000'
+
+      return ['line', 'bezier-line'].includes(this.type) ? lineColor : 'transparent'
     },
     chartType(): String {
       if (this.type == 'pie') return 'PieChart'

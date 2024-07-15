@@ -173,6 +173,11 @@ export default defineComponent({
           value: this.theTicket?.tags?.toString()
         },
         {
+          show: this.theTicket?.ticket_cc_emails?.length,
+          label: 'CC Emails',
+          value: this.theTicket?.ticket_cc_emails?.join('\n')
+        },
+        {
           show: true,
           label: 'Created',
           value: this.fdate(this.theTicket?.created_at)
