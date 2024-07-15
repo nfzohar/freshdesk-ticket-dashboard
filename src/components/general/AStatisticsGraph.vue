@@ -6,7 +6,7 @@
     :class="customClass"
     :options="chartOptions"
   >
-    <span v-text="'Graph could not be loaded.'" />
+    <span class="block opacity-50 px-5" v-text="'Graph could not be loaded.'" />
   </component>
 </template>
 
@@ -21,13 +21,15 @@ import {
   LineElement,
   LinearScale,
   PointElement,
-  CategoryScale
+  CategoryScale,
+  RadialLinearScale
 } from 'chart.js'
 import {
   Bar as BarChart,
   Line as LineChart,
   Pie as PieChart,
-  Doughnut as DoughnutChart
+  Doughnut as DoughnutChart,
+  PolarArea as PolarAreaChart
 } from 'vue-chartjs'
 import { defineComponent } from 'vue'
 
@@ -40,13 +42,14 @@ Chart.register(
   LineElement,
   LinearScale,
   PointElement,
-  CategoryScale
+  CategoryScale,
+  RadialLinearScale
 )
 
 export default defineComponent({
   name: 'TicketStatisticsGraph',
 
-  components: { BarChart, LineChart, PieChart, DoughnutChart },
+  components: { BarChart, LineChart, PieChart, DoughnutChart, PolarAreaChart },
 
   props: {
     datasetTitle: {
@@ -107,6 +110,8 @@ export default defineComponent({
     chartOptions() {
       return {
         responsive: true,
+        maintainAspectRatio: true,
+        tension: this.graphTension,
         indexAxis: this.graphIndexAxis,
         plugins: {
           legend: {
@@ -119,21 +124,26 @@ export default defineComponent({
     },
     legendPosition(): String {
       if (this.type == 'line') return 'bottom'
-      if (this.type == 'pie' || this.type == 'doughnut') return 'left'
+      if (['pie', 'doughnut', 'polar-area'].includes(this.type)) return 'left'
       return 'top'
     },
     graphIndexAxis(): String {
       return this.type == 'h-bar' ? 'y' : 'x'
+    },
+    graphTension() {
+      return this.type == 'bezier-line' ? 0.5 : 0
     },
     showGraphLegend(): Boolean {
       return this.displayGraphLegend || ['line', 'pie', 'doughnut'].includes(this.type)
     },
     chartType(): String {
       if (this.type == 'pie') return 'PieChart'
-      if (this.type == 'line') return 'LineChart'
       if (this.type == 'v-bar') return 'BarChart'
       if (this.type == 'h-bar') return 'BarChart'
+      if (this.type == 'line') return 'LineChart'
+      if (this.type == 'bezier-line') return 'LineChart'
       if (this.type == 'doughnut') return 'DoughnutChart'
+      if (this.type == 'polar-area') return 'PolarAreaChart'
       return 'BarChart'
     },
     datasetBackground() {

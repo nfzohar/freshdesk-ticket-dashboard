@@ -45,9 +45,9 @@
           />
         </div>
 
-        <div :class="'w-100p m-auto h-80p'">
+        <div :class="'w-100p m-auto h-70'">
           <a-statistics-graph
-            :class="'w-full h-full'"
+            :class="'w-auto h-90p'"
             :type="selectedGraphType"
             :display-graph-legend="true"
             :datasets-through-prop="true"
@@ -103,6 +103,8 @@ export default defineComponent({
       ticketsByYear: [],
       openedTickets: [],
       closedTickets: [],
+      resolvedTickets: [],
+      finishedTickets: [],
       yearsFromTickets: []
     }
   },
@@ -131,19 +133,19 @@ export default defineComponent({
           label: 'Closed/resolved tickets',
           borderColor: 'blue',
           backgroundColor: 'blue',
-          data: this.closedTickets
+          data: this.finishedTickets
         },
         {
           label: 'Closed tickets',
-          borderColor: 'green',
-          backgroundColor: 'green',
+          borderColor: 'lime',
+          backgroundColor: 'lime',
           data: this.closedTickets
         },
         {
           label: 'Resolved tickets',
           borderColor: 'green',
           backgroundColor: 'green',
-          data: this.closedTickets
+          data: this.resolvedTickets
         }
       ]
     },
@@ -190,23 +192,21 @@ export default defineComponent({
     },
 
     ticketStatisticsForYear() {
-      let ticketsOfSelectedYear = this.ticketsByYear[this.selectedYear] ?? []
+      let ticketsOfYear = this.ticketsByYear[this.selectedYear] ?? []
 
-      let closedStatusIds = [this.findStatusId('Closed'), this.findStatusId('Resolved')]
-      this.closedTickets = this.buildTicketsArray(
-        ticketsOfSelectedYear,
-        closedStatusIds,
-        'resolved_at'
-      )
+      this.openedTickets = this.buildTicketsArray(ticketsOfYear, 'Open', 'created_at')
+      this.closedTickets = this.buildTicketsArray(ticketsOfYear, 'Closed', 'stats.closed_at')
+      this.resolvedTickets = this.buildTicketsArray(ticketsOfYear, 'Resolved', 'stats.resolved_at')
 
-      let openStatusId = [this.findStatusId('Open')]
-      this.openedTickets = this.buildTicketsArray(ticketsOfSelectedYear, openStatusId, 'created_at')
+      for (let i = 0; i < this.closedTickets?.length; i++) {
+        this.finishedTickets[i] = this.closedTickets[i] + this.resolvedTickets[i]
+      }
     },
 
-    buildTicketsArray(ticketsOfYear, statusIds, dateField: String) {
-      let ticketsOfStatus = ticketsOfYear.filter((yearsTicket) =>
-        statusIds.includes(yearsTicket.status)
-      )
+    buildTicketsArray(ticketsOfYear, status: String, dateField: String) {
+      let statusId = this.findStatusId(status)
+
+      let ticketsOfStatus = ticketsOfYear.filter((yearsTicket) => yearsTicket.status == statusId)
 
       ticketsOfStatus.forEach((ticket) => {
         ticket['sorting_index'] = Number(this.fdate(get(ticket, dateField), 'M'))

@@ -20,14 +20,12 @@
         />
       </div>
 
-      <div :class="`flex items-center mx-2 gap-3 justify-between w-max ${primaryColorText}`">
-        <button
-          class="actions-button"
-          :title="'Refresh page'"
-          :key="Number(loadingState)"
-          @click.stop="$emit('refresh')"
-        >
-          <i :class="`fa fa-rotate ${loadingState ? 'animate-spin' : ''}`" />
+      <div
+        :key="Number(isLoading)"
+        :class="`flex items-center mx-2 gap-3 justify-between w-max ${primaryColorText}`"
+      >
+        <button class="actions-button" :title="'Refresh page'" @click.stop="$emit('refresh')">
+          <i :class="`fa fa-rotate ${isLoading ? 'animate-spin' : ''}`" />
         </button>
 
         <ticket-excel-exporter
@@ -79,9 +77,10 @@ export default defineComponent({
       type: [Array, Object],
       required: true
     },
-    loading: {
+    isLoading: {
       type: Boolean,
-      required: true
+      required: true,
+      default: false
     }
   },
 
@@ -100,7 +99,6 @@ export default defineComponent({
       timeoutId: '',
       modalsOpen: false,
       toolbarShow: false,
-      loadingState: this.loading,
       lastTicketDate: new Date().toDateString(),
       firstTicketDate: new Date().toDateString()
     }

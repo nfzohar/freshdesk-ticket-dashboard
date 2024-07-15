@@ -81,11 +81,13 @@ export const information = defineStore('information', {
     ],
 
     graphTypes: [
+      { value: 'line', label: 'Line chart' },
+      { value: 'bezier-line', label: 'Curved line chart' },
       { value: 'v-bar', label: 'Vertical bar charts' },
       { value: 'h-bar', label: 'Horizontal bar charts' },
       { value: 'pie', label: 'Pie chart' },
       { value: 'doughnut', label: 'Doughnut chart' },
-      { value: 'line', label: 'Line chart' }
+      { value: 'polar-area', label: 'Polar-area chart' }
     ]
   }),
 

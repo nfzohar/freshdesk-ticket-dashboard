@@ -6,7 +6,7 @@
     @mousemove="hideCursor"
   >
     <tool-bar
-      :loading="isLoading"
+      :is-loading="isLoading"
       :all-tickets="allTickets"
       @stopLoading="stopLoading"
       @startLoading="startLoading"
@@ -130,13 +130,12 @@ export default defineComponent({
         if (response) {
           this.ticketsTemp[this.page] = Object.values(response.results ?? response)
         }
-        /*
+
         this.refershTicketsFromTemp()
         this.keepFetching = this.isLoading = !true
         return
-*/
 
-        ////-----------------------------------------------------
+        /*
         if (!this.ticketsTemp[this.page]?.length) {
           this.keepFetching = false
 
@@ -155,7 +154,7 @@ export default defineComponent({
             this.fetchTickets()
           }, 6000)
         }
-        //-----------------------------------------------------
+        */
       })
     },
 
