@@ -8,12 +8,12 @@
 
     <template #content>
       <div
-        class="m-auto w-8/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
-        :class="'text-white'"
+        class="flex flex-col m-auto w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
+        :class="[secondaryColorText, { 'is-loading': isLoading }]"
       >
         <h1 class="text-xl font-bold cursor-pointer" v-text="'Filters'" />
 
-        <div class="grid grid-cols-1 md:grid-cols-2">
+        <div class="grid grid-cols-2 md:flex items-center">
           <!-- Created at -->
           <a-filter-section
             :section-title="'Created at:'"
@@ -55,7 +55,10 @@
           </a-filter-section>
 
           <!-- Closed at -->
-          <a-filter-section :section-title="'Closed at'">
+          <a-filter-section
+            :section-title="'Closed at'"
+            :body-class="'flex items-center justify-between p-2'"
+          >
             <a-date-select
               :label="'From:'"
               :class="'w-full'"
@@ -72,7 +75,10 @@
           </a-filter-section>
 
           <!-- Resolved at -->
-          <a-filter-section :section-title="'Resolved at'">
+          <a-filter-section
+            :section-title="'Resolved at'"
+            :body-class="'flex items-center justify-between p-2'"
+          >
             <a-date-select
               :label="'From:'"
               :class="'w-full'"
@@ -89,35 +95,33 @@
           </a-filter-section>
         </div>
 
-        <a-filter-section
-          :body-class="'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 w-full gap-y-2 gap-x-5'"
-        >
+        <div class="grid grid-cols-4">
           <template v-for="(filter, f) in filters" :key="f">
-            <a-select
+            <a-filter-section
               v-if="filter?.choices?.length"
-              :the-value="''"
-              :label="filter?.label"
-              :options="filter?.choices"
-              :label-field="'label'"
-              :value-field="'value'"
-              label-class="font-semibold mb-1"
-              :input-class="['h-10 mb-2 p-2', { 'bg-primary-600': true }]"
-              @changed="(value) => (values[filter?.name] = value)"
-            />
+              :section-title="filter?.label"
+              :body-class="'w-full h-auto p-2'"
+            >
+              <a-select
+                :the-value="''"
+                :options="filter?.choices"
+                :value-field="filter?.label_field ?? 'value'"
+                :label-field="filter?.value_field ?? 'label'"
+                :input-class="'bg-primary-600'"
+                @changed="(value) => (values[filter?.name] = value)"
+              />
+            </a-filter-section>
           </template>
-        </a-filter-section>
+        </div>
 
-        <!-- --------------------------------------------------------------------------------------- -->
-
-        <div class="grid grid-cols-2 gap-16">
+        <div class="flex items-center justify-between w-full">
           <button
-            class="bg-primary-500 hover:bg-primary-400 border border-primary-700 w-full py-2 px-5 rounded-md shadow-primary-600 font-semibold"
+            :class="`filters-action ${primaryColorText}`"
             v-text="'Reset'"
             @click="resetTicketFilters()"
           />
-
           <button
-            class="bg-primary-500 hover:bg-primary-400 border border-primary-700 w-full py-2 px-5 rounded-md shadow-primary-600 font-semibold"
+            :class="`filters-action ${primaryColorText}`"
             v-text="'Apply'"
             @click="applyTicketFilters()"
           />
@@ -163,7 +167,17 @@ export default defineComponent({
       resolvedAt: {
         from: '',
         to: ''
-      }
+      },
+      isLoading: false
+    }
+  },
+
+  computed: {
+    primaryColorText(): String {
+      return this.$information?.textOnPrimaryColor
+    },
+    secondaryColorText(): String {
+      return this.$information?.textOnSecondaryColor
     }
   },
 
@@ -173,15 +187,21 @@ export default defineComponent({
 
   methods: {
     async fetchAllTicketFields() {
-      await ApiCall.get('admin/ticket_fields').then((response) => {
-        if (response) {
-          Object.values(response)
-            .map((filter) => filter?.id)
-            .forEach((filterId) => {
-              this.fetchTicketFieldOptions(filterId)
-            })
-        }
-      })
+      this.isLoading = true
+
+      await ApiCall.get('admin/ticket_fields')
+        .then((response) => {
+          if (response) {
+            Object.values(response)
+              .map((filter) => filter?.id)
+              .forEach((filterId) => {
+                this.fetchTicketFieldOptions(filterId)
+              })
+          }
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     },
 
     async fetchTicketFieldOptions(filterId) {
@@ -191,12 +211,18 @@ export default defineComponent({
         if (filter) {
           if (filter.name == 'agent') {
             filter['choices'] = this.$information?.storedAgents
+            filter['label_field'] = 'contact.name'
+            filter['value_field'] = ''
           }
           if (filter.name == 'group') {
             filter['choices'] = this.$information?.storedGroups
+            filter['label_field'] = ''
+            filter['value_field'] = ''
           }
           if (filter.name == 'status') {
             filter['choices'] = this.$information?.storedStatuses
+            filter['label_field'] = ''
+            filter['value_field'] = ''
           }
           if (filter.name == 'source') {
             filter['choices'] = this.$information?.storedSources
@@ -207,9 +233,9 @@ export default defineComponent({
           if (filter.name == 'ticket_type') {
             filter.name = 'type'
           }
-        }
 
-        this.filters.push(filter)
+          this.filters.push(filter)
+        }
       })
     },
 
@@ -270,3 +296,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+.filters-action {
+  @apply bg-primary-500 hover:bg-primary-400 border border-primary-700 w-max py-2 px-5 rounded-md shadow-primary-600 font-semibold;
+}
+</style>

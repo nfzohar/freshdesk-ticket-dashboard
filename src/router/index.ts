@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ConfigWizard from '@/views/ConfigurationWizard.vue'
-import LoadDataPage from '@/views/LoadDataPage.vue'
+import FetchDataPage from '@/views/FetchDataPage.vue'
 import LandingPage from '@/views/LandingPage.vue'
 import LogoutPage from '@/views/LogoutPage.vue'
 import LoginPage from '@/views/LoginPage.vue'
@@ -37,8 +37,8 @@ const router = createRouter({
     },
     {
       path: '/loading',
-      name: 'Load-data-page',
-      component: LoadDataPage
+      name: 'fetch-data-page',
+      component: FetchDataPage
     },
     {
       path: '/:pathMatch(.*)*',

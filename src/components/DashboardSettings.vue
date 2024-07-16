@@ -196,8 +196,8 @@ export default defineComponent({
           function: () => this.$router.push('/setup')
         },
         {
-          name: 'Refresh information',
-          title: 'Refresh the whole page.',
+          name: 'Refetch information',
+          title: 'Refetch information from Freshdesk.',
           icon: 'fa fa-redo-alt',
           function: () => this.$router.replace('/loading')
         },

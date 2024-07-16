@@ -159,7 +159,10 @@ export default defineComponent({
       let colors = []
 
       for (let i = 0; i < this.datasets?.length; i++) {
-        let newColor = Math.floor(Math.random() * 0xfffff * 100000 * 3.14)
+        let randomNumber = Math.random()
+        randomNumber *= randomNumber
+
+        let newColor = Math.floor(randomNumber * 0xfffff * 100000)
         colors[i] = `#${newColor.toString(16).slice(0, 3)}`
       }
       return colors

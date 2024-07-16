@@ -12,6 +12,7 @@ export const information = defineStore('information', {
     statuses: [],
     priorities: [],
     savedFilterSets: [],
+    adminTicketFields: [],
 
     ticketFields: new Array(),
     isPrimaryColorDark: colorIsDark(import.meta.env.VITE_THEME_PRIMARY_COLOR),
@@ -111,6 +112,9 @@ export const information = defineStore('information', {
     storedSources(): Object {
       return this.sources
     },
+    storedAdminTicketFields(): Object {
+      return this.adminTicketFields
+    },
     autoRefreshTimeShortcuts(): Array {
       return this.autoRefreshShortcuts
     },
@@ -179,7 +183,8 @@ export const information = defineStore('information', {
         filters: this.filters,
         statuses: this.statuses,
         priorities: this.priorities,
-        ticketFields: this.ticketFields
+        ticketFields: this.ticketFields,
+        adminTicketFields: this.adminTicketFields
       }
       localStorage.setItem(storeLocalStorageKey, JSON.stringify(storeData))
     },
@@ -196,7 +201,8 @@ export const information = defineStore('information', {
         this.sources = stateFromStore?.sources
         this.statuses = stateFromStore?.statuses
         this.priorities = stateFromStore?.priorities
-        this.ticketFields = stateFromStore?.ticketFields
+        this.ticketFields = stateFromStore?.ticketFieldsd
+        this.adminTicketFields = stateFromStore?.adminTicketFields
       }
     },
 
@@ -205,8 +211,10 @@ export const information = defineStore('information', {
       this.groups = []
       this.filters = []
       this.sources = []
+      this.statuses = []
       this.priorities = []
       this.ticketFields = []
+      this.adminTicketFields = []
       localStorage.removeItem(storeLocalStorageKey)
     },
 

@@ -11,14 +11,15 @@
         v-for="(option, o) in options"
         :key="o"
         class="bg-primary-500 border-primary-500 hover:bg-primary-500 hover:font-bold hover:text-secondary-500"
-        :value="valueField ? option[valueField] : option"
-        v-text="labelField ? option[labelField] : option"
+        :value="valueField ? get(option, valueField) : option"
+        v-text="labelField ? get(option, labelField) : option"
       />
     </select>
   </div>
 </template>
 
 <script lang="ts">
+import { get } from 'lodash'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
@@ -97,6 +98,8 @@ export default defineComponent({
 
   mounted() {
     this.inputValue = this.theValue
-  }
+  },
+
+  methods: { get }
 })
 </script>
