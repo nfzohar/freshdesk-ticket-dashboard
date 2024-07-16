@@ -1,5 +1,5 @@
 <template>
-  <a-dialog custom-class="-mt-14" :manual-open="open">
+  <a-dialog :manual-open="open">
     <template #trigger>
       <button
         class="actions-button"
@@ -13,7 +13,7 @@
     <template #content>
       <div
         :key="updateToken"
-        class="flex flex-col bg-secondary-600 gap-5 w-95p xl:w-80p m-auto p-5 rounded-md border border-primary-500"
+        class="flex flex-col bg-secondary-600 w-90p xl:w-80p 2xl:w-65p gap-5 m-auto p-5 rounded-md border border-primary-500"
       >
         <div class="w-full flex items-center justify-between">
           <a-select
@@ -45,7 +45,7 @@
           />
         </div>
 
-        <div :class="'w-100p m-auto h-70'">
+        <div :class="'w-100p m-auto h-70p'">
           <a-statistics-graph
             :class="'w-auto h-90p'"
             :type="selectedGraphType"
@@ -61,9 +61,9 @@
 </template>
 
 <script lang="ts">
-import { format } from 'date-fns'
 import { groupBy, get } from 'lodash'
 import { defineComponent } from 'vue'
+import { fdate } from '@/helpers/CommonMethods'
 import ADialog from '@/components/general/ADialog.vue'
 import ASelect from '@/components/general/ASelect.vue'
 import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
@@ -130,9 +130,9 @@ export default defineComponent({
           data: this.openedTickets
         },
         {
-          label: 'Closed/resolved tickets',
-          borderColor: '#00ff77',
-          backgroundColor: '#00ff77',
+          label: 'Closed & Resolved tickets',
+          borderColor: '#008B83',
+          backgroundColor: '#008B83',
           data: this.finishedTickets
         },
         {
@@ -144,8 +144,8 @@ export default defineComponent({
         },
         {
           label: 'Resolved tickets',
-          borderColor: '#00ff11',
-          backgroundColor: '#00ff11',
+          borderColor: '#0099ff',
+          backgroundColor: '#0099ff',
           data: this.resolvedTickets,
           hidden: true
         }
@@ -188,7 +188,7 @@ export default defineComponent({
 
   methods: {
     splitTicketsByYear() {
-      this.ticketsByYear = groupBy(this.tickets, (ticket) => this.fdate(ticket?.created_at, 'y'))
+      this.ticketsByYear = groupBy(this.tickets, (ticket) => fdate(ticket?.created_at, 'y'))
       this.yearsFromTickets = Object.keys(this.ticketsByYear)
       this.selectedYear = this.yearsFromTickets[0]
     },
@@ -211,7 +211,7 @@ export default defineComponent({
       let ticketsOfStatus = ticketsOfYear.filter((yearsTicket) => yearsTicket.status == statusId)
 
       ticketsOfStatus.forEach((ticket) => {
-        ticket['sorting_index'] = Number(this.fdate(get(ticket, dateField), 'M'))
+        ticket['sorting_index'] = Number(fdate(get(ticket, dateField), 'M'))
       })
       ticketsOfStatus = groupBy(ticketsOfStatus, 'sorting_index')
 
@@ -226,10 +226,6 @@ export default defineComponent({
     findStatusId(label: String) {
       return this.statuses?.filter((status) => status?.value == label)[0]?.id
     },
-
-    fdate(date: String, dateFormat) {
-      return date ? format(new Date(date), dateFormat) : '-'
-    }
   }
 })
 </script>

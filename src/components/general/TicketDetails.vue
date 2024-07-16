@@ -65,9 +65,9 @@
 
 <script lang="ts">
 import { get } from 'lodash'
-import { format } from 'date-fns'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
+import { fdate } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'TicketDetails',
@@ -180,27 +180,27 @@ export default defineComponent({
         {
           show: true,
           label: 'Created',
-          value: this.fdate(this.theTicket?.created_at)
+          value: fdate(this.theTicket?.created_at, 'd. M. y - HH:mm')
         },
         {
           show: true,
           label: 'Last updated',
-          value: this.fdate(this.theTicket?.updated_at)
+          value: fdate(this.theTicket?.updated_at, 'd. M. y - HH:mm')
         },
         {
           show: this.theTicket.stats?.reopened_at ? true : false,
           label: 'Reopened at',
-          value: this.fdate(this.theTicket?.stats?.reopened_at)
+          value: fdate(this.theTicket?.stats?.reopened_at, 'd. M. y - HH:mm')
         },
         {
           show: this.theTicket.stats?.resolved_at ? true : false,
           label: 'Resolved at',
-          value: this.fdate(this.theTicket?.stats?.resolved_at)
+          value: fdate(this.theTicket?.stats?.resolved_at, 'd. M. y - HH:mm')
         },
         {
           show: this.theTicket.stats?.closed_at ? true : false,
           label: 'Closed at',
-          value: this.fdate(this.theTicket?.stats?.closed_at)
+          value: fdate(this.theTicket?.stats?.closed_at, 'd. M. y - HH:mm')
         }
       ]
     }
@@ -218,10 +218,6 @@ export default defineComponent({
         .finally(() => {
           this.isLoading = false
         })
-    },
-
-    fdate(date: String) {
-      return date ? format(new Date(date), 'd. M. y - HH:mm') : '-'
     },
 
     findValueOf(

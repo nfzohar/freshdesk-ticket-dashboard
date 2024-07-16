@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="font-semibold" v-text="label" />
+    <h1 class="font-semibold" :class="labelClass" v-text="label" />
     <div class="flex items-center gap-x-5 w-full">
       <div class="flex flex-col w-full">
         <input

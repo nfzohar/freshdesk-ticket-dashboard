@@ -53,7 +53,7 @@ export default class ApiCall {
           errorData?.number
             ? toast.error('Data could not be loaded. Please try again.')
             : toast.error(
-                'Connectoin timeout, too many requests. Please try again in a few minutes.',
+                'Connection timeout, too many requests. Please try again in a few minutes.',
                 { timeout: 60000 }
               )
         })

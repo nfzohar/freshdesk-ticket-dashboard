@@ -1,5 +1,6 @@
 import { sortBy, get } from 'lodash'
 import { auth } from '@/stores/auth'
+import format from 'date-fns/format'
 import { useToast } from 'vue-toastification'
 import { configuration } from '@/stores/configuration'
 
@@ -150,6 +151,11 @@ export function isEven(number: number) {
 // Check, if the number is odd.
 export function isOdd(number: number) {
   return number % 2 !== 0
+}
+
+// Use date-fns's format function on a date string and provide custom format.
+export function fdate(date: string, dateFormat: string = 'yyyy. M. D') {
+  return date ? format(new Date(date), dateFormat) : '-'
 }
 
 //Add an event listener for keystroke.

@@ -1,5 +1,5 @@
 <template>
-  <a-dialog custom-class="-mt-14">
+  <a-dialog>
     <template #trigger>
       <button
         class="actions-button fa fa-list"

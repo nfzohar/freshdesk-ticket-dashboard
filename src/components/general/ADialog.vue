@@ -5,7 +5,7 @@
 
   <div v-if="open">
     <dialog
-      class="absolute bg-opacity-50 bg-secondary-500 top-14 w-screen h-screen"
+      class="absolute bg-opacity-50 bg-secondary-500 top-0 w-screen h-screen"
       :class="customClass"
       :open="open"
       @close="closeDialog"

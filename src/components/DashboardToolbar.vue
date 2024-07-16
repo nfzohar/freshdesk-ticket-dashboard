@@ -34,7 +34,11 @@
           @finishExport="$emit('stopLoading')"
         />
 
-        <!-- <ticket-filter-modal @filtersApply="$emit('reload')" @filtersReset="$emit('reload')" /> -->
+        <ticket-filter-modal
+          @open="modalsOpen = true"
+          @close="modalsOpen = false"
+          @filtersUpdated="$emit('reload')"
+        />
 
         <resolved-statistics-graph
           :tickets="allTickets"
@@ -53,6 +57,8 @@
           @open="modalsOpen = true"
           @close="modalsOpen = false"
         />
+
+        <help-section @open="modalsOpen = true" @close="modalsOpen = false" />
       </div>
     </div>
   </div>
@@ -63,8 +69,9 @@
 <script lang="ts">
 import { format } from 'date-fns'
 import { defineComponent } from 'vue'
+import HelpSection from '@/components/HelpSection.vue'
 import AllTicketsList from '@/components/AllTicketsList.vue'
-// import TicketFilterModal from '@/components/TicketFilters.vue'
+import TicketFilterModal from '@/components/TicketFilters.vue'
 import TicketExcelExporter from '@/components/TicketExcelExporter.vue'
 import DashboardSettingsModal from '@/components/DashboardSettings.vue'
 import ResolvedStatisticsGraph from '@/components/ResolvedStatisticsGraph.vue'
@@ -77,7 +84,7 @@ export default defineComponent({
       type: [Array, Object],
       required: true
     },
-    isLoading: {
+    isFetchingTickets: {
       type: Boolean,
       required: true,
       default: false
@@ -85,8 +92,9 @@ export default defineComponent({
   },
 
   components: {
+    HelpSection,
     AllTicketsList,
-    // TicketFilterModal,
+    TicketFilterModal,
     TicketExcelExporter,
     DashboardSettingsModal,
     ResolvedStatisticsGraph
@@ -114,6 +122,9 @@ export default defineComponent({
   },
 
   computed: {
+    isLoading(): Boolean {
+      return this.isFetchingTickets
+    },
     autoHide(): Boolean {
       return this.$configuration?.autoHideToolbar
     },

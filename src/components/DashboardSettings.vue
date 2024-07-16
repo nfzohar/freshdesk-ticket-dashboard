@@ -1,5 +1,5 @@
 <template>
-  <a-dialog :manual-open="open" custom-class="-mt-14">
+  <a-dialog :manual-open="open">
     <template #trigger>
       <button class="actions-button" :title="'Settings'" @click="open = true">
         <i class="fa fa-cog" />
