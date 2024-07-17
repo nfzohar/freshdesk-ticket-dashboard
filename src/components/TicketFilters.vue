@@ -10,6 +10,7 @@
       <div
         class="flex flex-col m-auto w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
         :class="[secondaryColorText, { 'is-loading': isLoading }]"
+        @keydown.esc="open = false"
       >
         <h1 class="text-xl font-bold cursor-pointer" v-text="'Filters'" />
 

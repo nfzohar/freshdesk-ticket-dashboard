@@ -7,10 +7,12 @@ export const information = defineStore('information', {
   state: () => ({
     agents: [],
     groups: [],
-    filters: [],
     sources: [],
     statuses: [],
     priorities: [],
+    
+    // new full store object
+    filters: [],
     savedFilterSets: [],
     adminTicketFields: [],
 
@@ -172,6 +174,11 @@ export const information = defineStore('information', {
 
     setSources(newValue: Array) {
       this.sources = newValue
+      this.saveConfigurationToStore()
+    },
+
+    setAdminTicketFields(newValue: Array) {
+      this.adminTicketFields = newValue
       this.saveConfigurationToStore()
     },
 

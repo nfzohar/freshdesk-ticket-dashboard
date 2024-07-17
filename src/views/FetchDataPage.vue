@@ -16,114 +16,98 @@ export default defineComponent({
   name: 'FetchDataPage',
 
   async mounted() {
-    await this.fetchAgentsFromFreshdesk()
-    await this.fetchGroupsFromFreshdesk()
     await this.fetchTicketFieldsFromFreshdesk()
 
     setTimeout(() => {
       this.$information.saveConfigurationToStore()
-      //this.$router.replace('/dashboard')
+      this.$router.replace('/dashboard')
     }, 1000)
   },
 
   methods: {
+    async fetchTicketFieldsFromFreshdesk() {
+      let adminTicketFields = new Array()
+
+      await ApiCall.get('admin/ticket_fields').then((response) => {
+        if (response) {
+          let fetchedTicketFields = Object.values(response)
+
+          fetchedTicketFields?.forEach((ticketField) => {
+            let index = ticketField?.label?.toLocaleLowerCase()
+
+            setTimeout(async () => {
+              ticketField['choices'] = await this.loadTicketFieldChoices(ticketField?.id, index)
+              adminTicketFields[index] = ticketField
+            }, 3000)
+          })
+        }
+      })
+
+      this.$information.setAdminTicketFields(adminTicketFields)
+    },
+
+    async loadTicketFieldChoices(ticketFieldId, index) {
+      let choices = []
+
+      switch (index) {
+        case 'agent': {
+          choices = await this.fetchAgentsFromFreshdesk()
+          break
+        }
+        case 'group': {
+          choices = await this.fetchGroupsFromFreshdesk()
+          break
+        }
+        default: {
+          choices = await this.fetchResourceFromFreshdesk(ticketFieldId)
+          break
+        }
+      }
+      return choices
+    },
+
     async fetchGroupsFromFreshdesk() {
       let groups = []
 
-      await ApiCall.get('groups?per_page=100')
-        .then((response) => {
-          if (response) {
-            groups = Object.values(response)
-          }
-        })
-        .finally(() => {
-          this.$information.setGroups(groups)
-        })
+      await ApiCall.get('groups?per_page=100').then((response) => {
+        if (response) {
+          groups = Object.values(response)
+        }
+      })
+      return groups
     },
 
     async fetchAgentsFromFreshdesk() {
       let agents = []
 
-      await ApiCall.get('agents?per_page=100')
-        .then((response) => {
-          if (response) {
-            agents = Object.values(response)
-          }
-        })
-        .finally(() => {
-          this.$information.setAgents(agents)
-        })
-    },
-
-    async fetchTicketFieldsFromFreshdesk() {
-      let statusFieldId = null
-      let sourcesFieldId = null
-      let prioritiesFieldId = null
-
-      let adminTicketFields = new Array()
-
-      await ApiCall.get('admin/ticket_fields').then((response) => {
+      await ApiCall.get('agents?per_page=100').then((response) => {
         if (response) {
-          adminTicketFields = Object.values(response)
-
-          adminTicketFields.forEach(async (adminField) => {
-            switch (adminField?.name) {
-              case 'status':
-                statusFieldId = adminField?.id
-                break
-              case 'priority':
-                prioritiesFieldId = adminField?.id
-                break
-              case 'source':
-                sourcesFieldId = adminField?.id
-                break
-            }
-          })
+          agents = Object.values(response)
         }
       })
-
-      adminTicketFields?.forEach((ticketField) => {
-        setTimeout(async () => {
-          ticketField['choides'] = await this.fetchResourceFromFreshdesk(ticketField?.id)
-        }, 3000)
-      })
-      console.log(adminTicketFields)
-
-      // TO DO: add a setting to manually fetch groups and agents and assign sources, prioritries in store,...
-
-      // let priorities = await this.fetchResourceFromFreshdesk(prioritiesFieldId)
-      // this.$information.setPriorities(priorities)
-
-      // let sources = await this.fetchResourceFromFreshdesk(sourcesFieldId)
-      // this.$information?.setSources(sources)
-
-      // await this.fetchStatusesFromFreshdesk(statusFieldId)
-    },
-
-    async fetchStatusesFromFreshdesk(statusFieldId: number) {
-      await ApiCall.get(`admin/ticket_fields/${statusFieldId}?include=section`).then((response) => {
-        let statuses = response?.choices
-        this.$information.setStatuses(statuses)
-
-        if (!this.$configuration.visibleTicketCounts?.length) {
-          let visibleStatuses = statuses.map((status) => status?.label)
-          visibleStatuses.unshift('All', 'Unresolved')
-
-          this.$configuration.updateVisibleStatuses(visibleStatuses)
-        }
-      })
-    },
-
-    async fetchResourceFromFreshdesk(resourceFieldId: number): Array {
-      let choices = new Array()
-
-      await ApiCall.get(`admin/ticket_fields/${resourceFieldId}?include=section`).then(
-        (response) => {
-          choices = response?.choices
-        }
-      )
-      return choices
+      return agents
     }
+
+    //   async fetchStatusesFromFreshdesk(statusFieldId: number) {
+    //     await ApiCall.get(`admin/ticket_fields/${statusFieldId}?include=section`).then((response) => {
+    //       let statuses = response?.choices
+    //       this.$information.setStatuses(statuses)
+    //       if (!this.$configuration.visibleTicketCounts?.length) {
+    //         let visibleStatuses = statuses.map((status) => status?.label)
+    //         visibleStatuses.unshift('All', 'Unresolved')
+    //         this.$configuration.updateVisibleStatuses(visibleStatuses)
+    //       }
+    //     })
+    //   },
+    //   async fetchResourceFromFreshdesk(resourceFieldId: number): Array {
+    //     let choices = new Array()
+    //     await ApiCall.get(`admin/ticket_fields/${resourceFieldId}?include=section`).then(
+    //       (response) => {
+    //         choices = response?.choices
+    //       }
+    //     )
+    //     return choices
+    //   }
   }
 })
 </script>
