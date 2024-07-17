@@ -1,7 +1,7 @@
 <template>
   <div
     :key="visibleCounters?.length"
-    :class="`grid grid-cols-2 gap-5 w-full rounded-md overflow-y-scroll scrollbar-hide ${conditionalStyle}`"
+    :class="`grid grid-cols-2 md:grid-cols-3 gap-5 w-full rounded-md overflow-y-scroll scrollbar-hide ${conditionalStyle}`"
   >
     <template v-for="(status, s) in visibleCounters" :key="(s, visibleCounters?.length)">
       <div
@@ -63,7 +63,7 @@ export default defineComponent({
     },
     conditionalStyle() {
       if (this.layout == 'rows-layout' || this.layout == 'spin-layout') {
-        return 'sm:flex flex-row max-w-screen items-center justify-between'
+        return 'lg:flex flex-row max-w-screen items-center justify-between'
       }
       if (this.layout == 'columns-layout') {
         let grid = this.visibleCounters?.length > 7 ? 'grid grid-cols-2' : 'sm:flex flex-col'

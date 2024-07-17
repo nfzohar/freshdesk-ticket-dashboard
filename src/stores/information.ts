@@ -11,9 +11,9 @@ export const information = defineStore('information', {
     statuses: [],
     priorities: [],
     
-    // new full store object
     filters: [],
     savedFilterSets: [],
+    // new full store object
     adminTicketFields: [],
 
     ticketFields: new Array(),
