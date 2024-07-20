@@ -1,3 +1,4 @@
+import { get } from 'lodash'
 import { defineStore } from 'pinia'
 import { colorIsDark } from '@/helpers/CommonMethods'
 
@@ -5,15 +6,8 @@ const storeLocalStorageKey = 'stored_dashboard_information'
 
 export const information = defineStore('information', {
   state: () => ({
-    agents: [],
-    groups: [],
-    sources: [],
-    statuses: [],
-    priorities: [],
-    
     filters: [],
     savedFilterSets: [],
-    // new full store object
     adminTicketFields: [],
 
     ticketFields: new Array(),
@@ -96,23 +90,8 @@ export const information = defineStore('information', {
   }),
 
   getters: {
-    storedPriorities(): Object {
-      return this.priorities
-    },
-    storedStatuses(): Object {
-      return this.statuses
-    },
-    storedAgents(): Object {
-      return this.agents
-    },
-    storedGroups(): Object {
-      return this.groups
-    },
     storedFilters(): Object {
       return this.filters
-    },
-    storedSources(): Object {
-      return this.sources
     },
     storedAdminTicketFields(): Object {
       return this.adminTicketFields
@@ -122,6 +101,21 @@ export const information = defineStore('information', {
     },
     listOfAvailableTicketFields(): Array {
       return this.ticketFields
+    },
+    storedAgents(): Object {
+      return get(this.adminTicketFields, 'agent')?.choices ?? []
+    },
+    storedGroups(): Object {
+      return get(this.adminTicketFields, 'group')?.choices ?? []
+    },
+    storedStatuses(): Object {
+      return get(this.adminTicketFields, 'status')?.choices ?? []
+    },
+    storedSources(): Object {
+      return get(this.adminTicketFields, 'source')?.choices ?? []
+    },
+    storedPriorities(): Object {
+      return get(this.adminTicketFields, 'priority')?.choices ?? []
     },
     trophyIcons(): Array {
       return this.leaderboardsTrophy?.icons
@@ -147,33 +141,8 @@ export const information = defineStore('information', {
   },
 
   actions: {
-    setGroups(newValue: Array) {
-      this.groups = newValue
-      this.saveConfigurationToStore()
-    },
-
-    setAgents(newValue: Array) {
-      this.agents = newValue
-      this.saveConfigurationToStore()
-    },
-
     setFilters(newValue: Array) {
       this.filters = newValue
-      this.saveConfigurationToStore()
-    },
-
-    setStatuses(newValue: Array) {
-      this.statuses = newValue
-      this.saveConfigurationToStore()
-    },
-
-    setPriorities(newValue: Array) {
-      this.priorities = newValue
-      this.saveConfigurationToStore()
-    },
-
-    setSources(newValue: Array) {
-      this.sources = newValue
       this.saveConfigurationToStore()
     },
 
@@ -184,12 +153,7 @@ export const information = defineStore('information', {
 
     saveConfigurationToStore() {
       const storeData = {
-        agents: this.agents,
-        groups: this.groups,
-        sources: this.sources,
         filters: this.filters,
-        statuses: this.statuses,
-        priorities: this.priorities,
         ticketFields: this.ticketFields,
         adminTicketFields: this.adminTicketFields
       }
@@ -202,24 +166,14 @@ export const information = defineStore('information', {
       if (stateFromStore) {
         stateFromStore = JSON.parse(stateFromStore)
 
-        this.agents = stateFromStore?.agents
-        this.groups = stateFromStore?.groups
         this.filters = stateFromStore?.filters
-        this.sources = stateFromStore?.sources
-        this.statuses = stateFromStore?.statuses
-        this.priorities = stateFromStore?.priorities
         this.ticketFields = stateFromStore?.ticketFieldsd
         this.adminTicketFields = stateFromStore?.adminTicketFields
       }
     },
 
     deleteStoredConfiguration() {
-      this.agents = []
-      this.groups = []
       this.filters = []
-      this.sources = []
-      this.statuses = []
-      this.priorities = []
       this.ticketFields = []
       this.adminTicketFields = []
       localStorage.removeItem(storeLocalStorageKey)

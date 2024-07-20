@@ -23,7 +23,7 @@ export default defineComponent({
 
   async mounted() {
     await this.fetchTicketFieldsFromFreshdesk()
-
+    await this.fetchTicketFieldOptions()
     console.log(this.storedTicketFields)
 
     // setTimeout(() => {
@@ -39,35 +39,41 @@ export default defineComponent({
           this.$information?.setAdminTicketFields(response)
         }
       })
-    }
+    },
 
-    /*
     async fetchTicketFieldOptions() {
       let adminTicketFields = new Array()
-      this.message = 'Loading ticket field options'
+      //this.message = 'Loading ticket field options'
 
-      await this.storedTicketFields?.forEach((ticketField) => {
+      await Object.values(this.storedTicketFields)?.forEach((ticketField) => {
         let index = ticketField?.label?.toLocaleLowerCase()
-        let ticketFieldsRoute = `admin/ticket_fields/${ticketField?.id}?include=section`
-        if (index == 'agent') {
-          ticketFieldsRoute = 'agents?per_page=100'
+        let ticketFieldsRoute = ''
+
+        switch (index) {
+          case 'agent':
+            ticketFieldsRoute = 'agents?per_page=100'
+            break
+          case 'group':
+            ticketFieldsRoute = 'groups?per_page=100'
+            break
+          default:
+            ticketFieldsRoute = `admin/ticket_fields/${ticketField?.id}?include=section`
+            break
         }
-        if (index == 'group') {
-          ticketFieldsRoute = 'groups?per_page=100'
-        }
+
         ApiCall.get(ticketFieldsRoute).then((response) => {
           if (index == 'agent' && index == 'group') {
             ticketField['choices'] = Object.values(response ?? [])
           } else {
             ticketField['choices'] = Object.values(response?.choices ?? [])
           }
-          adminTicketFields[index] = ticketField
         })
+
+        adminTicketFields[index] = ticketField
       })
 
       this.$information?.setAdminTicketFields(adminTicketFields)
     }
-    */
   }
 })
 </script>
