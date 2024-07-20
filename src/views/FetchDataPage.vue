@@ -15,36 +15,46 @@ import ApiCall from '@/helpers/APICallHelper'
 export default defineComponent({
   name: 'FetchDataPage',
 
-  async mounted() {
-    let fields = await this.fetchTicketFieldsFromFreshdesk()
+  computed: {
+    storedTicketFields(): Object {
+      return this.$information?.storedAdminTicketFields
+    }
+  },
 
-    setTimeout(() => {
-      console.log(fields)
-      this.$information?.setAdminTicketFields(fields)
-      //this.$router.replace('/dashboard')
-    }, 10000)
+  async mounted() {
+    await this.fetchTicketFieldsFromFreshdesk()
+
+    console.log(this.storedTicketFields)
+
+    // setTimeout(() => {
+    //   console.log(fields)
+    //   //this.$router.replace('/dashboard')
+    // }, 10000)
   },
 
   methods: {
     async fetchTicketFieldsFromFreshdesk() {
-      let adminTicketFields = new Array()
-      let tempFields = new Array()
-
       await ApiCall.get('admin/ticket_fields').then((response) => {
-        tempFields = Object.values(response ?? [])
+        if (response) {
+          this.$information?.setAdminTicketFields(response)
+        }
       })
+    }
 
-      await tempFields?.forEach((ticketField) => {
+    /*
+    async fetchTicketFieldOptions() {
+      let adminTicketFields = new Array()
+      this.message = 'Loading ticket field options'
+
+      await this.storedTicketFields?.forEach((ticketField) => {
         let index = ticketField?.label?.toLocaleLowerCase()
         let ticketFieldsRoute = `admin/ticket_fields/${ticketField?.id}?include=section`
-
         if (index == 'agent') {
           ticketFieldsRoute = 'agents?per_page=100'
         }
         if (index == 'group') {
           ticketFieldsRoute = 'groups?per_page=100'
         }
-
         ApiCall.get(ticketFieldsRoute).then((response) => {
           if (index == 'agent' && index == 'group') {
             ticketField['choices'] = Object.values(response ?? [])
@@ -55,8 +65,9 @@ export default defineComponent({
         })
       })
 
-      return adminTicketFields
+      this.$information?.setAdminTicketFields(adminTicketFields)
     }
+    */
   }
 })
 </script>
