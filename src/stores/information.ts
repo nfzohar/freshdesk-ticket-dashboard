@@ -1,6 +1,6 @@
 import { get } from 'lodash'
 import { defineStore } from 'pinia'
-import { colorIsDark } from '@/helpers/CommonMethods'
+import { colorIsDark, ticketFieldOptions } from '@/helpers/CommonMethods'
 
 const storeLocalStorageKey = 'stored_dashboard_information'
 
@@ -103,19 +103,19 @@ export const information = defineStore('information', {
       return this.ticketFields
     },
     storedAgents(): Object {
-      return get(this.adminTicketFields, 'agent')?.choices ?? []
+      return ticketFieldOptions(this.adminTicketFields, 'agent')
     },
     storedGroups(): Object {
-      return get(this.adminTicketFields, 'group')?.choices ?? []
+      return ticketFieldOptions(this.adminTicketFields, 'group')
     },
     storedStatuses(): Object {
-      return get(this.adminTicketFields, 'status')?.choices ?? []
+      return ticketFieldOptions(this.adminTicketFields, 'status')
     },
     storedSources(): Object {
-      return get(this.adminTicketFields, 'source')?.choices ?? []
+      return ticketFieldOptions(this.adminTicketFields, 'source')
     },
     storedPriorities(): Object {
-      return get(this.adminTicketFields, 'priority')?.choices ?? []
+      return ticketFieldOptions(this.adminTicketFields, 'priority')
     },
     trophyIcons(): Array {
       return this.leaderboardsTrophy?.icons

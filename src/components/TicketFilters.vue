@@ -183,7 +183,7 @@ export default defineComponent({
   },
 
   async created() {
-    await this.fetchAllTicketFields()
+    //await this.fetchAllTicketFields()
   },
 
   methods: {

@@ -48,7 +48,7 @@ export default defineComponent({
       return this.$information?.isPrimaryColorDark
     },
     statuses(): any {
-      return Object.values(this.$information?.statuses ?? [])
+      return Object.values(this.$information?.storedStatuses ?? [])
     },
     statusGroupedTickets(): any {
       return this.tickets?.length ? groupBy(this.tickets, 'status') : []

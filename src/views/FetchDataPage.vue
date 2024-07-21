@@ -41,7 +41,6 @@ export default defineComponent({
     this.fetchTicketFieldsFromFreshdesk()
 
     setTimeout(() => {
-      this.message = 'Redirecting'
       this.$router.replace('/dashboard')
     }, 10000)
   },
@@ -56,6 +55,9 @@ export default defineComponent({
         })
         .then(() => {
           this.fetchTicketFieldOptions()
+        })
+        .finally(() => {
+          this.message = 'Redirecting'
         })
     },
 
@@ -75,6 +77,11 @@ export default defineComponent({
         } else {
           ApiCall.get(`admin/ticket_fields/${ticketField?.id}?include=section`).then((response) => {
             ticketField['choices'] = Object.values(response?.choices ?? [])
+
+            if (index == 'status') {
+              let statuses = Object.values(response?.choices).map((choice) => choice.label)
+              this.$configuration.updateVisibleStatuses(statuses)
+            }
           })
         }
       })

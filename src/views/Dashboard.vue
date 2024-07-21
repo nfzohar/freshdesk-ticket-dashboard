@@ -130,12 +130,10 @@ export default defineComponent({
         if (response) {
           this.ticketsTemp[this.page] = Object.values(response.results ?? response)
         }
-        /*
         this.refershTicketsFromTemp()
         this.keepFetching = this.isLoading = !true
         return
-        */
-        if (!this.ticketsTemp[this.page]?.length) {
+        /*if (!this.ticketsTemp[this.page]?.length) {
           this.keepFetching = false
 
           if (this.ticketsTemp?.length) {
@@ -152,7 +150,7 @@ export default defineComponent({
           setTimeout(() => {
             this.fetchTickets()
           }, 6000)
-        }
+        }        */
       })
     },
 

@@ -158,7 +158,7 @@ export function fdate(date: string, dateFormat: string = 'yyyy. M. D') {
   return date ? format(new Date(date), dateFormat) : '-'
 }
 
-//Add an event listener for keystroke.
+// Add an event listener for keystroke.
 export function listenForKey(eventKey = '', performFunction: Function) {
   document.addEventListener('keydown', (event) => {
     if (event?.key == eventKey) {
@@ -166,4 +166,10 @@ export function listenForKey(eventKey = '', performFunction: Function) {
       performFunction()
     }
   })
+}
+
+// Fetch choices of a ticekt field with given label.
+export function ticketFieldOptions(ticketFieldArray: Array, label: String) {
+  const index = ticketFieldArray.findIndex((field) => field?.label?.toLocaleLowerCase() == label)
+  return get(ticketFieldArray, `[${index}].choices`) ?? []
 }
