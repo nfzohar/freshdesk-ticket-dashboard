@@ -3,7 +3,7 @@
     <div class="is-loading w-screen m-auto" />
     <span
       class="w-full text-center p-24 font-bold text-xl animate-pulse"
-      v-text="'Fetching information from your freshdesk...'"
+      v-text="`${message}...`"
     />
   </div>
 </template>
@@ -15,64 +15,69 @@ import ApiCall from '@/helpers/APICallHelper'
 export default defineComponent({
   name: 'FetchDataPage',
 
-  computed: {
-    storedTicketFields(): Object {
-      return this.$information?.storedAdminTicketFields
+  data() {
+    return {
+      adminTicketFields: new Array(),
+      message: 'Fetching ticket fields from your freshdesk'
     }
   },
 
-  async mounted() {
-    await this.fetchTicketFieldsFromFreshdesk()
-    await this.fetchTicketFieldOptions()
-    console.log(this.storedTicketFields)
+  watch: {
+    adminTicketFields: {
+      deep: true,
+      handler: function () {
+        this.$information?.setAdminTicketFields(this.adminTicketFields)
+      }
+    }
+  },
 
-    // setTimeout(() => {
-    //   console.log(fields)
-    //   //this.$router.replace('/dashboard')
-    // }, 10000)
+  computed: {
+    storedTicketFields(): Array {
+      return Object.values(this.$information?.storedAdminTicketFields)
+    }
+  },
+
+  mounted() {
+    this.fetchTicketFieldsFromFreshdesk()
+
+    setTimeout(() => {
+      this.message = 'Redirecting'
+      this.$router.replace('/dashboard')
+    }, 10000)
   },
 
   methods: {
-    async fetchTicketFieldsFromFreshdesk() {
-      await ApiCall.get('admin/ticket_fields').then((response) => {
-        if (response) {
-          this.$information?.setAdminTicketFields(response)
-        }
-      })
+    fetchTicketFieldsFromFreshdesk() {
+      ApiCall.get('admin/ticket_fields')
+        .then((response) => {
+          if (response) {
+            this.adminTicketFields = Object.values(response)
+          }
+        })
+        .then(() => {
+          this.fetchTicketFieldOptions()
+        })
     },
 
     async fetchTicketFieldOptions() {
-      let adminTicketFields = new Array()
-      //this.message = 'Loading ticket field options'
-
-      await Object.values(this.storedTicketFields)?.forEach((ticketField) => {
+      this.adminTicketFields?.forEach((ticketField) => {
         let index = ticketField?.label?.toLocaleLowerCase()
-        let ticketFieldsRoute = ''
+        this.message = `Fetching options for ${index} ticket field`
 
-        switch (index) {
-          case 'agent':
-            ticketFieldsRoute = 'agents?per_page=100'
-            break
-          case 'group':
-            ticketFieldsRoute = 'groups?per_page=100'
-            break
-          default:
-            ticketFieldsRoute = `admin/ticket_fields/${ticketField?.id}?include=section`
-            break
-        }
-
-        ApiCall.get(ticketFieldsRoute).then((response) => {
-          if (index == 'agent' && index == 'group') {
+        if (index == 'agent') {
+          ApiCall.get('agents?per_page=100').then((response) => {
             ticketField['choices'] = Object.values(response ?? [])
-          } else {
+          })
+        } else if (index == 'group') {
+          ApiCall.get('groups?per_page=100').then((response) => {
+            ticketField['choices'] = Object.values(response ?? [])
+          })
+        } else {
+          ApiCall.get(`admin/ticket_fields/${ticketField?.id}?include=section`).then((response) => {
             ticketField['choices'] = Object.values(response?.choices ?? [])
-          }
-        })
-
-        adminTicketFields[index] = ticketField
+          })
+        }
       })
-
-      this.$information?.setAdminTicketFields(adminTicketFields)
     }
   }
 })
