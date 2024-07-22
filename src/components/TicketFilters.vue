@@ -298,11 +298,14 @@ export default defineComponent({
     addNewPreset() {
       let presets = Object.values(this.filterPresets ?? [])
 
-      presets.push({
-        name: this.filterPresetName,
-        values: this.values
-      })
-      this.$information?.setFilterPresets(presets)
+      if (this.filterPresetName) {
+        presets.push({
+          name: this.filterPresetName,
+          values: this.values
+        })
+        this.$information?.setFilterPresets(presets)
+        this.filterPresetName = ''
+      }
     }
   }
 })
