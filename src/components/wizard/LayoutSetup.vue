@@ -15,10 +15,12 @@
 
       <button
         :key="group?.length"
-        class="block w-full h-full rounded-md p-2 bg-secondary-600"
-        :class="{
-          'hover:bg-secondary-500 hover:border hover:border-primary-500': !groupIncludesComponent(g)
-        }"
+        class="block w-max h-auto rounded-md p-2 bg-secondary-600"
+        :class="
+          groupIncludesComponent(g)
+            ? 'cursor-not-allowed'
+            : 'hover:bg-secondary-500 hover:border hover:border-primary-500'
+        "
         :disabled="groupIncludesComponent(g)"
         @click="addNewPanel(g)"
       >
@@ -27,7 +29,7 @@
     </div>
 
     <button
-      class="block w-full h-full rounded-md p-2 bg-secondary-600 hover:bg-secondary-500 hover:border hover:border-primary-500"
+      class="block w-max h-auto rounded-md p-2 bg-secondary-600 hover:bg-secondary-500 hover:border hover:border-primary-500"
       @click="addNewGroup()"
     >
       <span class="opacity-40 text-2xl font-bold" v-text="'Add a new panel group'" />

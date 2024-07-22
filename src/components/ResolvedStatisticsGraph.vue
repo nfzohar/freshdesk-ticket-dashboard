@@ -158,7 +158,7 @@ export default defineComponent({
       return this.$information?.textOnSecondaryColor
     },
     statuses(): Array {
-      return Object.values(this.$information?.statuses ?? [])
+      return Object.values(this.$information?.storedStatuses ?? [])
     },
     selectedIsLeapYear(): Boolean {
       let year = Number(this.selectedYear)

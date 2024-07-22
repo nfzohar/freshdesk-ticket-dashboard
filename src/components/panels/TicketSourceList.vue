@@ -1,5 +1,5 @@
 <template>
-  <a-panel :title="'Ticket sources'" :dataset-source="uniqueSources">
+  <a-panel :title="'Sources'" :dataset-source="uniqueSources">
     <template #defaultView>
       <div class="panel-body lg:grid-cols-2" :class="'overflow-y-scroll scrollbar-hide'">
         <a-card

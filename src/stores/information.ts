@@ -1,4 +1,3 @@
-import { get } from 'lodash'
 import { defineStore } from 'pinia'
 import { colorIsDark, ticketFieldOptions } from '@/helpers/CommonMethods'
 
@@ -146,6 +145,11 @@ export const information = defineStore('information', {
       this.saveConfigurationToStore()
     },
 
+    setFilterPresets(newValue: Array) {
+      this.savedFilterSets = newValue
+      this.saveConfigurationToStore()
+    },
+
     setAdminTicketFields(newValue: Array) {
       this.adminTicketFields = newValue
       this.saveConfigurationToStore()
@@ -155,6 +159,7 @@ export const information = defineStore('information', {
       const storeData = {
         filters: this.filters,
         ticketFields: this.ticketFields,
+        savedFilterSets: this.savedFilterSets,
         adminTicketFields: this.adminTicketFields
       }
       localStorage.setItem(storeLocalStorageKey, JSON.stringify(storeData))
@@ -167,7 +172,8 @@ export const information = defineStore('information', {
         stateFromStore = JSON.parse(stateFromStore)
 
         this.filters = stateFromStore?.filters
-        this.ticketFields = stateFromStore?.ticketFieldsd
+        this.ticketFields = stateFromStore?.ticketFields
+        this.savedFilterSets = stateFromStore?.savedFilterSets
         this.adminTicketFields = stateFromStore?.adminTicketFields
       }
     },
@@ -175,6 +181,7 @@ export const information = defineStore('information', {
     deleteStoredConfiguration() {
       this.filters = []
       this.ticketFields = []
+      this.savedFilterSets = []
       this.adminTicketFields = []
       localStorage.removeItem(storeLocalStorageKey)
     },

@@ -2,7 +2,7 @@
   <div
     :key="reloadToken"
     class="flex flex-col transition-colors dashboard-body"
-    :class="[{ 'is-loading': isLoading }, { 'cursor-none': hiddenCursor }]"
+    :class="[{ 'is-loading cursor-loading': isLoading }, { 'cursor-none': hiddenCursor }]"
     @mousemove="hideCursor"
   >
     <tool-bar
@@ -44,8 +44,8 @@ export default defineComponent({
       startYear: '',
       timeoutId: null,
       isLoading: false,
-      hiddenCursor: false,
       keepFetching: true,
+      hiddenCursor: false,
       refreshIntervalId: null,
       updateToken: 0,
       reloadToken: 0,

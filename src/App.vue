@@ -10,8 +10,10 @@ export default defineComponent({
   name: 'App',
 
   mounted() {
+    this.setFavicon()
     this.setTextColorByBAckgroud()
     this.setEnvVarColors()
+    this.setEnvTitle()
   },
 
   methods: {
@@ -27,6 +29,18 @@ export default defineComponent({
 
       root?.style?.setProperty(primaryColor, '--primary-color')
       root?.style?.setProperty(secondaryColor, '--secondary-color')
+    },
+    setEnvTitle() {
+      document.title = import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
+    },
+    setFavicon() {
+      let faviconUrl = import.meta.env.VITE_FAVICON_URL || '/logo_icon.png'
+      let headTitle = document.querySelector('head')
+      let setFavicon = document.createElement('link')
+
+      setFavicon.setAttribute('rel', 'icon')
+      setFavicon.setAttribute('href', faviconUrl)
+      headTitle?.appendChild(setFavicon)
     }
   }
 })

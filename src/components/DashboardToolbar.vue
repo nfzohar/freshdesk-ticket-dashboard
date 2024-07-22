@@ -135,7 +135,7 @@ export default defineComponent({
       return this.$information.textOnSecondaryColor
     },
     appTitle(): String {
-      return import.meta.env.VITE_APP_TITLE ?? 'Freshdesk Ticket Dashboard'
+      return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
     }
   },
 

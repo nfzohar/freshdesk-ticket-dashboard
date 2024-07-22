@@ -8,124 +8,164 @@
 
     <template #content>
       <div
-        class="flex flex-col m-auto w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
+        class="flex flex-col gap-5 m-auto w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
         :class="[secondaryColorText, { 'is-loading': isLoading }]"
         @keydown.esc="open = false"
       >
-        <h1 class="text-xl font-bold cursor-pointer" v-text="'Filters'" />
-
-        <div class="grid grid-cols-2 md:flex items-center">
-          <!-- Created at -->
-          <a-filter-section
-            :section-title="'Created at:'"
-            :body-class="'flex items-center justify-between p-2'"
-          >
-            <a-date-select
-              :label="'From:'"
-              :class="'w-full'"
-              :label-class="'text-sm font-normal'"
-              @changed="(value) => (createdAt.from = value)"
+        <div class="flex items-center justify-between w-full">
+          <h1 class="text-3xl font-bold cursor-pointer" v-text="'Filters'" />
+          <div class="flex gap-5">
+            <button
+              :class="`filters-action ${primaryColorText}`"
+              v-text="'Reset filters'"
+              @click="resetTicketFilters()"
             />
-            <span class="font-bold px-5" v-text="'-'" />
-            <a-date-select
-              :label="'To:'"
-              :class="'w-full'"
-              :label-class="'text-sm font-normal'"
-              @changed="(value) => (createdAt.to = value)"
+            <button
+              :class="`filters-action ${primaryColorText}`"
+              v-text="'Apply filters'"
+              @click="applyTicketFilters()"
             />
-          </a-filter-section>
-
-          <!-- Updated at -->
-          <a-filter-section
-            :section-title="'Updated at:'"
-            :body-class="'flex items-center justify-between p-2'"
-          >
-            <a-date-select
-              :label="'From:'"
-              :class="'w-full'"
-              :label-class="'text-sm font-normal'"
-              @changed="(value) => (updatedAt.from = value)"
-            />
-            <span class="font-bold px-5" v-text="'-'" />
-            <a-date-select
-              :label="'To:'"
-              :class="'w-full'"
-              :label-class="'text-sm font-normal'"
-              @changed="(value) => (updatedAt.to = value)"
-            />
-          </a-filter-section>
-
-          <!-- Closed at -->
-          <a-filter-section
-            :section-title="'Closed at'"
-            :body-class="'flex items-center justify-between p-2'"
-          >
-            <a-date-select
-              :label="'From:'"
-              :class="'w-full'"
-              :label-class="'text-sm font-normal'"
-              @changed="(value) => (closedAt.from = value)"
-            />
-            <span class="font-bold px-5" v-text="'-'" />
-            <a-date-select
-              :label="'To:'"
-              :class="'w-full'"
-              :label-class="'text-sm font-normal'"
-              @changed="(value) => (closedAt.to = value)"
-            />
-          </a-filter-section>
-
-          <!-- Resolved at -->
-          <a-filter-section
-            :section-title="'Resolved at'"
-            :body-class="'flex items-center justify-between p-2'"
-          >
-            <a-date-select
-              :label="'From:'"
-              :class="'w-full'"
-              :label-class="'text-sm font-normal'"
-              @changed="(value) => (resolvedAt.from = value)"
-            />
-            <span class="font-bold px-5" v-text="'-'" />
-            <a-date-select
-              :label="'To:'"
-              :class="'w-full'"
-              :label-class="'text-sm font-normal'"
-              @changed="(value) => (resolvedAt.to = value)"
-            />
-          </a-filter-section>
+          </div>
         </div>
 
-        <div class="grid grid-cols-4">
-          <template v-for="(filter, f) in filters" :key="f">
+        <div class="flex items-start">
+          <div class="flex flex-col w-full items-center">
+            <!-- Created at -->
             <a-filter-section
-              v-if="filter?.choices?.length"
-              :section-title="filter?.label"
-              :body-class="'w-full h-auto p-2'"
+              :section-title="'Created at:'"
+              :body-class="'flex items-center justify-between p-2'"
             >
-              <a-select
-                :the-value="''"
-                :options="filter?.choices"
-                :value-field="filter?.label_field ?? 'value'"
-                :label-field="filter?.value_field ?? 'label'"
-                :input-class="'bg-primary-600'"
-                @changed="(value) => (values[filter?.name] = value)"
+              <a-date-select
+                :label="'From:'"
+                :class="'w-full'"
+                :label-class="'text-sm font-normal'"
+                @changed="(value) => (createdAt.from = value)"
+              />
+              <span class="font-bold px-5" v-text="'-'" />
+              <a-date-select
+                :label="'To:'"
+                :class="'w-full'"
+                :label-class="'text-sm font-normal'"
+                @changed="(value) => (createdAt.to = value)"
               />
             </a-filter-section>
-          </template>
+            <!-- Updated at -->
+            <a-filter-section
+              :section-title="'Updated at:'"
+              :body-class="'flex items-center justify-between p-2'"
+            >
+              <a-date-select
+                :label="'From:'"
+                :class="'w-full'"
+                :label-class="'text-sm font-normal'"
+                @changed="(value) => (updatedAt.from = value)"
+              />
+              <span class="font-bold px-5" v-text="'-'" />
+              <a-date-select
+                :label="'To:'"
+                :class="'w-full'"
+                :label-class="'text-sm font-normal'"
+                @changed="(value) => (updatedAt.to = value)"
+              />
+            </a-filter-section>
+            <!-- Closed at -->
+            <a-filter-section
+              :section-title="'Closed at'"
+              :body-class="'flex items-center justify-between p-2'"
+            >
+              <a-date-select
+                :label="'From:'"
+                :class="'w-full'"
+                :label-class="'text-sm font-normal'"
+                @changed="(value) => (closedAt.from = value)"
+              />
+              <span class="font-bold px-5" v-text="'-'" />
+              <a-date-select
+                :label="'To:'"
+                :class="'w-full'"
+                :label-class="'text-sm font-normal'"
+                @changed="(value) => (closedAt.to = value)"
+              />
+            </a-filter-section>
+            <!-- Resolved at -->
+            <a-filter-section
+              :section-title="'Resolved at'"
+              :body-class="'flex items-center justify-between p-2'"
+            >
+              <a-date-select
+                :label="'From:'"
+                :class="'w-full'"
+                :label-class="'text-sm font-normal'"
+                @changed="(value) => (resolvedAt.from = value)"
+              />
+              <span class="font-bold px-5" v-text="'-'" />
+              <a-date-select
+                :label="'To:'"
+                :class="'w-full'"
+                :label-class="'text-sm font-normal'"
+                @changed="(value) => (resolvedAt.to = value)"
+              />
+            </a-filter-section>
+          </div>
+
+          <a-filter-section
+            :key="filters?.length"
+            :section-title="'Ticket fields'"
+            :body-class="'grid grid-cols-1 gap-5 h-50vh overflow-y-scroll scrollbar-hide p-2'"
+          >
+            <template v-for="(filter, f) in filters" :key="f">
+              <a-select
+                v-if="filter.choices?.length"
+                :the-value="''"
+                :label="filter?.label"
+                :options="filter?.choices"
+                :show-null-value="true"
+                :null-value-label="'All'"
+                :label-field="ticketFieldsLabel(filter)"
+                :value-field="ticketFieldsValue(filter)"
+                :input-class="'bg-primary-500'"
+                @changed="(value) => (filters[filter?.name] = value)"
+              />
+            </template>
+          </a-filter-section>
         </div>
 
-        <div class="flex items-center justify-between w-full">
-          <button
-            :class="`filters-action ${primaryColorText}`"
-            v-text="'Reset'"
-            @click="resetTicketFilters()"
-          />
-          <button
-            :class="`filters-action ${primaryColorText}`"
-            v-text="'Apply'"
-            @click="applyTicketFilters()"
-          />
+        <div class="bg-secondary-500 z-100 w-full p-4 h-full">
+          <div class="flex items-center justify-between border-b border-primary-600 py-1">
+            <h1 class="w-full text-lg font-bold capitalize" v-text="'Saved filter presets'" />
+            <div class="flex items-center w-min">
+              <input
+                class="bg-transparent border border-primary-500 rounded-l-md px-1"
+                :placeholder="'New filter preset name...'"
+                type="text"
+                v-model="filterPresetName"
+              />
+              <button
+                class="w-max px-1 font-bold border capitalize border-primary-500 rounded-r-md hover:bg-primary-500"
+                :title="'Save current filters as a preset.'"
+                v-text="'Save'"
+                @click="addNewPreset()"
+              />
+            </div>
+          </div>
+
+          <div
+            :key="filterPresets?.length"
+            class="grid grid-cols-5 gap-5 items-center p-2 bg-secondary-600 rounded-md"
+          >
+            <span
+              v-if="!filterPresets?.length"
+              class="opacity-50"
+              v-text="'No presets created yet.'"
+            />
+            <button
+              v-for="(preset, p) in filterPresets"
+              :key="p"
+              :class="`${primaryColorText} border border-primary-500 rounded-md bg-primary-500 hover:bg-primary-600`"
+              v-text="preset?.name"
+              @click="values = preset?.value"
+            />
+          </div>
         </div>
       </div>
     </template>
@@ -134,7 +174,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import ApiCall from '@/helpers/APICallHelper'
 import { fdate } from '@/helpers/CommonMethods'
 import ADialog from '@/components/general/ADialog.vue'
 import ASelect from '@/components/general/ASelect.vue'
@@ -150,6 +189,8 @@ export default defineComponent({
 
   data() {
     return {
+      filterPresetName: '',
+      isLoading: false,
       open: true,
       values: [],
       filters: [],
@@ -168,8 +209,7 @@ export default defineComponent({
       resolvedAt: {
         from: '',
         to: ''
-      },
-      isLoading: false
+      }
     }
   },
 
@@ -179,94 +219,28 @@ export default defineComponent({
     },
     secondaryColorText(): String {
       return this.$information?.textOnSecondaryColor
+    },
+    filterPresets() {
+      return this.$information?.savedFilterSets
     }
   },
 
-  async created() {
-    //await this.fetchAllTicketFields()
+  mounted() {
+    this.buildTicketFieldsArray()
   },
 
   methods: {
-    async fetchAllTicketFields() {
-      this.isLoading = true
-
-      await ApiCall.get('admin/ticket_fields')
-        .then((response) => {
-          if (response) {
-            Object.values(response)
-              .map((filter) => filter?.id)
-              .forEach((filterId) => {
-                this.fetchTicketFieldOptions(filterId)
-              })
-          }
-        })
-        .finally(() => {
-          this.isLoading = false
-        })
-    },
-
-    async fetchTicketFieldOptions(filterId) {
-      await ApiCall.get('admin/ticket_fields/' + filterId + '?include=section').then((response) => {
-        let filter = response
-
-        if (filter) {
-          if (filter.name == 'agent') {
-            filter['choices'] = this.$information?.storedAgents
-            filter['label_field'] = 'contact.name'
-            filter['value_field'] = ''
-          }
-          if (filter.name == 'group') {
-            filter['choices'] = this.$information?.storedGroups
-            filter['label_field'] = ''
-            filter['value_field'] = ''
-          }
-          if (filter.name == 'status') {
-            filter['choices'] = this.$information?.storedStatuses
-            filter['label_field'] = ''
-            filter['value_field'] = ''
-          }
-          if (filter.name == 'source') {
-            filter['choices'] = this.$information?.storedSources
-          }
-          if (filter.name == 'priority') {
-            filter['choices'] = this.$information?.storedPriorities
-          }
-          if (filter.name == 'ticket_type') {
-            filter.name = 'type'
-          }
-
-          this.filters.push(filter)
-        }
-      })
+    buildTicketFieldsArray() {
+      this.filters = Object.values(this.$information?.storedAdminTicketFields)
     },
 
     applyTicketFilters() {
       let urlFilters = Array()
 
-      if (this.createdAtFrom) {
-        urlFilters.push("created_at:>'" + this.fdate(this.createdAtFrom) + "'")
-      }
-      if (this.createdAtTo) {
-        urlFilters.push("created_at:<'" + this.fdate(this.createdAtTo) + "'")
-      }
-      if (this.updatedAtFrom) {
-        urlFilters.push("updated_at:>'" + this.fdate(this.updatedAtFrom) + "'")
-      }
-      if (this.updatedAtTo) {
-        urlFilters.push("updated_at:<'" + this.fdate(this.updatedAtTo) + "'")
-      }
-      if (this.closedAtFrom) {
-        urlFilters.push("closed_at:>'" + this.fdate(this.closedAtFrom) + "'")
-      }
-      if (this.closedAtTo) {
-        urlFilters.push("closed_at:<'" + this.fdate(this.closedAtTo) + "'")
-      }
-      if (this.resolvedAtFrom) {
-        urlFilters.push("resolved_at:>'" + this.fdate(this.resolvedAtFrom) + "'")
-      }
-      if (this.resolvedAtTo) {
-        urlFilters.push("resolved_at:<'" + this.fdate(this.resolvedAtTo) + "'")
-      }
+      urlFilters.push(this.setDateFilter(this.closedAt, 'closed_at'))
+      urlFilters.push(this.setDateFilter(this.createdAt, 'created_at'))
+      urlFilters.push(this.setDateFilter(this.updatedAt, 'updated_at'))
+      urlFilters.push(this.setDateFilter(this.resolvedAt, 'resolved_at'))
 
       Object.keys(this.values).forEach((value) => {
         if (this.values[value]) {
@@ -278,11 +252,22 @@ export default defineComponent({
         }
       })
 
-      this.$auth.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
-
+      //this.$auth.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
       this.$information.setFilters([])
       this.$emit('filtersUpdated')
       this.open = false
+    },
+
+    setDateFilter(dateObject: { to: String; from: String }, field: string) {
+      let url = []
+
+      if (dateObject?.from) {
+        url.push(`${field}:>'${fdate(dateObject?.from, 'yyyy-MM-dd')}'`)
+      }
+      if (dateObject?.to) {
+        url.push(`${field}:<'${fdate(dateObject?.to, 'yyyy-MM-dd')}'`)
+      }
+      return url.join()
     },
 
     resetTicketFilters() {
@@ -291,8 +276,33 @@ export default defineComponent({
       this.open = false
     },
 
-    fdate(dateString) {
-      return fdate(dateString, 'yyyy-MM-dd')
+    ticketFieldsLabel(filter) {
+      let index = filter.label.toLocaleLowerCase()
+      if ('agent' == index) {
+        return 'contact.name'
+      }
+      if ('group' == index) {
+        return 'name'
+      }
+      return 'label'
+    },
+
+    ticketFieldsValue(filter) {
+      let index = filter.label.toLocaleLowerCase()
+      if (['agent', 'group'].includes(index)) {
+        return 'id'
+      }
+      return 'value'
+    },
+
+    addNewPreset() {
+      let presets = Object.values(this.filterPresets ?? [])
+
+      presets.push({
+        name: this.filterPresetName,
+        values: this.values
+      })
+      this.$information?.setFilterPresets(presets)
     }
   }
 })
