@@ -18,12 +18,12 @@
             <button
               :class="`filters-action ${primaryColorText}`"
               v-text="'Reset filters'"
-              @click="resetTicketFilters()"
+              @click="updateFilters([])"
             />
             <button
               :class="`filters-action ${primaryColorText}`"
               v-text="'Apply filters'"
-              @click="applyTicketFilters()"
+              @click="updateFilters(filters)"
             />
           </div>
         </div>
@@ -116,15 +116,15 @@
             <template v-for="(filter, f) in filters" :key="f">
               <a-select
                 v-if="filter.choices?.length"
-                :the-value="''"
+                :the-value="filter.value"
                 :label="filter?.label"
                 :options="filter?.choices"
                 :show-null-value="true"
                 :null-value-label="'All'"
+                :input-class="'bg-primary-500'"
                 :label-field="ticketFieldsLabel(filter)"
                 :value-field="ticketFieldsValue(filter)"
-                :input-class="'bg-primary-500'"
-                @changed="(value) => (filters[filter?.name] = value)"
+                @changed="(value) => (filter.value = value)"
               />
             </template>
           </a-filter-section>
@@ -135,7 +135,7 @@
             <h1 class="w-full text-lg font-bold capitalize" v-text="'Saved filter presets'" />
             <div class="flex items-center w-min">
               <input
-                class="bg-transparent border border-primary-500 rounded-l-md px-1 outline-none"
+                class="bg-transparent border border-primary-500 rounded-l-md px-2 outline-none"
                 :placeholder="'New filter preset name...'"
                 type="text"
                 v-model="filterPresetName"
@@ -150,21 +150,28 @@
           </div>
 
           <div
-            :key="filterPresets?.length"
-            class="grid grid-cols-5 gap-5 items-center p-2 bg-secondary-600 rounded-md"
+            :key="filters?.length"
+            class="grid gap-5 items-center p-2 bg-secondary-600 rounded-md"
+            :class="{ 'grid-cols-5': filterPresets?.length }"
           >
             <span
               v-if="!filterPresets?.length"
-              class="opacity-50"
+              class="block opacity-50 w-full"
               v-text="'No presets created yet.'"
             />
             <button
               v-for="(preset, p) in filterPresets"
               :key="p"
-              :class="`${primaryColorText} border border-primary-500 rounded-md bg-primary-500 hover:bg-primary-600`"
-              v-text="preset?.name"
-              @click="values = preset?.value"
-            />
+              class="flex justify-between items-center w-full px-2 border border-primary-500 rounded-md bg-primary-500 hover:bg-primary-600"
+              :class="primaryColorText"
+              @click="updateFilters(preset?.values)"
+            >
+              <span v-text="preset?.name" />
+              <button
+                @click.stop="removePreset(preset?.name)"
+                v-html="`<i class='fa fa-times'/>`"
+              />
+            </button>
           </div>
         </div>
       </div>
@@ -189,11 +196,10 @@ export default defineComponent({
 
   data() {
     return {
+      filters: new Array(),
       filterPresetName: '',
       isLoading: false,
       open: true,
-      values: [],
-      filters: [],
       createdAt: {
         from: '',
         to: ''
@@ -214,48 +220,33 @@ export default defineComponent({
   },
 
   computed: {
+    filterPresets(): Object {
+      return this.$information?.savedFilterSets
+    },
     primaryColorText(): String {
       return this.$information?.textOnPrimaryColor
     },
     secondaryColorText(): String {
       return this.$information?.textOnSecondaryColor
-    },
-    filterPresets() {
-      return this.$information?.savedFilterSets
     }
   },
 
   mounted() {
-    this.buildTicketFieldsArray()
+    this.buildFilterArray()
   },
 
   methods: {
-    buildTicketFieldsArray() {
-      this.filters = Object.values(this.$information?.storedAdminTicketFields)
-    },
+    buildFilterArray() {
+      if (this.$information?.storedFilters?.length) {
+        this.filters = this.$information?.storedFilters
+        return
+      }
 
-    applyTicketFilters() {
-      let urlFilters = Array()
-
-      urlFilters.push(this.setDateFilter(this.closedAt, 'closed_at'))
-      urlFilters.push(this.setDateFilter(this.createdAt, 'created_at'))
-      urlFilters.push(this.setDateFilter(this.updatedAt, 'updated_at'))
-      urlFilters.push(this.setDateFilter(this.resolvedAt, 'resolved_at'))
-
-      Object.keys(this.values).forEach((value) => {
-        if (this.values[value]) {
-          if (typeof this.values[value] == 'string') {
-            urlFilters.push(value + ":'" + this.values[value] + "'")
-          } else {
-            urlFilters.push(value + ':' + this.values[value])
-          }
-        }
+      let filterList = Object.values(this.$information?.storedAdminTicketFields)
+      filterList.forEach((filter) => {
+        filter['value'] = ''
       })
-
-      //this.$auth.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
-      this.$information.setFilters([])
-      this.$emit('filtersUpdated')
-      this.open = false
+      this.filters = filterList
     },
 
     setDateFilter(dateObject: { to: String; from: String }, field: string) {
@@ -270,8 +261,12 @@ export default defineComponent({
       return url.join()
     },
 
-    resetTicketFilters() {
-      this.$information.setFilters([])
+    updateFilters(filters: Array) {
+      this.$information.setFilters(filters)
+
+      if (filters?.length) {
+        this.filters = filters
+      }
       this.$emit('filtersUpdated')
       this.open = false
     },
@@ -279,36 +274,44 @@ export default defineComponent({
     ticketFieldsLabel(filter) {
       let index = filter.label.toLocaleLowerCase()
 
-      return (
-        {
-          agent: 'contact.name',
-          group: 'name'
-        }[index] ?? 'label'
-      )
+      let fields = {
+        agent: 'contact.name',
+        group: 'name'
+      }
+      return fields[index] ?? 'label'
     },
 
     ticketFieldsValue(filter) {
       let index = filter.label.toLocaleLowerCase()
 
-      return (
-        {
-          agent: 'id',
-          group: 'id'
-        }[index] ?? 'value'
-      )
+      let fields = {
+        agent: 'id',
+        group: 'id'
+      }
+      return fields[index] ?? 'value'
     },
 
     addNewPreset() {
       let presets = Object.values(this.filterPresets ?? [])
 
-      if (this.filterPresetName) {
-        presets.push({
-          name: this.filterPresetName,
-          values: this.values
-        })
-        this.$information?.setFilterPresets(presets)
-        this.filterPresetName = ''
+      if (!this.filterPresetName) {
+        this.$toast.error('A unique name is required for saved presets.')
+        return
       }
+
+      presets.push({
+        name: this.filterPresetName,
+        values: this.filters
+      })
+      this.$information?.setFilterPresets(presets)
+      this.filterPresetName = ''
+    },
+
+    removePreset(presetName: String) {
+      let presets = Object.values(this.filterPresets ?? [])
+      presets = presets.filter((preset) => preset?.name != presetName)
+
+      this.$information?.setFilterPresets(presets)
     }
   }
 })

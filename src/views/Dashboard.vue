@@ -22,6 +22,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
+import { filterParser } from '@/helpers/CommonMethods'
 import ToolBar from '@/components/DashboardToolbar.vue'
 import RowsLayout from '@/components/layouts/RowsLayout.vue'
 import ColumnsLayout from '@/components/layouts/ColumnsLayout.vue'
@@ -60,6 +61,9 @@ export default defineComponent({
     dashboardLayout(): Object {
       return this.$configuration?.layoutComponent
     },
+    storedFilters(): Array {
+      return this.$information?.storedFilters
+    },
     statStartYear(): string {
       let year = import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970'
       return new Date(year).toISOString()
@@ -72,18 +76,16 @@ export default defineComponent({
     },
     '$configuration.theAutoRefresh.active'() {
       let autorefresh = this.$configuration?.theAutoRefresh
+      let intervalLength = 1000 * 60 * autorefresh?.perMinutes
 
       if (!autorefresh?.active || autorefresh?.perMinutes <= 0) {
         clearInterval(this.refreshIntervalId)
         return
       }
 
-      this.refreshIntervalId = setInterval(
-        () => {
-          this.loadTickets()
-        },
-        1000 * 60 * autorefresh?.perMinutes
-      )
+      this.refreshIntervalId = setInterval(() => {
+        this.loadTickets()
+      }, intervalLength)
     }
   },
 
@@ -107,6 +109,10 @@ export default defineComponent({
       if (!this.apiCallUrl) {
         this.apiCallUrl =
           'tickets?updated_since=' + this.startYear + '&include=requester,stats&per_page=100'
+      }
+
+      if (this.storedFilters?.length) {
+        this.apiCallUrl = filterParser(this.apiCallUrl, this.storedFilters)
       }
 
       await this.fetchTicketsByPage()

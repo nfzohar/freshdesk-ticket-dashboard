@@ -6,6 +6,7 @@ import { configuration } from '@/stores/configuration'
 
 const toast = useToast()
 
+// Main authentication check method.
 export function checkAuthCredentials(username: String, password: String) {
   let authenticationSuccess = false
 
@@ -98,6 +99,7 @@ export function getAvailablePanelComponents() {
   return listOfPanelComponents
 }
 
+// Update a panel's instance in store state.
 export async function updatePanelInState(
   rows: Array,
   newValue: String,
@@ -118,7 +120,7 @@ export async function updatePanelInState(
   return rows
 }
 
-// Generate a name, ticket_count dataset for graph display
+// Generate a name, ticket_count dataset for graph display.
 export function generateGraphDataset(
   valueList: Object,
   sortProp = 'name-asc',
@@ -172,4 +174,29 @@ export function listenForKey(eventKey = '', performFunction: Function) {
 export function ticketFieldOptions(ticketFieldArray: Array, label: String) {
   const index = ticketFieldArray.findIndex((field) => field?.label?.toLocaleLowerCase() == label)
   return get(ticketFieldArray, `[${index}].choices`) ?? []
+}
+
+// Take filters from information store and parse them into the api call url.
+export function filterParser(apiCallUrl: String, filtersList: [Object | Array]) {
+  let filters = filtersList
+
+  // let urlFilters = Array()
+
+  // urlFilters.push(this.setDateFilter(this.closedAt, 'closed_at'))
+  // urlFilters.push(this.setDateFilter(this.createdAt, 'created_at'))
+  // urlFilters.push(this.setDateFilter(this.updatedAt, 'updated_at'))
+  // urlFilters.push(this.setDateFilter(this.resolvedAt, 'resolved_at'))
+
+  // Object.keys(this.values).forEach((value) => {
+  //   if (this.values[value]) {
+  //     if (typeof this.values[value] == 'string') {
+  //       urlFilters.push(value + ":'" + this.values[value] + "'")
+  //     } else {
+  //       urlFilters.push(value + ':' + this.values[value])
+  //     }
+  //   }
+  // })
+  //this.$auth.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
+  
+  return apiCallUrl
 }

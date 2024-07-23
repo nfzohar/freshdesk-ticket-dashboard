@@ -37,7 +37,7 @@
         <ticket-filter-modal
           @open="modalsOpen = true"
           @close="modalsOpen = false"
-          @filtersUpdated="$emit('reload')"
+          @filtersUpdated="$emit('refresh')"
         />
 
         <resolved-statistics-graph
