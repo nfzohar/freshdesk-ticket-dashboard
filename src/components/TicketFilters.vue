@@ -36,17 +36,19 @@
               :body-class="'flex items-center justify-between p-2'"
             >
               <a-date-select
+                :the-value="dates?.createdAt?.from"
                 :label="'From:'"
                 :class="'w-full'"
                 :label-class="'text-sm font-normal'"
-                @changed="(value) => (createdAt.from = value)"
+                @changed="(value) => (dates['createdAt']['from'] = value)"
               />
               <span class="font-bold px-5" v-text="'-'" />
               <a-date-select
+                :the-value="dates?.createdAt?.to"
                 :label="'To:'"
                 :class="'w-full'"
                 :label-class="'text-sm font-normal'"
-                @changed="(value) => (createdAt.to = value)"
+                @changed="(value) => (dates['createdAt']['to'] = value)"
               />
             </a-filter-section>
             <!-- Updated at -->
@@ -55,17 +57,19 @@
               :body-class="'flex items-center justify-between p-2'"
             >
               <a-date-select
+                :the-value="dates?.updatedAt?.from"
                 :label="'From:'"
                 :class="'w-full'"
                 :label-class="'text-sm font-normal'"
-                @changed="(value) => (updatedAt.from = value)"
+                @changed="(value) => (dates['updatedAt']['from'] = value)"
               />
               <span class="font-bold px-5" v-text="'-'" />
               <a-date-select
+                :the-value="dates?.updatedAt?.to"
                 :label="'To:'"
                 :class="'w-full'"
                 :label-class="'text-sm font-normal'"
-                @changed="(value) => (updatedAt.to = value)"
+                @changed="(value) => (dates['updatedAt']['to'] = value)"
               />
             </a-filter-section>
             <!-- Closed at -->
@@ -74,17 +78,19 @@
               :body-class="'flex items-center justify-between p-2'"
             >
               <a-date-select
+                :the-value="dates?.closedAt?.from"
                 :label="'From:'"
                 :class="'w-full'"
                 :label-class="'text-sm font-normal'"
-                @changed="(value) => (closedAt.from = value)"
+                @changed="(value) => (dates['closedAt']['from'] = value)"
               />
               <span class="font-bold px-5" v-text="'-'" />
               <a-date-select
+                :the-value="dates?.closedAt?.to"
                 :label="'To:'"
                 :class="'w-full'"
                 :label-class="'text-sm font-normal'"
-                @changed="(value) => (closedAt.to = value)"
+                @changed="(value) => (dates['closedAt']['to'] = value)"
               />
             </a-filter-section>
             <!-- Resolved at -->
@@ -93,17 +99,19 @@
               :body-class="'flex items-center justify-between p-2'"
             >
               <a-date-select
+                :the-value="dates?.resolvedAt?.from"
                 :label="'From:'"
                 :class="'w-full'"
                 :label-class="'text-sm font-normal'"
-                @changed="(value) => (resolvedAt.from = value)"
+                @changed="(value) => (dates['resolvedAt']['from'] = value)"
               />
               <span class="font-bold px-5" v-text="'-'" />
               <a-date-select
+                :the-value="dates?.resolvedAt?.to"
                 :label="'To:'"
                 :class="'w-full'"
                 :label-class="'text-sm font-normal'"
-                @changed="(value) => (resolvedAt.to = value)"
+                @changed="(value) => (dates['resolvedAt']['to'] = value)"
               />
             </a-filter-section>
           </div>
@@ -200,21 +208,23 @@ export default defineComponent({
       filterPresetName: '',
       isLoading: false,
       open: true,
-      createdAt: {
-        from: '',
-        to: ''
-      },
-      updatedAt: {
-        from: '',
-        to: ''
-      },
-      closedAt: {
-        from: '',
-        to: ''
-      },
-      resolvedAt: {
-        from: '',
-        to: ''
+      dates: {
+        createdAt: {
+          from: '',
+          to: ''
+        },
+        updatedAt: {
+          from: '',
+          to: ''
+        },
+        closedAt: {
+          from: '',
+          to: ''
+        },
+        resolvedAt: {
+          from: '',
+          to: ''
+        }
       }
     }
   },
@@ -238,7 +248,10 @@ export default defineComponent({
   methods: {
     buildFilterArray() {
       if (this.$information?.storedFilters?.length) {
-        this.filters = this.$information?.storedFilters
+        let storedFilters = this.$information?.storedFilters
+
+        this.filters = storedFilters
+        this.dates = storedFilters.filter((filter) => filter?.name != 'dates')[0]
         return
       }
 
@@ -249,24 +262,15 @@ export default defineComponent({
       this.filters = filterList
     },
 
-    setDateFilter(dateObject: { to: String; from: String }, field: string) {
-      let url = []
-
-      if (dateObject?.from) {
-        url.push(`${field}:>'${fdate(dateObject?.from, 'yyyy-MM-dd')}'`)
-      }
-      if (dateObject?.to) {
-        url.push(`${field}:<'${fdate(dateObject?.to, 'yyyy-MM-dd')}'`)
-      }
-      return url.join()
-    },
-
     updateFilters(filters: Array) {
-      this.$information.setFilters(filters)
+      let list = filters
 
       if (filters?.length) {
-        this.filters = filters
+        list.push({ name: 'dates', value: this.dates })
+        this.filters = list
       }
+
+      this.$information.setFilters(list)
       this.$emit('filtersUpdated')
       this.open = false
     },

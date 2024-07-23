@@ -197,6 +197,20 @@ export function filterParser(apiCallUrl: String, filtersList: [Object | Array]) 
   //   }
   // })
   //this.$auth.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
-  
+
   return apiCallUrl
+}
+
+// Specialized dates filters parser.
+export function setDateFilter(dateObject: { to: String; from: String }, field: string) {
+  let url = []
+
+  if (dateObject?.from) {
+    url.push(`${field}:>'${fdate(dateObject?.from, 'yyyy-MM-dd')}'`)
+  }
+  if (dateObject?.to) {
+    url.push(`${field}:<'${fdate(dateObject?.to, 'yyyy-MM-dd')}'`)
+  }
+
+  return url.join()
 }
