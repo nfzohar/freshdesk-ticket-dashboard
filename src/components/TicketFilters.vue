@@ -111,7 +111,7 @@
           <a-filter-section
             :key="filters?.length"
             :section-title="'Ticket fields'"
-            :body-class="'grid grid-cols-1 gap-5 h-50vh overflow-y-scroll scrollbar-hide p-2'"
+            :body-class="'grid grid-cols-1 xl:grid-cols-2 gap-5 h-50vh overflow-y-scroll scrollbar-hide p-2'"
           >
             <template v-for="(filter, f) in filters" :key="f">
               <a-select
@@ -135,7 +135,7 @@
             <h1 class="w-full text-lg font-bold capitalize" v-text="'Saved filter presets'" />
             <div class="flex items-center w-min">
               <input
-                class="bg-transparent border border-primary-500 rounded-l-md px-1"
+                class="bg-transparent border border-primary-500 rounded-l-md px-1 outline-none"
                 :placeholder="'New filter preset name...'"
                 type="text"
                 v-model="filterPresetName"
@@ -278,21 +278,24 @@ export default defineComponent({
 
     ticketFieldsLabel(filter) {
       let index = filter.label.toLocaleLowerCase()
-      if ('agent' == index) {
-        return 'contact.name'
-      }
-      if ('group' == index) {
-        return 'name'
-      }
-      return 'label'
+
+      return (
+        {
+          agent: 'contact.name',
+          group: 'name'
+        }[index] ?? 'label'
+      )
     },
 
     ticketFieldsValue(filter) {
       let index = filter.label.toLocaleLowerCase()
-      if (['agent', 'group'].includes(index)) {
-        return 'id'
-      }
-      return 'value'
+
+      return (
+        {
+          agent: 'id',
+          group: 'id'
+        }[index] ?? 'value'
+      )
     },
 
     addNewPreset() {
