@@ -33,13 +33,6 @@
           @startExport="$emit('startLoading')"
           @finishExport="$emit('stopLoading')"
         />
-
-        <ticket-filter-modal
-          @open="modalsOpen = true"
-          @close="modalsOpen = false"
-          @filtersUpdated="$emit('refresh')"
-        />
-
         <resolved-statistics-graph
           :tickets="allTickets"
           :last-ticket-date="lastTicketDate"
@@ -52,12 +45,16 @@
           @open="modalsOpen = true"
           @close="modalsOpen = false"
         />
+        <ticket-filter-modal
+          @open="modalsOpen = true"
+          @close="modalsOpen = false"
+          @filtersUpdated="$emit('refresh')"
+        />
         <dashboard-settings-modal
           @reloadDashboard="$emit('reload')"
           @open="modalsOpen = true"
           @close="modalsOpen = false"
         />
-
         <help-section @open="modalsOpen = true" @close="modalsOpen = false" />
       </div>
     </div>

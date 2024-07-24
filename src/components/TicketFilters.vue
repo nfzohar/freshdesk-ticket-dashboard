@@ -23,95 +23,34 @@
             <button
               :class="`filters-action ${primaryColorText}`"
               v-text="'Apply filters'"
-              @click="updateFilters(filters)"
+              @click="updateFilters(allSetFilters)"
             />
           </div>
         </div>
 
-        <div class="flex items-start">
-          <div class="flex flex-col w-full items-center">
+        <div class="flex items-center p-0 m-0">
+          <div class="grid grid-cols-1 w-full h-full overflow-y-scroll scrollbar-hide p-2">
             <!-- Created at -->
             <a-filter-section
-              :section-title="'Created at:'"
-              :body-class="'flex items-center justify-between p-2'"
+              v-for="(date, d) in dates"
+              :key="d"
+              :section-title="date?.title"
+              :body-class="'flex flex-col lg:flex-row items-center justify-between p-2'"
             >
               <a-date-select
-                :the-value="dates?.createdAt?.from"
+                :the-value="date['from']"
                 :label="'From:'"
                 :class="'w-full'"
                 :label-class="'text-sm font-normal'"
-                @changed="(value) => (dates['createdAt']['from'] = value)"
+                @changed="(value) => (date.from = value)"
               />
-              <span class="font-bold px-5" v-text="'-'" />
+              <span class="hidden lg:block font-bold text-2xl px-4" v-text="'-'" />
               <a-date-select
-                :the-value="dates?.createdAt?.to"
+                :the-value="date['to']"
                 :label="'To:'"
                 :class="'w-full'"
                 :label-class="'text-sm font-normal'"
-                @changed="(value) => (dates['createdAt']['to'] = value)"
-              />
-            </a-filter-section>
-            <!-- Updated at -->
-            <a-filter-section
-              :section-title="'Updated at:'"
-              :body-class="'flex items-center justify-between p-2'"
-            >
-              <a-date-select
-                :the-value="dates?.updatedAt?.from"
-                :label="'From:'"
-                :class="'w-full'"
-                :label-class="'text-sm font-normal'"
-                @changed="(value) => (dates['updatedAt']['from'] = value)"
-              />
-              <span class="font-bold px-5" v-text="'-'" />
-              <a-date-select
-                :the-value="dates?.updatedAt?.to"
-                :label="'To:'"
-                :class="'w-full'"
-                :label-class="'text-sm font-normal'"
-                @changed="(value) => (dates['updatedAt']['to'] = value)"
-              />
-            </a-filter-section>
-            <!-- Closed at -->
-            <a-filter-section
-              :section-title="'Closed at'"
-              :body-class="'flex items-center justify-between p-2'"
-            >
-              <a-date-select
-                :the-value="dates?.closedAt?.from"
-                :label="'From:'"
-                :class="'w-full'"
-                :label-class="'text-sm font-normal'"
-                @changed="(value) => (dates['closedAt']['from'] = value)"
-              />
-              <span class="font-bold px-5" v-text="'-'" />
-              <a-date-select
-                :the-value="dates?.closedAt?.to"
-                :label="'To:'"
-                :class="'w-full'"
-                :label-class="'text-sm font-normal'"
-                @changed="(value) => (dates['closedAt']['to'] = value)"
-              />
-            </a-filter-section>
-            <!-- Resolved at -->
-            <a-filter-section
-              :section-title="'Resolved at'"
-              :body-class="'flex items-center justify-between p-2'"
-            >
-              <a-date-select
-                :the-value="dates?.resolvedAt?.from"
-                :label="'From:'"
-                :class="'w-full'"
-                :label-class="'text-sm font-normal'"
-                @changed="(value) => (dates['resolvedAt']['from'] = value)"
-              />
-              <span class="font-bold px-5" v-text="'-'" />
-              <a-date-select
-                :the-value="dates?.resolvedAt?.to"
-                :label="'To:'"
-                :class="'w-full'"
-                :label-class="'text-sm font-normal'"
-                @changed="(value) => (dates['resolvedAt']['to'] = value)"
+                @changed="(value) => (date.to = value)"
               />
             </a-filter-section>
           </div>
@@ -119,11 +58,11 @@
           <a-filter-section
             :key="filters?.length"
             :section-title="'Ticket fields'"
-            :body-class="'grid grid-cols-1 xl:grid-cols-2 gap-5 h-50vh overflow-y-scroll scrollbar-hide p-2'"
+            :body-class="'grid grid-cols-1 xl:grid-cols-2 gap-5 w-full h-50vh overflow-y-scroll scrollbar-hide p-2'"
           >
             <template v-for="(filter, f) in filters" :key="f">
               <a-select
-                v-if="filter.choices?.length"
+                v-if="filter?.choices?.length"
                 :the-value="filter.value"
                 :label="filter?.label"
                 :options="filter?.choices"
@@ -138,7 +77,7 @@
           </a-filter-section>
         </div>
 
-        <div class="bg-secondary-500 z-100 w-full p-4 h-full">
+        <div class="bg-secondary-500 w-full p-4 h-full">
           <div class="flex items-center justify-between border-b border-primary-600 py-1">
             <h1 class="w-full text-lg font-bold capitalize" v-text="'Saved filter presets'" />
             <div class="flex items-center w-min">
@@ -147,6 +86,7 @@
                 :placeholder="'New filter preset name...'"
                 type="text"
                 v-model="filterPresetName"
+                @keydown.enter="addNewPreset()"
               />
               <button
                 class="w-max px-1 font-bold border capitalize border-primary-500 rounded-r-md hover:bg-primary-500"
@@ -159,7 +99,7 @@
 
           <div
             :key="filters?.length"
-            class="grid gap-5 items-center p-2 bg-secondary-600 rounded-md"
+            class="grid gap-5 items-center p-3 bg-secondary-600 rounded-md"
             :class="{ 'grid-cols-5': filterPresets?.length }"
           >
             <span
@@ -172,7 +112,7 @@
               :key="p"
               class="flex justify-between items-center w-full px-2 border border-primary-500 rounded-md bg-primary-500 hover:bg-primary-600"
               :class="primaryColorText"
-              @click="updateFilters(preset?.values)"
+              @click="updateFilters(preset?.value)"
             >
               <span v-text="preset?.name" />
               <button
@@ -189,7 +129,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { fdate } from '@/helpers/CommonMethods'
 import ADialog from '@/components/general/ADialog.vue'
 import ASelect from '@/components/general/ASelect.vue'
 import ADateSelect from '@/components/general/ADateSelect.vue'
@@ -210,18 +149,26 @@ export default defineComponent({
       open: true,
       dates: {
         createdAt: {
+          title: 'Created at',
+          field: 'created_at',
           from: '',
           to: ''
         },
         updatedAt: {
+          title: 'Updated at',
+          field: 'updated_at',
           from: '',
           to: ''
         },
         closedAt: {
+          title: 'Closed at',
+          field: 'closed_at',
           from: '',
           to: ''
         },
         resolvedAt: {
+          title: 'Resolved at',
+          field: 'resolved_at',
           from: '',
           to: ''
         }
@@ -238,39 +185,50 @@ export default defineComponent({
     },
     secondaryColorText(): String {
       return this.$information?.textOnSecondaryColor
+    },
+    allSetFilters() {
+      let list = Object.values(this.filters)
+      list.push({ name: 'date_filters', value: this.dates })
+      return list
+    },
+    storedFilters(): Array {
+      return Object.values(this.$information?.storedFilters)
+    },
+    storedTicketFields(): Array {
+      return Object.values(this.$information?.storedAdminTicketFields)
     }
   },
 
   mounted() {
-    this.buildFilterArray()
+    this.generateTicketFilters()
   },
 
   methods: {
-    buildFilterArray() {
-      if (this.$information?.storedFilters?.length) {
-        let storedFilters = this.$information?.storedFilters
+    generateTicketFilters() {
+      if (!this.storedFilters?.length) {
+        let listOfFilters = this.storedTicketFields
 
-        this.filters = storedFilters
-        this.dates = storedFilters.filter((filter) => filter?.name != 'dates')[0]
+        listOfFilters.map((filter) => {
+          filter['value'] = ''
+        })
+        this.filters = listOfFilters
         return
       }
 
-      let filterList = Object.values(this.$information?.storedAdminTicketFields)
-      filterList.forEach((filter) => {
-        filter['value'] = ''
-      })
-      this.filters = filterList
+      this.dates = this.storedFilters.filter((filter) => filter?.name == 'date_filters')[0].value
+
+      let filtersInStore = this.storedFilters.filter((filter) => filter?.name != 'date_filters')
+      this.filters = filtersInStore
     },
 
-    updateFilters(filters: Array) {
-      let list = filters
+    updateFilters(filterlist: Array) {
+      this.$information.setFilters(filterlist)
 
-      if (filters?.length) {
-        list.push({ name: 'dates', value: this.dates })
-        this.filters = list
+      this.filters = filterlist.filter((filter) => filter?.name != 'date_filters')
+      if (filterlist?.length) {
+        this.dates = filterlist.filter((filter) => filter?.name == 'date_filters')[0].value
       }
 
-      this.$information.setFilters(list)
       this.$emit('filtersUpdated')
       this.open = false
     },
@@ -297,16 +255,18 @@ export default defineComponent({
 
     addNewPreset() {
       let presets = Object.values(this.filterPresets ?? [])
+      let presetNames = presets.map((preset) => preset?.name)
 
-      if (!this.filterPresetName) {
+      if (!this.filterPresetName || presetNames.includes(this.filterPresetName)) {
         this.$toast.error('A unique name is required for saved presets.')
         return
       }
 
       presets.push({
         name: this.filterPresetName,
-        values: this.filters
+        value: this.allSetFilters
       })
+
       this.$information?.setFilterPresets(presets)
       this.filterPresetName = ''
     },

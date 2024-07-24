@@ -233,8 +233,8 @@ export default defineComponent({
       }`
     },
     statusLabels(): Array {
-      let statuses = Object.values(this.$information?.statuses ?? [])
-      let labels = statuses.map((status: { label: String }) => status?.label)
+      let statuses = Object.values(this.$information?.storedStatuses ?? [])
+      let labels = statuses.map((status) => status?.label)
 
       labels.unshift('All', 'Unresolved')
       return labels.sort()

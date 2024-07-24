@@ -63,7 +63,7 @@ export default defineComponent({
       return this.$information?.textOnPrimaryColor
     },
     storedStatuses(): Array {
-      return Object.values(this.$information?.statuses)
+      return Object.values(this.$information?.storedStatuses)
     },
     status(): String {
       let status = this.storedStatuses?.filter((status) => status?.id == this.theTicket?.status)

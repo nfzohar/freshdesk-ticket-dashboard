@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :key="Number(theValue)">
     <h1 class="font-semibold" :class="labelClass" v-text="label" />
     <div class="flex items-center gap-x-5 w-full">
       <div class="flex flex-col w-full">
@@ -18,18 +18,13 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'ACheckbox',
+  name: 'ADateSelect',
 
   props: {
     theValue: {
-      type: Object,
+      type: [String, Date],
       required: false,
-      default: () => {
-        return {
-          to: new Date(),
-          from: new Date()
-        }
-      }
+      default: ''
     },
     label: {
       type: String,
@@ -64,18 +59,12 @@ export default defineComponent({
 
   watch: {
     inputValue() {
-      this.emitSelectedDateRange()
+      this.$emit('changed', this.inputValue)
     }
   },
 
   mounted() {
-    this.inputValueTo = this.theValue
-  },
-
-  methods: {
-    emitSelectedDateRange() {
-      this.$emit('changed', this.inputValue ?? null)
-    }
+    this.inputValue = this.theValue
   }
 })
 </script>
