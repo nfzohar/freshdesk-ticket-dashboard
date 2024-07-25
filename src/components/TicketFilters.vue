@@ -23,12 +23,12 @@
             <button
               :class="`filters-action ${primaryColorText}`"
               v-text="'Apply filters'"
-              @click="updateFilters(allSetFilters)"
+              @click="updateFilters(allCurrentFilters)"
             />
           </div>
         </div>
 
-        <div class="flex items-center p-0 m-0">
+        <div class="flex items-start p-0 m-0">
           <div class="grid grid-cols-1 w-full h-full overflow-y-scroll scrollbar-hide p-2">
             <!-- Created at -->
             <a-filter-section
@@ -112,7 +112,7 @@
               :key="p"
               class="flex justify-between items-center w-full px-2 border border-primary-500 rounded-md bg-primary-500 hover:bg-primary-600"
               :class="primaryColorText"
-              @click="updateFilters(preset?.value)"
+              @click="updateFilters(preset)"
             >
               <span v-text="preset?.name" />
               <button
@@ -172,11 +172,18 @@ export default defineComponent({
           from: '',
           to: ''
         }
-      }
+      },
+      dateRangeShortcuts: ['today', 'this week', 'this month', 'this year']
     }
   },
 
   computed: {
+    allCurrentFilters(): Object {
+      return {
+        field_filters: this.filters,
+        date_filters: this.dates
+      }
+    },
     filterPresets(): Object {
       return this.$information?.savedFilterSets
     },
@@ -186,13 +193,11 @@ export default defineComponent({
     secondaryColorText(): String {
       return this.$information?.textOnSecondaryColor
     },
-    allSetFilters() {
-      let list = Object.values(this.filters)
-      list.push({ name: 'date_filters', value: this.dates })
-      return list
-    },
     storedFilters(): Array {
       return Object.values(this.$information?.storedFilters)
+    },
+    storedDateFilters(): Array {
+      return Object.values(this.$information?.storedDateFilters)
     },
     storedTicketFields(): Array {
       return Object.values(this.$information?.storedAdminTicketFields)
@@ -212,22 +217,23 @@ export default defineComponent({
           filter['value'] = ''
         })
         this.filters = listOfFilters
+        this.dates = this.dates
         return
       }
 
-      this.dates = this.storedFilters.filter((filter) => filter?.name == 'date_filters')[0].value
-
-      let filtersInStore = this.storedFilters.filter((filter) => filter?.name != 'date_filters')
-      this.filters = filtersInStore
+      this.filters = this.storedFilters
+      this.dates = this.storedDateFilters
     },
 
-    updateFilters(filterlist: Array) {
-      this.$information.setFilters(filterlist)
+    updateFilters(filtersObject: Array) {
+      let fieldFilters = filtersObject['field_filters'] ?? []
+      let dateFiltes = filtersObject['date_filters'] ?? []
 
-      this.filters = filterlist.filter((filter) => filter?.name != 'date_filters')
-      if (filterlist?.length) {
-        this.dates = filterlist.filter((filter) => filter?.name == 'date_filters')[0].value
-      }
+      this.$information.setFilters(fieldFilters)
+      this.$information.setDateFilters(dateFiltes)
+
+      this.dates = dateFiltes
+      this.filters = fieldFilters
 
       this.$emit('filtersUpdated')
       this.open = false
@@ -264,7 +270,8 @@ export default defineComponent({
 
       presets.push({
         name: this.filterPresetName,
-        value: this.allSetFilters
+        date_filters: this.allCurrentFilters?.date_filters,
+        field_filters: this.allCurrentFilters?.field_filters
       })
 
       this.$information?.setFilterPresets(presets)

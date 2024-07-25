@@ -178,7 +178,7 @@ export function ticketFieldOptions(ticketFieldArray: Array, label: String) {
 
 // Take filters from information store and parse them into the api call url.
 export function filterParser(apiCallUrl: String, filtersList: [Object | Array]) {
-  let filters = filtersList
+  let allFilters = filtersList
 
   // let urlFilters = Array()
 
@@ -197,6 +197,11 @@ export function filterParser(apiCallUrl: String, filtersList: [Object | Array]) 
   //   }
   // })
   //this.$auth.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
+
+  // this.filters = filterlist.filter((filter) => filter?.name != 'date_filters')
+  // if (filterlist?.length) {
+  //   this.dates = filterlist.filter((filter) => filter?.name == 'date_filters')[0].value
+  // }
 
   return apiCallUrl
 }

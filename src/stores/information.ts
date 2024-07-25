@@ -6,6 +6,7 @@ const storeLocalStorageKey = 'stored_dashboard_information'
 export const information = defineStore('information', {
   state: () => ({
     filters: [],
+    dateFilters: [],
     savedFilterSets: [],
     adminTicketFields: [],
 
@@ -92,6 +93,9 @@ export const information = defineStore('information', {
     storedFilters(): Object {
       return this.filters
     },
+    storedDateFilters(): Object {
+      return this.dateFilters
+    },
     storedAdminTicketFields(): Object {
       return this.adminTicketFields
     },
@@ -142,6 +146,11 @@ export const information = defineStore('information', {
   actions: {
     setFilters(newValue: Array) {
       this.filters = newValue
+      this.saveConfigurationToStore()
+    },
+
+    setDateFilters(newValue: Array) {
+      this.dateFilters = newValue
       this.saveConfigurationToStore()
     },
 
