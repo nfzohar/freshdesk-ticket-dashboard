@@ -30,7 +30,6 @@
 
         <div class="flex items-start p-0 m-0">
           <div class="grid grid-cols-1 w-full h-full overflow-y-scroll scrollbar-hide p-2">
-            <!-- Created at -->
             <a-filter-section
               v-for="(date, d) in dates"
               :key="d"
@@ -58,7 +57,7 @@
           <a-filter-section
             :key="filters?.length"
             :section-title="'Ticket fields'"
-            :body-class="'grid grid-cols-1 xl:grid-cols-2 gap-5 w-full h-50vh overflow-y-scroll scrollbar-hide p-2'"
+            :body-class="'grid grid-cols-1 lg:grid-cols-2 gap-5 w-full h-50vh overflow-y-scroll scrollbar-hide p-2'"
           >
             <template v-for="(filter, f) in filters" :key="f">
               <a-select
@@ -86,13 +85,13 @@
                 :placeholder="'New filter preset name...'"
                 type="text"
                 v-model="filterPresetName"
-                @keydown.enter="addNewPreset()"
+                @keydown.enter="addNewPreset(filters, dates)"
               />
               <button
                 class="w-max px-1 font-bold border capitalize border-primary-500 rounded-r-md hover:bg-primary-500"
                 :title="'Save current filters as a preset.'"
                 v-text="'Save'"
-                @click="addNewPreset()"
+                @click="addNewPreset(filters, dates)"
               />
             </div>
           </div>
@@ -194,10 +193,10 @@ export default defineComponent({
       return this.$information?.textOnSecondaryColor
     },
     storedFilters(): Array {
-      return Object.values(this.$information?.storedFilters)
+      return Object.values(this.$information?.storedFilters ?? [])
     },
     storedDateFilters(): Array {
-      return Object.values(this.$information?.storedDateFilters)
+      return Object.values(this.$information?.storedDateFilters ?? this.dates)
     },
     storedTicketFields(): Array {
       return Object.values(this.$information?.storedAdminTicketFields)
@@ -226,14 +225,11 @@ export default defineComponent({
     },
 
     updateFilters(filtersObject: Array) {
-      let fieldFilters = filtersObject['field_filters'] ?? []
-      let dateFiltes = filtersObject['date_filters'] ?? []
+      this.dates = filtersObject['date_filters']
+      this.filters = filtersObject['field_filters']
 
-      this.$information.setFilters(fieldFilters)
-      this.$information.setDateFilters(dateFiltes)
-
-      this.dates = dateFiltes
-      this.filters = fieldFilters
+      this.$information.setFilters(this.filters)
+      this.$information.setDateFilters(this.dates)
 
       this.$emit('filtersUpdated')
       this.open = false
@@ -259,7 +255,7 @@ export default defineComponent({
       return fields[index] ?? 'value'
     },
 
-    addNewPreset() {
+    addNewPreset(filters: Array, dates: Object) {
       let presets = Object.values(this.filterPresets ?? [])
       let presetNames = presets.map((preset) => preset?.name)
 
@@ -270,8 +266,8 @@ export default defineComponent({
 
       presets.push({
         name: this.filterPresetName,
-        date_filters: this.allCurrentFilters?.date_filters,
-        field_filters: this.allCurrentFilters?.field_filters
+        field_filters: filters,
+        date_filters: dates
       })
 
       this.$information?.setFilterPresets(presets)
