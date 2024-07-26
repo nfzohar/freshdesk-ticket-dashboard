@@ -8,7 +8,7 @@
 
     <template #content>
       <div
-        class="flex flex-col gap-5 m-auto w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
+        class="flex flex-col gap-5 m-auto h-90vh overflow-y-scroll scrollbar-hide w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
         :class="[secondaryColorText, { 'is-loading': isLoading }]"
         @keydown.esc="open = false"
       >

@@ -177,45 +177,60 @@ export function ticketFieldOptions(ticketFieldArray: Array, label: String) {
 }
 
 // Take filters from information store and parse them into the api call url.
-export function filterParser(apiCallUrl: String, filtersList: [Object | Array]) {
-  let allFilters = filtersList
+export function filterParser(apiCallUrl: String, filtersList: Object) {
+  let urlWithParameters = new Array()
 
-  // let urlFilters = Array()
+  const dateFilters = Object.values(filtersList?.date_filters)
 
-  // urlFilters.push(this.setDateFilter(this.closedAt, 'closed_at'))
-  // urlFilters.push(this.setDateFilter(this.createdAt, 'created_at'))
-  // urlFilters.push(this.setDateFilter(this.updatedAt, 'updated_at'))
-  // urlFilters.push(this.setDateFilter(this.resolvedAt, 'resolved_at'))
+  dateFilters.forEach((dateObject) => {
+    const dateParams = setDateFilter(dateObject)
+    urlWithParameters = urlWithParameters.concat(dateParams)
+  })
 
-  // Object.keys(this.values).forEach((value) => {
-  //   if (this.values[value]) {
-  //     if (typeof this.values[value] == 'string') {
-  //       urlFilters.push(value + ":'" + this.values[value] + "'")
-  //     } else {
-  //       urlFilters.push(value + ':' + this.values[value])
-  //     }
-  //   }
-  // })
-  //this.$auth.setApiFilters(urlFilters?.length ? urlFilters.join(' AND ').trim() : '')
+  const fieldFilters = filtersList?.field_filters
 
-  // this.filters = filterlist.filter((filter) => filter?.name != 'date_filters')
-  // if (filterlist?.length) {
-  //   this.dates = filterlist.filter((filter) => filter?.name == 'date_filters')[0].value
-  // }
+  fieldFilters?.forEach((fieldFilter) => {
+    if (fieldFilter['value'] != '') {
+      let fieldParams = setFieldFilter(fieldFilter)
+      urlWithParameters.push(fieldParams)
+    }
+  })
+
+  //urlWithParameters = urlWithParameters.filter((param) => param)
+
+  console.log(urlWithParameters)
+
+  if (urlWithParameters?.length) {
+    let query = urlWithParameters.join(' AND ').trim()
+    return `search/tickets?query="${encodeURI(query)}"`
+  }
 
   return apiCallUrl
 }
 
-// Specialized dates filters parser.
-export function setDateFilter(dateObject: { to: String; from: String }, field: string) {
-  let url = []
+// Ticket field filters parser.
+export function setFieldFilter(ticketFieldFilter: Object) {
+  let ticketField = ticketFieldFilter?.name
+  let filterValue = ticketFieldFilter?.value ?? ''
+
+  switch (typeof filterValue) {
+    case 'string':
+      return `${ticketField}:'${filterValue}'`
+    default:
+      return `${ticketField}:${filterValue}`
+  }
+}
+
+// Date filters parser.
+export function setDateFilter(dateObject: { to: String; from: String; field: string }) {
+  let dateParams = []
 
   if (dateObject?.from) {
-    url.push(`${field}:>'${fdate(dateObject?.from, 'yyyy-MM-dd')}'`)
+    dateParams.push(`${dateObject?.field}:>'${fdate(dateObject?.from, 'yyyy-MM-dd')}'`)
   }
   if (dateObject?.to) {
-    url.push(`${field}:<'${fdate(dateObject?.to, 'yyyy-MM-dd')}'`)
+    dateParams.push(`${dateObject?.field}:<'${fdate(dateObject?.to, 'yyyy-MM-dd')}'`)
   }
 
-  return url.join()
+  return dateParams
 }

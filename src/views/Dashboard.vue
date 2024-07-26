@@ -2,18 +2,25 @@
   <div
     :key="reloadToken"
     class="flex flex-col transition-colors dashboard-body"
-    :class="[{ 'is-loading cursor-loading': isLoading }, { 'cursor-none': hiddenCursor }]"
+    :class="[
+      { 'is-loading': isLoading },
+      { 'cursor-loading': keepFetching },
+      { 'cursor-none': hiddenCursor }
+    ]"
     @mousemove="hideCursor"
   >
     <tool-bar
-      :is-fetching-tickets="keepFetching"
       :all-tickets="allTickets"
-      @stopLoading="stopLoading"
+      :is-fetching-tickets="keepFetching"
       @startLoading="startLoading"
-      @refresh="loadTickets"
+      @stopLoading="stopLoading"
       @reload="reloadToken++"
+      @refresh="loadTickets"
     />
-    <div class="overflow-hidden scrollbar-hide min-h-screen w-screen">
+    <div class="block md:hidden overflow-hidden scrollbar-hide min-h-screen w-screen">
+      <mobile-layout :key="resizeToken" :all-tickets="allTickets" />
+    </div>
+    <div class="hidden md:block overflow-hidden scrollbar-hide min-h-screen w-screen">
       <component :key="resizeToken" :is="dashboardLayout" :all-tickets="allTickets" />
     </div>
   </div>
@@ -24,17 +31,12 @@ import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import { filterParser } from '@/helpers/CommonMethods'
 import ToolBar from '@/components/DashboardToolbar.vue'
-import RowsLayout from '@/components/layouts/RowsLayout.vue'
-import ColumnsLayout from '@/components/layouts/ColumnsLayout.vue'
+import MobileLayout from '@/components/layouts/MobileLayout.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
 
-  components: {
-    ToolBar,
-    RowsLayout,
-    ColumnsLayout
-  },
+  components: { ToolBar, MobileLayout },
 
   data() {
     return {
@@ -61,8 +63,17 @@ export default defineComponent({
     dashboardLayout(): Object {
       return this.$configuration?.layoutComponent
     },
+    anyFiltersSet(): Boolean {
+      return (
+        this.storedFilters?.date_filters?.length > 0 ||
+        this.storedFilters?.field_filters?.length > 0
+      )
+    },
     storedFilters(): Array {
-      return this.$information?.storedFilters
+      return {
+        field_filters: this.$information?.storedFilters,
+        date_filters: this.$information?.storedDateFilters
+      }
     },
     statStartYear(): string {
       let year = import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970'
@@ -104,14 +115,9 @@ export default defineComponent({
   methods: {
     async loadTickets() {
       this.keepFetching = true
-      this.startLoading()
+      this.apiCallUrl = `tickets?updated_since=${this.startYear}&include=requester,stats&per_page=100`
 
-      if (!this.apiCallUrl) {
-        this.apiCallUrl =
-          'tickets?updated_since=' + this.startYear + '&include=requester,stats&per_page=100'
-      }
-
-      if (this.storedFilters?.length) {
+      if (this.anyFiltersSet) {
         this.apiCallUrl = filterParser(this.apiCallUrl, this.storedFilters)
       }
 
@@ -132,14 +138,12 @@ export default defineComponent({
     },
 
     async fetchTickets() {
-      await ApiCall.get(this.apiCallUrl + '&page=' + this.page).then((response) => {
+      await ApiCall.get(`${this.apiCallUrl}&page=${this.page}`).then((response) => {
         if (response) {
-          this.ticketsTemp[this.page] = Object.values(response.results ?? response)
+          this.ticketsTemp[this.page] = Object.values(response?.results ?? response)
         }
-        this.refershTicketsFromTemp()
-        this.keepFetching = this.isLoading = !true
-        return
-        /*if (!this.ticketsTemp[this.page]?.length) {
+
+        if (!this.ticketsTemp[this.page]?.length) {
           this.keepFetching = false
 
           if (this.ticketsTemp?.length) {
@@ -155,8 +159,8 @@ export default defineComponent({
           this.page++
           setTimeout(() => {
             this.fetchTickets()
-          }, 6000)
-        }        */
+          }, 7000)
+        }
       })
     },
 

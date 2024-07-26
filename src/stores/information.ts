@@ -167,6 +167,7 @@ export const information = defineStore('information', {
     saveConfigurationToStore() {
       const storeData = {
         filters: this.filters,
+        dateFilters: this.dateFilters,
         ticketFields: this.ticketFields,
         savedFilterSets: this.savedFilterSets,
         adminTicketFields: this.adminTicketFields
@@ -181,6 +182,7 @@ export const information = defineStore('information', {
         stateFromStore = JSON.parse(stateFromStore)
 
         this.filters = stateFromStore?.filters
+        this.dateFilters = stateFromStore?.dateFilters
         this.ticketFields = stateFromStore?.ticketFields
         this.savedFilterSets = stateFromStore?.savedFilterSets
         this.adminTicketFields = stateFromStore?.adminTicketFields
@@ -189,6 +191,7 @@ export const information = defineStore('information', {
 
     deleteStoredConfiguration() {
       this.filters = []
+      this.dateFilters = []
       this.ticketFields = []
       this.savedFilterSets = []
       this.adminTicketFields = []

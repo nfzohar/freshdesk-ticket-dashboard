@@ -48,10 +48,10 @@ export default class ApiCall {
           return response.data
         })
         .catch((e) => {
-          let errorData = e.toJSON()
+          const errorData = e.toJSON()
 
-          errorData?.number
-            ? toast.error('Data could not be loaded. Please try again.')
+          errorData.message
+            ? toast.error(errorData.message || 'Data could not be loaded. Please try again.')
             : toast.error(
                 'Connection timeout, too many requests. Please try again in a few minutes.',
                 { timeout: 60000 }
