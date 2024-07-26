@@ -46,7 +46,7 @@ export default defineComponent({
       apiCallUrl: '',
       startYear: '',
       timeoutId: null,
-      isLoading: false,
+      isLoading: true,
       keepFetching: true,
       hiddenCursor: false,
       refreshIntervalId: null,
@@ -122,7 +122,6 @@ export default defineComponent({
       }
 
       await this.fetchTicketsByPage()
-      this.setInformationTicketFields()
     },
 
     async fetchTicketsByPage() {
@@ -149,9 +148,9 @@ export default defineComponent({
           if (this.ticketsTemp?.length) {
             this.refershTicketsFromTemp()
           } else {
+            this.stopLoading()
             this.$toast.clear()
             this.$toast.error('No tickets to display found.')
-            this.stopLoading()
           }
         }
 
@@ -159,7 +158,7 @@ export default defineComponent({
           this.page++
           setTimeout(() => {
             this.fetchTickets()
-          }, 7000)
+          }, 6000)
         }
       })
     },
@@ -169,6 +168,8 @@ export default defineComponent({
       if (this.ticketsTemp?.length) {
         this.tickets = this.ticketsTemp
       }
+
+      this.setInformationTicketFields()
 
       setTimeout(async () => {
         this.ticketsTemp = []
@@ -183,7 +184,7 @@ export default defineComponent({
     },
 
     setInformationTicketFields() {
-      this.$information?.saveTicketFields(this.allTickets?.at(1))
+      this.$information?.saveTicketFields(this.allTickets[1])
     },
 
     hideCursor() {

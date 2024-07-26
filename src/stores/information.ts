@@ -7,10 +7,10 @@ export const information = defineStore('information', {
   state: () => ({
     filters: [],
     dateFilters: [],
+    ticketFields: [],
     savedFilterSets: [],
     adminTicketFields: [],
 
-    ticketFields: new Array(),
     isPrimaryColorDark: colorIsDark(import.meta.env.VITE_THEME_PRIMARY_COLOR),
     isSecondaryColorDark: colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR),
 
@@ -206,12 +206,9 @@ export const information = defineStore('information', {
         'stats',
         'status',
         'source',
-        'due_by',
         'subject',
         'fr_due_by',
         'requester',
-        'updated_at',
-        'created_at',
         'responder_id',
         'requester_id',
         'custom_fields'
@@ -221,11 +218,15 @@ export const information = defineStore('information', {
         return
       }
 
-      this.ticketFields = [Object.keys(ticket), Object.keys(ticket?.custom_fields)]
-        .flat()
-        .filter((field) => !ignoredFields.includes(field))
-        .sort()
+      this.ticketFields = new Array()
 
+      const ticketFields = Object.keys(ticket).filter((field) => !ignoredFields.includes(field))
+      const statsFields = Object.keys(ticket?.stats).map((stat) => `stats.${stat}`)
+      const customFields = Object.keys(ticket?.custom_fields).map(
+        (customField) => `custom_fields.${customField}`
+      )
+
+      this.ticketFields = [ticketFields, statsFields, customFields].flat().sort()
       this.saveConfigurationToStore()
     }
   }

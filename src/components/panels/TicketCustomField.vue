@@ -9,7 +9,7 @@
         <a-card
           v-for="(customField, c) in uniqueFields"
           :key="c"
-          :name="customField?.name"
+          :name="formatLabel(customField?.name)"
           :count="customField?.ticket_count"
         />
       </div>
@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import { uniq } from 'lodash'
+import { uniq, get } from 'lodash'
 import { defineComponent } from 'vue'
 import ACard from '@/components//general/ACard.vue'
 import APanel from '@/components/general/APanel.vue'
@@ -77,9 +77,6 @@ export default defineComponent({
     },
     customFieldIsDefined() {
       return this.customTitle && this.customField
-    },
-    customCustomField() {
-      return this.customField.substring(0, 3) == 'cf_'
     }
   },
 
@@ -97,10 +94,7 @@ export default defineComponent({
     generateCustomFieldStatistics() {
       this.uniqueFields = []
 
-      let customFields = this.customCustomField
-        ? this.tickets.map((ticket) => ticket.custom_fields[this.customField])
-        : this.tickets.map((ticket) => ticket[this.customField])
-
+      let customFields = this.tickets.map((ticket) => get(ticket, this.customField))
       let uniqueFieldsList = uniq(customFields)
 
       if (uniqueFieldsList.length == 1) {
@@ -131,6 +125,13 @@ export default defineComponent({
       }
 
       this.isLoading = false
+    },
+
+    formatLabel(label: Any) {
+      if ([true, false].includes(label)) {
+        return Boolean(label) ? 'Yes' : 'No'
+      }
+      return label
     }
   }
 })

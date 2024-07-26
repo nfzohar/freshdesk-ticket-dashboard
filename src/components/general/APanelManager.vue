@@ -41,7 +41,7 @@
           v-for="(field, f) in availableTicketFields"
           :key="f"
           :value="field"
-          v-text="field"
+          v-text="customFieldLabel(field)"
         />
       </select>
     </template>
@@ -121,6 +121,10 @@ export default defineComponent({
   methods: {
     label(label: String) {
       return label?.split(/(?=[A-Z])/)?.join(' ')
+    },
+
+    customFieldLabel(field) {
+      return field.includes('.') ? field.split('.')[1] : field
     },
 
     updateComponentData() {
