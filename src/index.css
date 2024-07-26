@@ -8,8 +8,20 @@ body {
   @apply bg-secondary-100;
 }
 
+.dashboard-body {
+  @apply w-screen h-screen overflow-hidden bg-secondary-500;
+}
+
+.panel-body {
+  @apply grid grid-cols-1 gap-5 items-center justify-between w-full bg-transparent p-2 rounded-md shadow-primary-600;
+}
+
 .primary-button {
   @apply border rounded-md bg-primary-500;
+}
+
+.actions-button {
+  @apply rounded-md text-center text-lg bg-primary-500 border border-primary-600 hover:bg-primary-600 shadow-primary-600 h-10 w-10;
 }
 
 .scrollbar-hide::-webkit-scrollbar {

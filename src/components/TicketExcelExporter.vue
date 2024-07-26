@@ -1,20 +1,17 @@
 <template>
-  <button
-    class="primary-button w-20 h-10 text-center bg-primary-500 hover:bg-primary-600 border-none py-2 shadow-md shadow-primary-600 hover:font-semibold"
-    v-text="'Export'"
-    :title="'Export tickets to excel'"
-    @click="exportTickets()"
-  />
+  <button class="actions-button" :title="'Export tickets to Excel'" @click="exportTickets()">
+    <i class="fa fa-file-excel" />
+  </button>
 </template>
 
 <script lang="ts">
-import { clone } from 'lodash'
+import { clone, get } from 'lodash'
 import format from 'date-fns/format'
 import { defineComponent } from 'vue'
 import writeXlsxFile from 'write-excel-file'
 
 export default defineComponent({
-  name: 'TIcketExcelExporter',
+  name: 'TicketExcelExporter',
 
   emits: ['startExport', 'finishExport'],
 
@@ -44,7 +41,7 @@ export default defineComponent({
 
   computed: {
     statuses(): any {
-      return Object.values(this.$dashboard?.statuses) ?? []
+      return Object.values(this.$information?.statuses) ?? []
     },
     customFields() {
       return Object.keys(this.allTickets[0].custom_fields)
@@ -168,7 +165,10 @@ export default defineComponent({
     },
 
     getStatusLabel(statusId: string) {
-      return this.statuses.filter((status) => status?.id == statusId)[0].label
+      return get(
+        this.statuses.filter((status) => status?.id == statusId),
+        '[0].label'
+      )
     },
 
     titleCase(word: String) {

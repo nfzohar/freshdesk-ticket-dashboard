@@ -1,13 +1,12 @@
 import axios from 'axios'
-import { Store } from '@/stores'
+import { auth } from '../stores/auth'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
 
 export default class ApiCall {
-  protected freshdeskDomainUrl = Store().domain
-
-  protected freshdeskApiKey = Store().api_key
+  protected freshdeskDomainUrl = auth().domain
+  protected freshdeskApiKey = auth().api_key
 
   get(path: string) {
     return this.performApiCall('get', path)
@@ -48,9 +47,15 @@ export default class ApiCall {
         .then((response) => {
           return response.data
         })
-        .catch((error) => {
-          console.error(error)
-          toast.error('Data could not be loaded. Please try again.')
+        .catch((e) => {
+          const errorData = e.toJSON()
+
+          errorData.message
+            ? toast.error(errorData.message || 'Data could not be loaded. Please try again.')
+            : toast.error(
+                'Connection timeout, too many requests. Please try again in a few minutes.',
+                { timeout: 60000 }
+              )
         })
 
       return results

@@ -1,228 +1,83 @@
 <template>
-  <ticket-details-modal
-    :key="String(detailsTicketId)"
-    :ticket-id="Number(detailsTicketId)"
-    @modalClosed="detailsTicketId = null"
-  />
-
-  <the-layout :key="reloadToken" :class="{ 'is-loading': isLoading }">
-    <div
-      class="flex flex-col md:flex-row items-center justify-between p-5 gap-y-5 mb-3 bg-transparent mr-"
-    >
-      <div class="w-full">
-        <h1 class="text-xl md:text-4xl font-semibold" v-text="appTitle" />
-        <h1 :key="updateToken" class="md:flex text-sm md:text-base items-center gap-x-2">
-          Ticket statistics from: <b v-text="oldestTicketDate" /> to
-          <b v-text="youngestTicketDate" />
-        </h1>
-      </div>
-
-      <div class="flex items-center gap-x-5 justify-between w-full md:w-auto">
-        <div class="flex items-center gap-x-5">
-          <button
-            class="primary-button text-center bg-primary-500 border-none hover:bg-primary-600 py-2 px-3 shadow-md shadow-primary-600 h-10 w-auto"
-            :title="'Refresh page'"
-            @click.stop="loadTickets()"
-          >
-            <reload-icon
-              :class="{ 'animate-spin': keepFetching }"
-              :pt-height="'20'"
-              :pt-width="'20'"
-            />
-          </button>
-
-          <ticket-excel-exporter
-            v-if="tickets?.length"
-            :all-tickets="allTickets"
-            @startExport="isLoading = true"
-            @finishExport="isLoading = false"
-          />
-          <ticket-filter-modal
-            @filtersApply="loadFilteredTickets()"
-            @filtersReset="apiCallUrl = ''"
-          />
-        </div>
-        <dashboard-settings
-          @refreshDashboard="loadTickets()"
-          @reloadDashboard="reloadToken++"
-          :a-ticket="allTickets[0]"
-        />
-      </div>
+  <div
+    :key="reloadToken"
+    class="flex flex-col transition-colors dashboard-body"
+    :class="[
+      { 'is-loading': isLoading },
+      { 'cursor-loading': keepFetching },
+      { 'cursor-none': hiddenCursor }
+    ]"
+    @mousemove="hideCursor"
+  >
+    <tool-bar
+      :all-tickets="allTickets"
+      :is-fetching-tickets="keepFetching"
+      @startLoading="startLoading"
+      @stopLoading="stopLoading"
+      @reload="reloadToken++"
+      @refresh="loadTickets"
+    />
+    <div class="block md:hidden overflow-hidden scrollbar-hide min-h-screen w-screen">
+      <mobile-layout :key="resizeToken" :all-tickets="allTickets" />
     </div>
-
-    <div class="flex flex-col gap-y-5 w-full h-screen overflow-y-scroll px-5 scrollbar-hide">
-      <ticket-count-section v-if="showTicketCounts" :tickets="allTickets" />
-
-      <div
-        v-if="showTicketTags || showTicketTypes || showTicketGroups"
-        class="grid gap-5 grid-cols-1"
-        :class="typesTagsGroupsClass"
-      >
-        <ticket-custom-field-section
-          v-if="showTicketTypes"
-          :tickets="allTickets"
-          :custom-field="'type'"
-          :show-undefined="true"
-          title="Ticket types"
-        />
-        <ticket-tags-section v-if="showTicketTags" :tickets="allTickets" />
-        <ticket-groups-section v-if="showTicketGroups" :tickets="allTickets" />
-      </div>
-
-      <!-- WORK IN PROGRESS
-        <div
-          v-if="layout.ticket_open_closed_graph?.show"
-          :key="updateToken"
-          class="grid grid-cols-1 items-center gap-5"
-        >
-          <ticket-statistics-open-closed-graph
-            :tickets="allTickets"
-            :oldest-ticket="oldestTicketDate"
-          />
-        </div> 
-      -->
-
-      <div
-        class="grid grid-cols-1 gap-5"
-        :class="{
-          'sm:grid-cols-2': showTopRequesters || showTopAgents || customFields?.length > 1
-        }"
-      >
-        <top-requesters-section v-if="showTopRequesters" :tickets="allTickets" />
-        <top-agents-section v-if="showTopAgents" :tickets="allTickets" />
-        <ticket-custom-field-section
-          v-for="(customField, cf) in customFields"
-          :key="cf"
-          :tickets="allTickets"
-          :title="customField?.title"
-          :custom-field="customField?.field"
-        />
-      </div>
-
-      <ticket-list-section
-        v-if="showTicketList && allTickets?.length"
-        :key="updateToken"
-        :tickets-list="allTickets"
-        @showTicketDetails="(value) => (detailsTicketId = value)"
-      />
+    <div class="hidden md:block overflow-hidden scrollbar-hide min-h-screen w-screen">
+      <component :key="resizeToken" :is="dashboardLayout" :all-tickets="allTickets" />
     </div>
-  </the-layout>
+  </div>
 </template>
 
 <script lang="ts">
-import { format } from 'date-fns'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
-import TheLayout from '@/views/TheLayout.vue'
-import ReloadIcon from '@/components/icons/ReloadIcon.vue'
-import DashboardSettings from '@/components/DashboardSettings.vue'
-import TicketFilterModal from '@/components/TicketFilterModal.vue'
-import TicketExcelExporter from '@/components/TicketExcelExporter.vue'
-import TopAgentsSection from '@/components/sections/TopAgentsSection.vue'
-import TicketTagsSection from '@/components/sections/TicketTagsSection.vue'
-import TicketListSection from '@/components/sections/TicketListSection.vue'
-import TicketCountSection from '@/components/sections/TicketCountSection.vue'
-import TicketGroupsSection from '@/components/sections/TicketGroupsSection.vue'
-import TopRequestersSection from '@/components/sections/TopRequestersSection.vue'
-import TicketDetailsModal from '@/components/subcomponents/TicketDetailsModal.vue'
-import TicketCustomFieldSection from '@/components/sections/TicketCustomFieldSection.vue'
-// import TicketStatisticsOpenClosedGraph from '@/components/sections/TicketStatisticsOpenClosedGraph.vue'
+import { filterParser } from '@/helpers/CommonMethods'
+import ToolBar from '@/components/DashboardToolbar.vue'
+import MobileLayout from '@/components/layouts/MobileLayout.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
 
-  components: {
-    TheLayout,
-    ReloadIcon,
-    TopAgentsSection,
-    TicketTagsSection,
-    TicketListSection,
-    TicketFilterModal,
-    DashboardSettings,
-    TicketCountSection,
-    TicketDetailsModal,
-    TicketGroupsSection,
-    TicketExcelExporter,
-    TopRequestersSection,
-    TicketCustomFieldSection
-    // TicketStatisticsOpenClosedGraph
-  },
+  components: { ToolBar, MobileLayout },
 
   data() {
     return {
       page: 1,
-      filters: [],
       tickets: [],
       ticketsTemp: [],
       apiCallUrl: '',
+      startYear: '',
+      timeoutId: null,
+      isLoading: false,
+      keepFetching: true,
+      hiddenCursor: false,
+      refreshIntervalId: null,
       updateToken: 0,
       reloadToken: 0,
-      startYear: null,
-      isLoading: true,
-      keepFetching: true,
-      detailsTicketId: null,
-      oldestTicketDate: new Date().toDateString(),
-      youngestTicketDate: new Date().toDateString()
+      resizeToken: 0
     }
   },
 
   computed: {
-    showTicketTags() {
-      return this.layout.tags?.show
-    },
-    showTicketTypes() {
-      return this.layout.types?.show
-    },
-    showTicketGroups() {
-      return this.layout.groups?.show
-    },
-    showTopAgents() {
-      return this.layout.top_agents?.show
-    },
-    showTicketList() {
-      return this.layout.ticket_list?.show
-    },
-    showTicketCounts() {
-      return this.layout.ticket_counts?.show
-    },
-    showTopRequesters() {
-      return this.layout.top_requesters?.show
-    },
     allTickets(): Object {
-      return this.tickets?.flat()
+      return this.tickets?.flat() ?? []
     },
-    customFields(): Object {
-      return this.$dashboard?.storedCustomFields
+    dashboardLayout(): Object {
+      return this.$configuration?.layoutComponent
     },
-    layout(): Object {
-      return this.$dashboard?.dashboardLayout ?? []
+    anyFiltersSet(): Boolean {
+      return (
+        this.storedFilters?.date_filters?.length > 0 ||
+        this.storedFilters?.field_filters?.length > 0
+      )
     },
-    appTitle(): String {
-      return import.meta.env.VITE_APP_TITLE ?? 'Freshdesk Ticket Dashboard'
-    },
-    typesTagsGroupsVisible(): Number {
-      return [this.showTicketTags, this.showTicketTypes, this.showTicketGroups].filter((t) => t)
-        .length
-    },
-    typesTagsGroupsClass(): String {
-      switch (this.typesTagsGroupsVisible) {
-        case 2: {
-          return 'sm:grid-cols-2'
-        }
-        case 3: {
-          return 'sm:grid-cols-2 md:grid-cols-3'
-        }
-        default: {
-          return 'flex'
-        }
+    storedFilters(): Array {
+      return {
+        field_filters: this.$information?.storedFilters,
+        date_filters: this.$information?.storedDateFilters
       }
     },
-    customFieldsClass(): String {
-      return this.customFields?.length == 2
-        ? 'sm:grid-cols-2'
-        : this.customFields?.length == 3
-        ? 'sm:grid-cols-2 md:grid-cols-3'
-        : ''
+    statStartYear(): string {
+      let year = import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970'
+      return new Date(year).toISOString()
     }
   },
 
@@ -230,38 +85,44 @@ export default defineComponent({
     'allTickets.length'() {
       this.updateToken++
     },
-    apiCallUrl() {
-      this.loadTickets()
+    '$configuration.theAutoRefresh.active'() {
+      let autorefresh = this.$configuration?.theAutoRefresh
+      let intervalLength = 1000 * 60 * autorefresh?.perMinutes
+
+      if (!autorefresh?.active || autorefresh?.perMinutes <= 0) {
+        clearInterval(this.refreshIntervalId)
+        return
+      }
+
+      this.refreshIntervalId = setInterval(() => {
+        this.loadTickets()
+      }, intervalLength)
     }
   },
 
   created() {
-    this.startYear = new Date(import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '2023').toISOString()
+    if (!this.$auth.authenticated) {
+      this.$router.push('/')
+    }
+    this.windowResizeListener()
   },
 
   async mounted() {
-    if (!this.$store.authenticated) {
-      this.$router.push('/')
-    }
-
+    this.startYear = this.statStartYear
     await this.loadTickets()
   },
 
   methods: {
     async loadTickets() {
       this.keepFetching = true
+      this.apiCallUrl = `tickets?updated_since=${this.startYear}&include=requester,stats&per_page=100`
 
-      // Set default api call if not set
-      if (!this.apiCallUrl) {
-        this.apiCallUrl =
-          'tickets?updated_since=' + this.startYear + '&include=requester,stats&per_page=100'
+      if (this.anyFiltersSet) {
+        this.apiCallUrl = filterParser(this.apiCallUrl, this.storedFilters)
       }
 
       await this.fetchTicketsByPage()
-    },
-
-    loadFilteredTickets() {
-      this.apiCallUrl = 'search/tickets?query="' + this.$store.filters + '"'
+      this.setInformationTicketFields()
     },
 
     async fetchTicketsByPage() {
@@ -277,9 +138,9 @@ export default defineComponent({
     },
 
     async fetchTickets() {
-      await ApiCall.get(this.apiCallUrl + '&page=' + this.page).then((response) => {
+      await ApiCall.get(`${this.apiCallUrl}&page=${this.page}`).then((response) => {
         if (response) {
-          this.ticketsTemp[this.page] = Object.values(response.results ?? response)
+          this.ticketsTemp[this.page] = Object.values(response?.results ?? response)
         }
 
         if (!this.ticketsTemp[this.page]?.length) {
@@ -287,7 +148,6 @@ export default defineComponent({
 
           if (this.ticketsTemp?.length) {
             this.refershTicketsFromTemp()
-            this.findFirstLastTicketDate()
           } else {
             this.$toast.clear()
             this.$toast.error('No tickets to display found.')
@@ -299,14 +159,16 @@ export default defineComponent({
           this.page++
           setTimeout(() => {
             this.fetchTickets()
-          }, 6000)
+          }, 7000)
         }
       })
     },
 
     async refershTicketsFromTemp() {
       this.startLoading()
-      this.tickets = this.ticketsTemp
+      if (this.ticketsTemp?.length) {
+        this.tickets = this.ticketsTemp
+      }
 
       setTimeout(async () => {
         this.ticketsTemp = []
@@ -314,30 +176,22 @@ export default defineComponent({
       }, 3000)
     },
 
-    epochDateForm(date: Date) {
-      return (date.getTime() - date.getMilliseconds()) / 1000
+    windowResizeListener() {
+      window.addEventListener('resize', () => {
+        this.resizeToken++
+      })
     },
 
-    findFirstLastTicketDate() {
-      let ticketCreationDates = this.allTickets.map(
-        (ticket: { created_at: String }) => new Date(ticket.created_at)
-      )
+    setInformationTicketFields() {
+      this.$information?.saveTicketFields(this.allTickets?.at(1))
+    },
 
-      ticketCreationDates = ticketCreationDates.filter((date) => date)
-
-      ticketCreationDates = ticketCreationDates.sort(
-        (date1: Date, date2: Date) => this.epochDateForm(date1) - this.epochDateForm(date2)
-      )
-
-      let dateFromArray = new Date(ticketCreationDates[0] ?? null)
-      let dateToArray = new Date(ticketCreationDates[ticketCreationDates.length - 1] ?? null)
-
-      if (dateFromArray) {
-        this.oldestTicketDate = format(dateFromArray, "eeee',' do MMMM y")
-      }
-      if (dateToArray) {
-        this.youngestTicketDate = format(dateToArray, "eeee',' do MMMM y")
-      }
+    hideCursor() {
+      this.hiddenCursor = false
+      clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(() => {
+        this.hiddenCursor = true
+      }, 10000)
     },
 
     startLoading() {

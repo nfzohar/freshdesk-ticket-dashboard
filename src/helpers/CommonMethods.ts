@@ -1,12 +1,16 @@
-import { Store } from '@/stores'
+import { sortBy, get } from 'lodash'
+import { auth } from '@/stores/auth'
+import format from 'date-fns/format'
 import { useToast } from 'vue-toastification'
+import { configuration } from '@/stores/configuration'
 
 const toast = useToast()
 
+// Main authentication check method.
 export function checkAuthCredentials(username: String, password: String) {
   let authenticationSuccess = false
 
-  if (Store().$state.auth) {
+  if (auth().authenticated) {
     return
   }
 
@@ -28,7 +32,7 @@ export function checkAuthCredentials(username: String, password: String) {
 
   authenticationSuccess = username == envUsername && password == envPassword
 
-  Store().canAuthenticate(authenticationSuccess)
+  auth().setAuthState(authenticationSuccess)
 
   if (!authenticationSuccess) {
     let theError = 'Incorrect credentials. Please, try again.'
@@ -73,7 +77,71 @@ export function colorIsDark(color: String) {
 
     const hsp: any = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
 
-    return !(hsp > 127.5)
+    const darkColorThreshold = 155
+    // return !(hsp > 127.5)
+
+    return !(hsp > darkColorThreshold)
+  }
+}
+
+// Read @/components/panels folder and return a list of present components.
+export function getAvailablePanelComponents() {
+  const listOfPanelComponents = new Array()
+
+  Object.entries(import.meta.glob('@/components/panels/*')).map(([path]) => {
+    const parts = path.split('/')
+    const filename = parts[parts.length - 1]
+    const componentName = filename.slice(0, -4)
+
+    listOfPanelComponents.push(componentName)
+  })
+
+  return listOfPanelComponents
+}
+
+// Update a panel's instance in store state.
+export async function updatePanelInState(
+  rows: Array,
+  newValue: String,
+  panelId: String,
+  property: String
+) {
+  let tempRows = rows
+
+  tempRows.forEach((row) => {
+    row.forEach((panel) => {
+      if (panel.id == panelId) {
+        panel[property] = newValue
+      }
+    })
+  })
+
+  await configuration().updateLayoutGroups(rows)
+  return rows
+}
+
+// Generate a name, ticket_count dataset for graph display.
+export function generateGraphDataset(
+  valueList: Object,
+  sortProp = 'name-asc',
+  labelField = 'name',
+  valueField = 'ticket_count'
+) {
+  let sortByField = 'name'
+
+  if (sortProp?.includes('ticket_count')) {
+    sortByField = 'ticket_count'
+  }
+
+  let values = sortBy(Object.values(valueList), sortByField)
+
+  if (sortProp.includes('desc')) {
+    values = values.reverse()
+  }
+
+  return {
+    labels: values?.map((field) => get(field, labelField)),
+    values: values?.map((field) => get(field, valueField))
   }
 }
 
@@ -85,4 +153,84 @@ export function isEven(number: number) {
 // Check, if the number is odd.
 export function isOdd(number: number) {
   return number % 2 !== 0
+}
+
+// Use date-fns's format function on a date string and provide custom format.
+export function fdate(date: string, dateFormat: string = 'yyyy. M. D') {
+  return date ? format(new Date(date), dateFormat) : '-'
+}
+
+// Add an event listener for keystroke.
+export function listenForKey(eventKey = '', performFunction: Function) {
+  document.addEventListener('keydown', (event) => {
+    if (event?.key == eventKey) {
+      event.preventDefault()
+      performFunction()
+    }
+  })
+}
+
+// Fetch choices of a ticekt field with given label.
+export function ticketFieldOptions(ticketFieldArray: Array, label: String) {
+  const index = ticketFieldArray.findIndex((field) => field?.label?.toLocaleLowerCase() == label)
+  return get(ticketFieldArray, `[${index}].choices`) ?? []
+}
+
+// Take filters from information store and parse them into the api call url.
+export function filterParser(apiCallUrl: String, filtersList: Object) {
+  let urlWithParameters = new Array()
+
+  const dateFilters = Object.values(filtersList?.date_filters)
+
+  dateFilters.forEach((dateObject) => {
+    const dateParams = setDateFilter(dateObject)
+    urlWithParameters = urlWithParameters.concat(dateParams)
+  })
+
+  const fieldFilters = filtersList?.field_filters
+
+  fieldFilters?.forEach((fieldFilter) => {
+    if (fieldFilter['value'] != '') {
+      let fieldParams = setFieldFilter(fieldFilter)
+      urlWithParameters.push(fieldParams)
+    }
+  })
+
+  //urlWithParameters = urlWithParameters.filter((param) => param)
+
+  console.log(urlWithParameters)
+
+  if (urlWithParameters?.length) {
+    let query = urlWithParameters.join(' AND ').trim()
+    return `search/tickets?query="${encodeURI(query)}"`
+  }
+
+  return apiCallUrl
+}
+
+// Ticket field filters parser.
+export function setFieldFilter(ticketFieldFilter: Object) {
+  let ticketField = ticketFieldFilter?.name
+  let filterValue = ticketFieldFilter?.value ?? ''
+
+  switch (typeof filterValue) {
+    case 'string':
+      return `${ticketField}:'${filterValue}'`
+    default:
+      return `${ticketField}:${filterValue}`
+  }
+}
+
+// Date filters parser.
+export function setDateFilter(dateObject: { to: String; from: String; field: string }) {
+  let dateParams = []
+
+  if (dateObject?.from) {
+    dateParams.push(`${dateObject?.field}:>'${fdate(dateObject?.from, 'yyyy-MM-dd')}'`)
+  }
+  if (dateObject?.to) {
+    dateParams.push(`${dateObject?.field}:<'${fdate(dateObject?.to, 'yyyy-MM-dd')}'`)
+  }
+
+  return dateParams
 }

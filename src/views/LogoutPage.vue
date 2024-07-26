@@ -1,22 +1,15 @@
 <template>
-  <div class="w-screen h-screen overflow-hidden bg-secondary-500">
-    <div class="m-auto w-min align-middle mt-44 animate-spin">
-      <logo-icon pt-width="300" pt-height="300" class="shadow-lg rounded-full" />
-    </div>
-  </div>
+  <div class="dashboard-body is-loading" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import LogoIcon from '@/components/icons/LogoIcon.vue'
 
 export default defineComponent({
   name: 'LogoutPage',
 
-  components: { LogoIcon },
-
   async created() {
-    this.$store.canAuthenticate(false)
+    this.$auth.logout()
 
     setTimeout(() => {
       this.$router.push('/login')

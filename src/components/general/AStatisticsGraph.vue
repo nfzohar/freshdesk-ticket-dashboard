@@ -1,0 +1,172 @@
+<template>
+  <component
+    :key="type"
+    :is="chartType"
+    :data="chartData"
+    :class="customClass"
+    :options="chartOptions"
+  >
+    <span class="block opacity-50 px-5" v-text="'Graph could not be loaded.'" />
+  </component>
+</template>
+
+<script lang="ts">
+import {
+  Chart,
+  Title,
+  Legend,
+  Tooltip,
+  ArcElement,
+  BarElement,
+  LineElement,
+  LinearScale,
+  PointElement,
+  CategoryScale,
+  RadialLinearScale
+} from 'chart.js'
+import {
+  Bar as BarChart,
+  Line as LineChart,
+  Pie as PieChart,
+  Doughnut as DoughnutChart,
+  PolarArea as PolarAreaChart
+} from 'vue-chartjs'
+import { defineComponent } from 'vue'
+
+Chart.register(
+  Title,
+  Legend,
+  Tooltip,
+  ArcElement,
+  BarElement,
+  LineElement,
+  LinearScale,
+  PointElement,
+  CategoryScale,
+  RadialLinearScale
+)
+
+export default defineComponent({
+  name: 'TicketStatisticsGraph',
+
+  components: { BarChart, LineChart, PieChart, DoughnutChart, PolarAreaChart },
+
+  props: {
+    datasetTitle: {
+      type: String,
+      required: false,
+      default: null
+    },
+    type: {
+      type: String,
+      required: false,
+      default: 'v-bar'
+    },
+    datasets: {
+      type: [Object, Array],
+      required: false,
+      default: () => []
+    },
+    datasetLabels: {
+      type: [Object, Array],
+      required: false,
+      default: () => []
+    },
+    displayGraphLegend: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    customClass: {
+      type: String,
+      required: false,
+      default: 'w-full m-auto p-2 border-primary-700 border bg-secondary-500 rounded-md'
+    },
+    datasetsThroughProp: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
+
+  computed: {
+    chartData() {
+      let chartsData = {
+        labels: this.datasetLabels,
+        datasets: this.datasets
+      }
+
+      if (!this.datasetsThroughProp) {
+        chartsData['datasets'] = [
+          {
+            label: this.datasetTitle ?? 'Info',
+            backgroundColor: this.datasetBackground,
+            borderColor: this.graphBorderColor,
+            data: this.datasets
+          }
+        ]
+      }
+      return chartsData
+    },
+    chartOptions() {
+      return {
+        responsive: true,
+        maintainAspectRatio: true,
+        tension: this.graphTension,
+        indexAxis: this.graphIndexAxis,
+        plugins: {
+          legend: {
+            display: this.showGraphLegend,
+            position: this.legendPosition,
+            title: 'Tickets'
+          }
+        }
+      }
+    },
+    legendPosition(): String {
+      if (['bezier-line', 'line'].includes(this.type)) return 'bottom'
+      if (['pie', 'doughnut', 'polar-area'].includes(this.type)) return 'left'
+      return 'top'
+    },
+    graphIndexAxis(): String {
+      return this.type == 'h-bar' ? 'y' : 'x'
+    },
+    graphTension() {
+      return this.type == 'bezier-line' ? 0.5 : 0
+    },
+    showGraphLegend(): Boolean {
+      return (
+        this.displayGraphLegend ||
+        ['bezier-line', 'line', 'pie', 'doughnut', 'polar-area'].includes(this.type)
+      )
+    },
+    graphBorderColor(): Any {
+      let lineColor = this.$information?.isSecondaryColorDark ? '#ffffff' : '#000000'
+
+      return ['line', 'bezier-line'].includes(this.type) ? lineColor : 'transparent'
+    },
+    chartType(): String {
+      if (this.type == 'pie') return 'PieChart'
+      if (this.type == 'v-bar') return 'BarChart'
+      if (this.type == 'h-bar') return 'BarChart'
+      if (this.type == 'line') return 'LineChart'
+      if (this.type == 'bezier-line') return 'LineChart'
+      if (this.type == 'doughnut') return 'DoughnutChart'
+      if (this.type == 'polar-area') return 'PolarAreaChart'
+      return 'BarChart'
+    },
+    datasetBackground() {
+      let colors = []
+
+      for (let i = 0; i < this.datasets?.length; i++) {
+        let randomNumber = Math.random()
+        randomNumber *= randomNumber
+
+        let newColor = Math.floor(randomNumber * 0xfffff * 100000)
+        colors[i] = `#${newColor.toString(16).slice(0, 3)}`
+      }
+      return colors
+    }
+  }
+})
+</script>
