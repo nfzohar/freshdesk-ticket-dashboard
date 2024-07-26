@@ -1,19 +1,18 @@
 <template>
   <div
-    class="w-full h-20 mb-5 px-1 border-b-2 border-primary-500 shadow-primary-500 transition-all"
+    class="w-full h-32 md:h-20 mb-5 px-1 border-b-2 border-primary-500 shadow-primary-500 transition-all"
     :class="[
       primaryColorText,
       textOnSecondaryColor,
-      { 'sm:-mt-24 ': autoHide && !modalsOpen && !toolbarShow }
+      { '-mt-32 md:-mt-24 ': autoHide && !modalsOpen && !toolbarShow }
     ]"
     @mouseleave="hideTopBar"
   >
-    <div class="flex flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md">
+    <div
+      class="flex flex-col md:flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md"
+    >
       <div :class="textOnSecondaryColor">
-        <h1
-          class="text-base sm:text-xl md:text-2xl font-bold w-max text-center"
-          v-text="appTitle"
-        />
+        <h1 class="text-xl md:text-2xl font-bold w-full md:w-max text-center" v-text="appTitle" />
         <span
           class="text-xs sm:text-sm w-1/2 sm:w-max md:flex md:text-sm font-semibold items-center text-center gap-x-2"
           v-text="`Tickets from ${firstTicketDate} to ${lastTicketDate}`"
