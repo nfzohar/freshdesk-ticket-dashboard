@@ -190,9 +190,9 @@ export default defineComponent({
           function: () => this.logout()
         },
         {
-          name: 'Clear data',
+          name: 'Clear all info',
           title: 'Clear all stored information.',
-          icon: 'fa fa-sign-out-alt',
+          icon: 'fa fa-broom',
           function: () => this.clearSavedInfo()
         },
         {
