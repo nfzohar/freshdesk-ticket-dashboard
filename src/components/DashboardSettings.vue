@@ -185,9 +185,15 @@ export default defineComponent({
       actions: [
         {
           name: 'Logout',
-          title: 'Clear all stored information and logout.',
+          title: 'Logout and delete your API credentials.',
           icon: 'fa fa-sign-out-alt',
           function: () => this.logout()
+        },
+        {
+          name: 'Clear data',
+          title: 'Clear all stored information.',
+          icon: 'fa fa-sign-out-alt',
+          function: () => this.clearSavedInfo()
         },
         {
           name: 'Configuration wizard',
@@ -305,9 +311,14 @@ export default defineComponent({
         : (this.visibleStatusCounters = this.visibleStatusCounters.filter((s) => s != status))
     },
 
-    logout() {
+    clearSavedInfo() {
       this.$configuration.deleteStoredConfiguration()
       this.$information.deleteStoredConfiguration()
+      this.$router.push('/logout')
+    },
+
+    logout() {
+      this.$configuration.deleteStoredConfiguration()
       this.$router.push('/logout')
     }
   }
