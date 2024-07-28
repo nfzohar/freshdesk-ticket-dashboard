@@ -130,6 +130,7 @@ export default defineComponent({
 
       try {
         await this.fetchTickets()
+        // await this.fetchTicketsDev()
       } catch (error) {
         this.keepFetching = false
         this.stopLoading()
@@ -159,6 +160,24 @@ export default defineComponent({
           setTimeout(() => {
             this.fetchTickets()
           }, 6000)
+        }
+      })
+    },
+
+    async fetchTicketsDev() {
+      await ApiCall.get(`${this.apiCallUrl}&page=${this.page}`).then((response) => {
+        if (response) {
+          this.ticketsTemp[this.page] = Object.values(response?.results ?? response)
+        }
+
+        this.keepFetching = false
+
+        if (this.ticketsTemp?.length) {
+          this.refershTicketsFromTemp()
+        } else {
+          this.stopLoading()
+          this.$toast.clear()
+          this.$toast.error('No tickets to display found.')
         }
       })
     },
