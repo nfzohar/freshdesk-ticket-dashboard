@@ -59,9 +59,9 @@ export const auth = defineStore('auth', {
     },
 
     logout() {
-      this.auth = false
-      this.domainURL = ''
-      this.apiKey = ''
+      this.setAuthState(false)
+      this.setNewDomainUrl('')
+      this.setNewApiKey('')
     }
   }
 })

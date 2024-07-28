@@ -8,7 +8,7 @@
 
     <template #content>
       <div
-        class="m-auto w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 scrollbar-hide border rounded-md h-full md:h-auto p-5 overflow-y-scroll"
+        class="m-auto w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 h-80vh md:h-auto overflow-y-scroll scrollbar-hide border rounded-md p-5"
         :class="`text-${secondaryColorDark ? 'white' : 'black'}`"
       >
         <div class="grid grid-cols-1 md:grid-cols-2">
@@ -128,27 +128,18 @@
           </a-setting-section>
         </div>
 
-        <div class="flex flex-col xl:flex-row justify-between md:items-center gap-4 px-5">
-          <div class="flex gap-3">
-            <button
-              v-for="(action, a) in actions"
-              :key="a"
-              :title="action.title"
-              class="flex items-center gap-x-1 primary-button settings-button text-center"
-              :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-              @click.stop="action.function"
-            >
-              <i :class="action.icon" />
-              <span v-text="action.name" />
-            </button>
-          </div>
-
+        <div class="grid grid-cols-3 2xl:grid-cols-6 justify-between md:items-center gap-4 px-5">
           <button
-            class="primary-button settings-button text-center"
+            v-for="(action, a) in actions"
+            :key="a"
+            :title="action.title"
+            class="flex items-center gap-x-1 h-full primary-button settings-button text-center hover:font-semibold"
             :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-            @click="open = false"
-            v-text="'Save'"
-          />
+            @click.stop="action.function"
+          >
+            <i :class="action.icon" />
+            <span v-text="action.name" />
+          </button>
         </div>
       </div>
     </template>
@@ -212,6 +203,12 @@ export default defineComponent({
           title: 'Manually reload entire dashboard.',
           icon: 'fa fa-repeat',
           function: () => this.$emit('reloadDashboard')
+        },
+        {
+          name: 'Save',
+          title: 'Save properties and close the form.',
+          icon: 'fa fa-repeat',
+          function: () => (this.open = false)
         }
       ]
     }
@@ -318,7 +315,7 @@ export default defineComponent({
     },
 
     logout() {
-      this.$configuration.deleteStoredConfiguration()
+      this.$auth.logout()
       this.$router.push('/logout')
     }
   }

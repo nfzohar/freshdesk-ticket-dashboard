@@ -180,7 +180,7 @@ export function ticketFieldOptions(ticketFieldArray: Array, label: String) {
 export function filterParser(apiCallUrl: String, filtersList: Object) {
   let urlWithParameters = new Array()
 
-  const dateFilters = Object.values(filtersList?.date_filters)
+  const dateFilters = Object.values(filtersList?.date_filters ?? [])
 
   dateFilters.forEach((dateObject) => {
     const dateParams = setDateFilter(dateObject)
@@ -196,12 +196,10 @@ export function filterParser(apiCallUrl: String, filtersList: Object) {
     }
   })
 
-  //urlWithParameters = urlWithParameters.filter((param) => param)
-
-  console.log(urlWithParameters)
+  urlWithParameters = urlWithParameters.filter((param) => param)
 
   if (urlWithParameters?.length) {
-    let query = urlWithParameters.join(' AND ').trim()
+    const query = urlWithParameters.join(' AND ').trim()
     return `search/tickets?query="${encodeURI(query)}"`
   }
 
