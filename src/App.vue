@@ -34,7 +34,7 @@ export default defineComponent({
       document.title = import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
     },
     setFavicon() {
-      let faviconUrl = import.meta.env.VITE_FAVICON_URL || '/logo_icon.png'
+      let faviconUrl = import.meta.env.VITE_FAVICON_URL || '/tab_icon.png'
       let headTitle = document.querySelector('head')
       let setFavicon = document.createElement('link')
 
