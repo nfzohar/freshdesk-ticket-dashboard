@@ -1,11 +1,13 @@
 <template>
-  <div class="bg-secondary-500 shadow-primary-500 border-primary-500 border rounded-full p-1">
+  <div
+    class="bg-secondary-500 shadow-primary-500 border-primary-500 border m-auto h-max w-max rounded-full p-1"
+  >
     <img
       v-if="customLoginImage"
-      :width="450"
-      :height="450"
+      :width="ptWidth"
+      :height="ptHeight"
       :src="customLoginImage"
-      class="m-auto rounded-full"
+      class="m-auto rounded-full md:w-96 md:h-auto"
     />
     <svg
       v-else
