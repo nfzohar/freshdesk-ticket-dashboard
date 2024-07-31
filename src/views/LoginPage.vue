@@ -3,14 +3,7 @@
     <div
       class="flex flex-col md:flex-row m-auto text-center w-9/12 sm:w-7/12 md:w-9/12 xl:w-7/12 2xl:w-5/12 md:gap-x-8 shadow-lg rounded-lg p-5 bg-none border border-primary-500"
     >
-      <img
-        v-if="customLoginImage"
-        width="200"
-        height="200"
-        class="m-auto rounded-full border p-1"
-        :src="customLoginImage"
-      />
-      <logo-icon v-else pt-width="190" pt-height="190" class="m-auto shadow-lg rounded-full" />
+      <logo-icon :pt-width="200" :pt-height="200" />
 
       <div class="flex flex-col w-full">
         <p
@@ -113,9 +106,6 @@ export default defineComponent({
         import.meta.env.VITE_ACCESS_CONTROL_USERNAME != '' &&
         import.meta.env.VITE_ACCESS_CONTROL_PASSWORD != ''
       )
-    },
-    customLoginImage(): String {
-      return import.meta.env.VITE_LOGIN_ICON_URL
     },
     appTitle(): String {
       return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
