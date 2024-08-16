@@ -220,9 +220,11 @@ export const information = defineStore('information', {
 
       this.ticketFields = new Array()
 
-      const ticketFields = Object.keys(ticket).filter((field) => !ignoredFields.includes(field))
-      const statsFields = Object.keys(ticket?.stats).map((stat) => `stats.${stat}`)
-      const customFields = Object.keys(ticket?.custom_fields).map(
+      const ticketFields = Object.keys(ticket ?? []).filter(
+        (field) => !ignoredFields.includes(field)
+      )
+      const statsFields = Object.keys(ticket?.stats ?? []).map((stat) => `stats.${stat}`)
+      const customFields = Object.keys(ticket?.custom_fields ?? []).map(
         (customField) => `custom_fields.${customField}`
       )
 

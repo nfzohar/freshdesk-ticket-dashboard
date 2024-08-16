@@ -5,7 +5,7 @@
   >
     <div class="flex flex-col w-full h-full">
       <span class="font-bold" v-text="name ?? 'N/A'" />
-      <span v-if="subtitle" class="text-sm mb-2" v-text="subtitle" />
+      <span v-if="subtitle" class="text-xs mb-2" v-text="subtitle" />
       <span
         class="text-sm"
         :class="{ 'font-semibold': subtitle }"
