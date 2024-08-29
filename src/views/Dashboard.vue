@@ -109,6 +109,8 @@ export default defineComponent({
 
   async mounted() {
     this.startYear = this.statStartYear
+    this.startRefreshInterval()
+
     await this.loadTickets()
   },
 
@@ -212,6 +214,13 @@ export default defineComponent({
       this.timeoutId = setTimeout(() => {
         this.hiddenCursor = true
       }, 10000)
+    },
+
+    startRefreshInterval() {
+      let initialState = this.$configuration.theAutoRefresh.active
+
+      this.$configuration.theAutoRefresh.active = !initialState
+      this.$configuration.theAutoRefresh.active = initialState
     },
 
     startLoading() {
