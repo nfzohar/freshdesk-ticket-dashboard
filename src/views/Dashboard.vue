@@ -69,6 +69,9 @@ export default defineComponent({
         this.storedFilters?.field_filters?.length > 0
       )
     },
+    autoRefresh(): Boolean {
+      return this.$configuration.theAutoRefresh
+    },
     storedFilters(): Array {
       return {
         field_filters: this.$information?.storedFilters,
@@ -85,14 +88,13 @@ export default defineComponent({
     'allTickets.length'() {
       this.updateToken++
     },
-    '$configuration.theAutoRefresh.active'() {
-      let autorefresh = this.$configuration?.theAutoRefresh
-      let intervalLength = 1000 * 60 * autorefresh?.perMinutes
-
-      if (!autorefresh?.active || autorefresh?.perMinutes <= 0) {
+    'autoRefresh.active'() {
+      if (!this.autoRefresh?.active || this.autoRefresh?.perMinutes <= 0) {
         clearInterval(this.refreshIntervalId)
         return
       }
+
+      let intervalLength = 1000 * 60 * this.autoRefresh?.perMinutes
 
       this.refreshIntervalId = setInterval(() => {
         this.loadTickets()
@@ -109,7 +111,10 @@ export default defineComponent({
 
   async mounted() {
     this.startYear = this.statStartYear
-    this.startRefreshInterval()
+
+    let refresh = this.$configuration.theAutoRefresh.active
+    this.$configuration.theAutoRefresh.active = !refresh
+    this.$configuration.theAutoRefresh.active = refresh
 
     await this.loadTickets()
   },
@@ -214,13 +219,6 @@ export default defineComponent({
       this.timeoutId = setTimeout(() => {
         this.hiddenCursor = true
       }, 10000)
-    },
-
-    startRefreshInterval() {
-      let initialState = this.$configuration.theAutoRefresh.active
-
-      this.$configuration.theAutoRefresh.active = !initialState
-      this.$configuration.theAutoRefresh.active = initialState
     },
 
     startLoading() {
