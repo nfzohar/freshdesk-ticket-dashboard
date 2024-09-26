@@ -89,16 +89,7 @@ export default defineComponent({
       this.updateToken++
     },
     'autoRefresh.active'() {
-      if (!this.autoRefresh?.active || this.autoRefresh?.perMinutes <= 0) {
-        clearInterval(this.refreshIntervalId)
-        return
-      }
-
-      let intervalLength = 1000 * 60 * this.autoRefresh?.perMinutes
-
-      this.refreshIntervalId = setInterval(() => {
-        this.loadTickets()
-      }, intervalLength)
+      this.initiateRefreshInterval()
     }
   },
 
@@ -112,11 +103,8 @@ export default defineComponent({
   async mounted() {
     this.startYear = this.statStartYear
 
-    let refresh = this.$configuration.theAutoRefresh.active
-    this.$configuration.theAutoRefresh.active = !refresh
-    this.$configuration.theAutoRefresh.active = refresh
-
     await this.loadTickets()
+    this.initiateRefreshInterval()
   },
 
   methods: {
@@ -137,7 +125,6 @@ export default defineComponent({
 
       try {
         await this.fetchTickets()
-        // await this.fetchTicketsDev()
       } catch (error) {
         this.keepFetching = false
         this.stopLoading()
@@ -171,22 +158,17 @@ export default defineComponent({
       })
     },
 
-    async fetchTicketsDev() {
-      await ApiCall.get(`${this.apiCallUrl}&page=${this.page}`).then((response) => {
-        if (response) {
-          this.ticketsTemp[this.page] = Object.values(response?.results ?? response)
-        }
+    initiateRefreshInterval() {
+      if (!this.autoRefresh?.active || this.autoRefresh?.perMinutes <= 0) {
+        clearInterval(this.refreshIntervalId)
+        return
+      }
 
-        this.keepFetching = false
+      let intervalLength = 1000 * 60 * this.autoRefresh?.perMinutes
 
-        if (this.ticketsTemp?.length) {
-          this.refershTicketsFromTemp()
-        } else {
-          this.stopLoading()
-          this.$toast.clear()
-          this.$toast.error('No tickets to display found.')
-        }
-      })
+      this.refreshIntervalId = setInterval(() => {
+        this.loadTickets()
+      }, intervalLength)
     },
 
     async refershTicketsFromTemp() {

@@ -102,7 +102,7 @@ export default defineComponent({
         }
       })
 
-      this.sortedAgents = sortBy(this.sortedAgents, 'ticket_count').reverse()
+      this.sortedAgents = sortBy(this.sortedAgents, 'ticket_count')
     }
   }
 })
