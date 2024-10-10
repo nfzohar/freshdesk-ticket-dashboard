@@ -7,7 +7,7 @@
         @click="toggleVisibility"
       />
 
-      <div class="flex items-center gap-x-2">
+      <div v-if="showViewSwitch" class="flex items-center gap-x-2">
         <template v-if="!selectedViewDefault">
           <button
             class="graph-icon transition-transform hover:rotate-45"
@@ -94,6 +94,11 @@ export default defineComponent({
       default: 'name-asc'
     },
     isSortable: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    showViewSwitch: {
       type: Boolean,
       required: false,
       default: true

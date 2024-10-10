@@ -52,7 +52,8 @@ export default defineComponent({
       refreshIntervalId: null,
       updateToken: 0,
       reloadToken: 0,
-      resizeToken: 0
+      resizeToken: 0,
+      perPage: 100
     }
   },
 
@@ -110,7 +111,7 @@ export default defineComponent({
   methods: {
     async loadTickets() {
       this.keepFetching = true
-      this.apiCallUrl = `tickets?updated_since=${this.startYear}&include=requester,stats&per_page=100`
+      this.apiCallUrl = `tickets?updated_since=${this.startYear}&include=requester,stats&per_page=${this.perPage}`
 
       if (this.anyFiltersSet) {
         this.apiCallUrl = filterParser(this.apiCallUrl, this.storedFilters)
@@ -137,7 +138,7 @@ export default defineComponent({
           this.ticketsTemp[this.page] = Object.values(response?.results ?? response)
         }
 
-        if (!this.ticketsTemp[this.page]?.length) {
+        if (this.ticketsTemp[this.page]?.length < this.perPage) {
           this.keepFetching = false
 
           if (this.ticketsTemp?.length) {

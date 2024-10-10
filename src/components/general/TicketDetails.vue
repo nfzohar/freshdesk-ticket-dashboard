@@ -2,6 +2,7 @@
   <div class="flex items-start justify-between w-80vh border-primary-500 border-b pb-2">
     <h1 class="text-3xl font-semibold" v-text="`#${theTicket?.id}: ${theTicket?.subject}`" />
     <button
+      v-if="showBackButton"
       :class="`primary-button py-1 px-3 hover:font-bold border-none ${primaryTextClass}`"
       @click.stop="$emit('closeDetails')"
       v-text="'Back'"
@@ -79,6 +80,11 @@ export default defineComponent({
       type: Number,
       required: false,
       default: null
+    },
+    showBackButton: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
 
