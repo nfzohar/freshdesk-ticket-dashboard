@@ -138,7 +138,7 @@ export default defineComponent({
           this.ticketsTemp[this.page] = Object.values(response?.results ?? response)
         }
 
-        if (this.ticketsTemp[this.page]?.length < this.perPage) {
+        if (!this.ticketsTemp[this.page]?.length < this.perPage) {
           this.keepFetching = false
 
           if (this.ticketsTemp?.length) {

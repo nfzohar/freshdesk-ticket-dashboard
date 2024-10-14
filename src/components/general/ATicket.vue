@@ -3,28 +3,53 @@
     :title="'Show details'"
     :class="`bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 cursor-pointer ${primaryColorText}`"
   >
-    <h3 class="block font-bold text-lg" v-text="`#${id}: ${subject}`" />
-    <hr class="my-1 border-t-2" />
+    <template v-if="mode == 'panel-content'">
+      <h3 class="block font-bold text-base" v-text="subject" />
+      <hr class="my-1 border-t-2" />
 
-    <div class="flex items-center justify-between">
-      <div class="flex flex-col gap-y-1 w-auto text-base">
+      <div class="flex flex-col items-left w-full text-base justify-between">
         <span v-html="`<b>Submitted by:</b> ${requester}`" />
         <span v-if="tags?.length" v-html="`<b>Tags</b>: ${tags}`" />
-      </div>
 
-      <div :class="`flex items-center gap-x-2 justify-between p-2 w-auto ${primaryColorText}`">
-        <span
-          title="Ticket status"
-          :class="`ticket-label border-primary-500 ${primaryAccentedBg}`"
-          v-text="status"
-        />
-        <span
-          title="Ticket type"
-          :class="`ticket-label border-primary-500 ${primaryAccentedBg}`"
-          v-text="type"
-        />
+        <div :class="`flex items-center gap-x-2 w-full ${primaryColorText}`">
+          <span
+            title="Ticket status"
+            :class="`mt-2 font-bold border w-full text-center rounded-md px-2 py-1 border-primary-500 ${primaryAccentedBg}`"
+            v-text="status"
+          />
+          <span
+            title="Ticket type"
+            :class="`mt-2 font-bold border w-full text-center rounded-md px-2 py-1 border-primary-500 ${primaryAccentedBg}`"
+            v-text="type"
+          />
+        </div>
       </div>
-    </div>
+    </template>
+
+    <template v-else>
+      <h3 class="block font-bold text-lg" v-text="`#${id}: ${subject}`" />
+      <hr class="my-1 border-t-2" />
+
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-y-1 w-auto text-base">
+          <span v-html="`<b>Submitted by:</b> ${requester}`" />
+          <span v-if="tags?.length" v-html="`<b>Tags</b>: ${tags}`" />
+        </div>
+
+        <div :class="`flex items-center gap-x-2 justify-between p-2 w-auto ${primaryColorText}`">
+          <span
+            title="Ticket status"
+            :class="`ticket-label border-primary-500 ${primaryAccentedBg}`"
+            v-text="status"
+          />
+          <span
+            title="Ticket type"
+            :class="`ticket-label border-primary-500 ${primaryAccentedBg}`"
+            v-text="type"
+          />
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -40,6 +65,11 @@ export default defineComponent({
       type: String,
       required: false,
       default: () => {}
+    },
+    mode: {
+      type: String,
+      required: false,
+      default: 'list-item'
     }
   },
 

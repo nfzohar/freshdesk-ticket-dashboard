@@ -1,10 +1,15 @@
 <template>
-  <a-panel :title="'Latest ticket'" :show-view-switch="false">
+  <a-panel :title="`Latest ticket (#${latestTicket?.id})`" :show-view-switch="false">
     <template #defaultView>
       <a-dialog>
         <template #trigger>
           <div class="p-2">
-            <a-ticket v-if="tickets?.length" :the-ticket="latestTicket" @click="showModal = true" />
+            <a-ticket
+              v-if="tickets?.length"
+              :the-ticket="latestTicket"
+              :mode="'panel-content'"
+              @click="showModal = true"
+            />
             <span v-else class="opacity-50" v-text="'No tickets to display.'" />
           </div>
         </template>
