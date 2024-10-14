@@ -7,7 +7,7 @@
       <h3 class="block font-bold text-base" v-text="subject" />
       <hr class="my-1 border-t-2" />
 
-      <div class="flex flex-col items-left w-full text-base justify-between">
+      <div class="flex flex-col items-left w-full text-sm justify-between">
         <span v-html="`<b>Submitted by:</b> ${requester}`" />
         <span v-if="tags?.length" v-html="`<b>Tags</b>: ${tags}`" />
 
