@@ -4,22 +4,23 @@
     :class="`bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 cursor-pointer ${primaryColorText}`"
   >
     <template v-if="mode == 'panel-content'">
-      <h3 class="block font-bold text-base" v-text="subject" />
-      <hr class="my-1 border-t-2" />
+      <h3 :class="`block font-bold text-base border-0 border-b-2`" v-text="subject" />
 
       <div class="flex flex-col items-left w-full text-sm justify-between">
-        <span v-html="`<b>Submitted by:</b> ${requester}`" />
-        <span v-if="tags?.length" v-html="`<b>Tags</b>: ${tags}`" />
+        <div class="flex flex-col items-left w-max text-sm justify-between">
+          <span v-html="`<b>Submitted by:</b> ${requester}`" />
+          <span v-if="tags?.length" v-html="`<b>Tags</b>: ${tags}`" />
+        </div>
 
-        <div :class="`flex items-center gap-x-2 w-full ${primaryColorText}`">
+        <div :class="`flex items-end gap-x-2 mt-1 w-max ${primaryColorText}`">
           <span
             title="Ticket status"
-            :class="`mt-2 font-bold border w-full text-center rounded-md px-2 py-1 border-primary-500 ${primaryAccentedBg}`"
+            :class="`font-bold text-xs border w-max text-center rounded-md px-3 py-1 border-primary-500 ${primaryAccentedBg}`"
             v-text="status"
           />
           <span
             title="Ticket type"
-            :class="`mt-2 font-bold border w-full text-center rounded-md px-2 py-1 border-primary-500 ${primaryAccentedBg}`"
+            :class="`font-bold text-xs border w-max text-center rounded-md px-3 py-1 border-primary-500 ${primaryAccentedBg}`"
             v-text="type"
           />
         </div>
