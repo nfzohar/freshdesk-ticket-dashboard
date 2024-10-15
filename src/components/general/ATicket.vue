@@ -4,7 +4,10 @@
     :class="`bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 cursor-pointer ${primaryColorText}`"
   >
     <template v-if="mode == 'panel-content'">
-      <h3 :class="`block font-bold text-base border-0 border-b-2`" v-text="subject" />
+      <h3
+        :class="`block font-bold text-base border-0 border-b-2 w-full h-7 overflow-x-hidden break-keep`"
+        v-text="subject"
+      />
 
       <div class="flex flex-col items-left w-full text-sm justify-between">
         <div class="flex flex-col items-left w-max text-sm justify-between">
