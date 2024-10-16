@@ -2,7 +2,7 @@
   <div :class="`w-full h-min rounded-md ${accentSecondaryBg} ${panelBorder}`">
     <div class="flex items-center justify-between py-1 px-2">
       <h1
-        class="text-xl font-bold mb-1 capitalize cursor-pointer"
+        class="text-xl font-bold capitalize cursor-pointer"
         v-text="title"
         @click="toggleVisibility"
       />
