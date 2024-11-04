@@ -7,7 +7,7 @@
 
       <div class="flex flex-col w-full">
         <p
-          class="py-3 opacity-50 w-full md:text-3xl md:text-left font-semibold"
+          class="py-3 opacity-50 w-full md:text-3xl md:text-left font-semibold text-primary-500"
           v-text="appTitle"
         />
         <hr class="md:hidden w-full my-2 border-primary-500" />

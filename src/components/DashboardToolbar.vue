@@ -32,6 +32,13 @@
           @startExport="$emit('startLoading')"
           @finishExport="$emit('stopLoading')"
         />
+        <open-tickets-graph
+          :tickets="allTickets"
+          :last-ticket-date="lastTicketDate"
+          :first-ticket-date="firstTicketDate"
+          @open="modalsOpen = true"
+          @close="modalsOpen = false"
+        />
         <resolved-statistics-graph
           :tickets="allTickets"
           :last-ticket-date="lastTicketDate"
@@ -68,6 +75,7 @@ import { defineComponent } from 'vue'
 import HelpSection from '@/components/HelpSection.vue'
 import AllTicketsList from '@/components/AllTicketsList.vue'
 import TicketFilterModal from '@/components/TicketFilters.vue'
+import OpenTicketsGraph from '@/components/OpenTicketsGraph.vue'
 import TicketExcelExporter from '@/components/TicketExcelExporter.vue'
 import DashboardSettingsModal from '@/components/DashboardSettings.vue'
 import ResolvedStatisticsGraph from '@/components/ResolvedStatisticsGraph.vue'
@@ -90,6 +98,7 @@ export default defineComponent({
   components: {
     HelpSection,
     AllTicketsList,
+    OpenTicketsGraph,
     TicketFilterModal,
     TicketExcelExporter,
     DashboardSettingsModal,
