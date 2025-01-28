@@ -41,10 +41,10 @@ export default defineComponent({
 
   computed: {
     statuses(): any {
-      return Object.values(this.$information?.statuses) ?? []
+      return Object.values(this.$information?.storedStatuses ?? {}) ?? []
     },
     customFields() {
-      return Object.keys(this.allTickets[0].custom_fields)
+      return Object.keys(this.allTickets[0].custom_fields ?? {}) ?? []
     }
   },
 
@@ -75,7 +75,6 @@ export default defineComponent({
         // ID
         {
           type: Number,
-          fontWeight: 'bold',
           align: 'center',
           value: ticket?.id
         },
@@ -143,8 +142,7 @@ export default defineComponent({
       let headers = []
       let template = {
         value: '',
-        fontWeight: 'bold',
-        backgroundColor: '#C6C6C6'
+        fontWeight: 'bold'
       }
 
       this.defaultHeaders.forEach((header) => {
