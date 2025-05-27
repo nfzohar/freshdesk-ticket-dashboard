@@ -65,10 +65,14 @@ export default defineComponent({
       return this.$configuration?.layoutComponent
     },
     anyFiltersSet(): Boolean {
-      return (
-        this.storedFilters?.date_filters?.length > 0 ||
-        this.storedFilters?.field_filters?.length > 0
-      )
+      const dateFilters = this.storedFilters?.date_filters
+      const hasDateFilters = !!dateFilters && Object.keys(dateFilters).some((key) => {
+        return dateFilters[key].from && dateFilters[key].to
+      })
+
+      const hasFieldFilters = this.storedFilters?.field_filters?.length > 0
+
+      return hasDateFilters || hasFieldFilters
     },
     autoRefresh(): Boolean {
       return this.$configuration.theAutoRefresh
@@ -111,7 +115,7 @@ export default defineComponent({
   methods: {
     async loadTickets() {
       this.keepFetching = true
-      this.apiCallUrl = `tickets?updated_since=${this.startYear}&include=requester,stats&per_page=${this.perPage}`
+      this.apiCallUrl = `/api/v2/tickets?updated_since=${this.startYear}&include=requester,stats&per_page=${this.perPage}`
 
       if (this.anyFiltersSet) {
         this.apiCallUrl = filterParser(this.apiCallUrl, this.storedFilters)

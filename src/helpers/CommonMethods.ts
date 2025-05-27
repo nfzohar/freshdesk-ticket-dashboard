@@ -200,7 +200,7 @@ export function filterParser(apiCallUrl: String, filtersList: Object) {
 
   if (urlWithParameters?.length) {
     const query = urlWithParameters.join(' AND ').trim()
-    return `search/tickets?query="${encodeURI(query)}"`
+    return `/api/v2/search/tickets?query="${encodeURI(query)}"`
   }
 
   return apiCallUrl
