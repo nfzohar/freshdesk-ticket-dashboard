@@ -115,7 +115,7 @@ export default defineComponent({
   methods: {
     async loadTickets() {
       this.keepFetching = true
-      this.apiCallUrl = `/api/v2/tickets?updated_since=${this.startYear}&include=requester,stats&per_page=${this.perPage}`
+      this.apiCallUrl = `tickets?updated_since=${this.startYear}&include=requester,stats&per_page=${this.perPage}`
 
       if (this.anyFiltersSet) {
         this.apiCallUrl = filterParser(this.apiCallUrl, this.storedFilters)
