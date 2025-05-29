@@ -64,7 +64,7 @@
 <li class="my-0"><strong>Package Manager:</strong> Yarn, Npm</li>
 </ul>
 <h3>Installation</h3>
-<p>Build freshdesk-ticket-dashboard from the source and intsall dependencies:</p>
+<p>Build freshdesk-ticket-dashboard from the source and install dependencies:</p>
 <ol>
 <li class="my-0">
 <p><strong>Clone the repository:</strong></p>
@@ -94,13 +94,6 @@
 <p><strong>Using <a href="https://www.npmjs.com/">npm</a>:</strong></p>
 <pre><code class="language-sh">npm start
 </code></pre>
-<h3>Testing</h3>
-<p>Freshdesk-ticket-dashboard uses the {<strong>test_framework</strong>} test framework. Run the test suite with:</p>
-<p><strong>Using <a href="https://yarnpkg.com/">yarn</a>:</strong></p>
-<pre><code class="language-sh">yarn test
-</code></pre>
-<p><strong>Using <a href="https://www.npmjs.com/">npm</a>:</strong></p>
-<pre><code class="language-sh">npm test
 </code></pre>
 <hr>
 <div align="left" class=""><a href="#top">⬆ Return</a></div>
