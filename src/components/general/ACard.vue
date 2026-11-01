@@ -15,7 +15,10 @@
     </div>
 
     <div class="flex flex-col items-end shrink-0" :title="countLabel">
-      <span class="text-lg font-semibold tabular-nums leading-6" v-text="count ?? 0" />
+      <span
+        class="text-lg font-semibold tabular-nums leading-6 text-primary-500"
+        v-text="count ?? 0"
+      />
       <span class="text-[11px] text-ink-muted" v-text="countLabel" />
     </div>
   </div>

@@ -28,6 +28,7 @@
       <div v-if="showViewSwitch" class="flex items-center gap-0.5">
         <template v-if="!selectedViewDefault">
           <button
+            v-if="hasColorPalette"
             class="actions-button h-8 w-8 text-sm"
             :title="'Generate new graph color palette'"
             @click="updateToken++"
@@ -80,7 +81,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { generateGraphDataset } from '@/helpers/CommonMethods'
+import { generateGraphDataset, ROUND_CHART_TYPES } from '@/helpers/CommonMethods'
 import AStatisticsGraph from '@/components/general/AStatisticsGraph.vue'
 
 export default defineComponent({
@@ -148,6 +149,11 @@ export default defineComponent({
   computed: {
     selectedViewDefault() {
       return this.selectedView == 'default'
+    },
+    // Bar/line views are now a single brand-colored series with no palette to
+    // regenerate; only part-to-whole views have per-segment colors to shuffle.
+    hasColorPalette() {
+      return ROUND_CHART_TYPES.includes(this.selectedView)
     },
     accentSecondaryBg(): String {
       return this.$information?.bgAccentSecondaryColor

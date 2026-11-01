@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia'
 import { migrateLayout, type DashboardPanel } from '@/helpers/LayoutGrid'
+import {
+  saveToLocalStorage,
+  loadFromLocalStorage,
+  removeFromLocalStorage
+} from '@/helpers/LocalStorageStore'
 
 const storeLocalStorageKey = 'stored_configuration'
 
@@ -88,20 +93,17 @@ export const configuration = defineStore('configuration', {
     },
 
     saveConfigurationToStore() {
-      const storeData = {
+      saveToLocalStorage(storeLocalStorageKey, {
         layout: this.layout,
         autoRefresh: this.autoRefresh,
         leaderboards: this.leaderboards
-      }
-      localStorage.setItem(storeLocalStorageKey, JSON.stringify(storeData))
+      })
     },
 
     initializeConfigurationFromStorage() {
-      let configurationFromStore = localStorage.getItem(storeLocalStorageKey)
+      const configurationFromStore = loadFromLocalStorage(storeLocalStorageKey)
 
       if (configurationFromStore) {
-        configurationFromStore = JSON.parse(configurationFromStore)
-
         this.layout = migrateLayout(configurationFromStore?.layout) ?? this.layout
         this.autoRefresh = configurationFromStore?.autoRefresh
         this.leaderboards = configurationFromStore?.leaderboards
@@ -109,7 +111,7 @@ export const configuration = defineStore('configuration', {
     },
 
     deleteStoredConfiguration() {
-      localStorage.removeItem(storeLocalStorageKey)
+      removeFromLocalStorage(storeLocalStorageKey)
     }
   }
 })

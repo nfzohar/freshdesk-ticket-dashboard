@@ -1,5 +1,9 @@
 <template>
-  <div ref="scroller" class="w-full h-full overflow-y-auto scrollbar-hide px-1 pb-6">
+  <div
+    ref="scroller"
+    class="w-full h-full px-1"
+    :class="editMode ? 'overflow-y-auto scrollbar-hide pb-6' : 'overflow-hidden'"
+  >
     <div v-if="editMode" class="sticky top-0 z-30 px-3 pt-3 pb-1">
       <div
         class="card flex flex-wrap items-center justify-between gap-3 px-4 py-3 shadow-lg"
@@ -45,7 +49,7 @@
       class="dashboard-grid"
       :class="{ 'is-editing': editMode }"
       :col-num="columns"
-      :row-height="rowHeight"
+      :row-height="activeRowHeight"
       :margin="[gap, gap]"
       :is-draggable="editMode"
       :is-resizable="editMode"
@@ -136,6 +140,7 @@ import {
   GRID_COLUMNS,
   GRID_GAP,
   GRID_ROW_HEIGHT,
+  bottomRow,
   createPanel,
   panelSize,
   type DashboardPanel
@@ -150,6 +155,11 @@ interface GridItem {
   minW: number
   minH: number
 }
+
+// Floor for the computed row height: only guards against a zero/negative value
+// (e.g. before the container has been measured) — never a readability cutoff,
+// since the dashboard view must always fit the screen with no scrolling.
+const MIN_FIT_ROW_HEIGHT = 1
 
 export default defineComponent({
   name: 'GridLayout',
@@ -181,7 +191,9 @@ export default defineComponent({
       // Working copy: edits stay here until saved.
       panels: [] as DashboardPanel[],
       items: [] as GridItem[],
-      settingsPanelId: null as string | null
+      settingsPanelId: null as string | null,
+      containerHeight: 0,
+      resizeObserver: null as ResizeObserver | null
     }
   },
 
@@ -194,6 +206,24 @@ export default defineComponent({
     },
     canSave(): boolean {
       return this.panels.some((panel) => panel.component)
+    },
+    totalRows(): number {
+      return bottomRow(this.items) || 1
+    },
+    // Row height that makes the grid's total height (rows * (rowHeight + gap) + gap,
+    // matching grid-layout-plus's own formula) exactly match the available screen space.
+    fitRowHeight(): number {
+      if (!this.containerHeight) {
+        return this.rowHeight
+      }
+
+      const available = this.containerHeight - this.gap * (this.totalRows + 1)
+      return Math.max(available / this.totalRows, MIN_FIT_ROW_HEIGHT)
+    },
+    // Editing keeps a fixed row height so dragging/resizing feels consistent;
+    // the dashboard view scales panels to always fit the screen without scrolling.
+    activeRowHeight(): number {
+      return this.editMode ? this.rowHeight : this.fitRowHeight
     }
   },
 
@@ -209,7 +239,25 @@ export default defineComponent({
     this.loadFromStore()
   },
 
+  mounted() {
+    this.observeContainerHeight()
+  },
+
+  beforeUnmount() {
+    this.resizeObserver?.disconnect()
+  },
+
   methods: {
+    observeContainerHeight() {
+      const scroller = this.$refs.scroller as HTMLElement | undefined
+      if (!scroller) return
+
+      this.resizeObserver = new ResizeObserver(([entry]) => {
+        this.containerHeight = entry?.contentRect?.height ?? scroller.clientHeight
+      })
+      this.resizeObserver.observe(scroller)
+    },
+
     loadFromStore() {
       this.panels = cloneDeep(this.$configuration?.layoutPanels ?? [])
       this.items = this.panels.map((panel) => this.toItem(panel))

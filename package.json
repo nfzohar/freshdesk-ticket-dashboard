@@ -14,12 +14,11 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
     "autoprefixer": "^10.4.16",
-    "axios": "^0.21.0",
+    "axios": "^1.21.0",
     "buffer": "^6.0.3",
     "chart.js": "^4.4.0",
     "date-fns": "^2.30.0",
     "dompurify": "^3.2.4",
-    "dotenv": "^16.3.1",
     "grid-layout-plus": "1.1.1",
     "lodash": "^4.17.21",
     "pinia": "^2.1.7",
@@ -28,11 +27,9 @@
     "postcss-env-function": "^6.0.0",
     "tailwindcss": "^3.3.5",
     "vue": "^3.3.4",
-    "vue-api-query": "^1.10.0",
     "vue-chartjs": "^5.2.0",
     "vue-toastification": "^2.0.0-rc.5",
-    "write-excel-file": "^1.4.29",
-    "yarn": "^1.22.19"
+    "write-excel-file": "^1.4.29"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.3",
@@ -43,6 +40,7 @@
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/tsconfig": "^0.4.0",
+    "dotenv": "^16.3.1",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
     "npm-run-all2": "^6.1.1",

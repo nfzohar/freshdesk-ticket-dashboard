@@ -14,6 +14,7 @@
       <tool-bar
         :all-tickets="allTickets"
         :is-fetching-tickets="keepFetching"
+        :results-truncated="resultsTruncated"
         @startLoading="startLoading"
         @stopLoading="stopLoading"
         @reload="reloadToken++"
@@ -95,6 +96,7 @@ export default defineComponent({
       // Freshdesk's search endpoint ignores per_page: 30 results per page, max 10 pages.
       searchPageSize: 30,
       searchMaxPages: 10,
+      resultsTruncated: false,
       wizardOpen: false,
       editMode: false,
       // Set after the custom wizard path: open edit mode once the dashboard is ready.
@@ -257,6 +259,7 @@ export default defineComponent({
     async fetchTicketsByPage() {
       this.page = 1
       this.ticketsTemp = []
+      this.resultsTruncated = false
 
       try {
         await this.fetchTickets(this.fetchRun)
@@ -278,6 +281,7 @@ export default defineComponent({
 
         if (this.isLastPage(response)) {
           this.keepFetching = false
+          this.resultsTruncated = this.isTruncatedSearch(response)
 
           if (this.ticketsTemp.flat().length) {
             this.refershTicketsFromTemp()
@@ -310,6 +314,16 @@ export default defineComponent({
       }
 
       return this.ticketsTemp[this.page]?.length < this.perPage
+    },
+
+    // Freshdesk's search endpoint hard-caps at searchMaxPages: if more tickets
+    // actually matched, what we show is a partial result.
+    isTruncatedSearch(response: any) {
+      return (
+        Array.isArray(response?.results) &&
+        this.page >= this.searchMaxPages &&
+        this.page * this.searchPageSize < (response?.total ?? 0)
+      )
     },
 
     initiateRefreshInterval() {

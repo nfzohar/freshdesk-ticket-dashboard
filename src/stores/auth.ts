@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { saveToLocalStorage, loadFromLocalStorage } from '@/helpers/LocalStorageStore'
 
 const storeLocalStorageKey = 'stored_authentication'
 
@@ -38,11 +39,9 @@ export const auth = defineStore('auth', {
     },
 
     initializeStateFromStorage() {
-      let stateFromStore = localStorage.getItem(storeLocalStorageKey)
+      const stateFromStore = loadFromLocalStorage(storeLocalStorageKey)
 
       if (stateFromStore) {
-        stateFromStore = JSON.parse(stateFromStore)
-
         this.auth = stateFromStore?.authenticated
         this.domainURL = stateFromStore?.api_domain
         this.apiKey = stateFromStore?.api_key
@@ -50,12 +49,11 @@ export const auth = defineStore('auth', {
     },
 
     saveConfigurationToStore() {
-      const authState = {
+      saveToLocalStorage(storeLocalStorageKey, {
         authenticated: this.authenticated,
         api_domain: this.domain,
         api_key: this.api_key
-      }
-      localStorage.setItem(storeLocalStorageKey, JSON.stringify(authState))
+      })
     },
 
     logout() {

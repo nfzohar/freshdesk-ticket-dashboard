@@ -167,8 +167,6 @@ export default defineComponent({
         groupBy(month, (ticket) => fdate(ticket?.created_at, 'd'))
       )
 
-      console.log(this.ticketsOfYear)
-
       this.isLoading = false
     },
 

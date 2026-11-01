@@ -44,7 +44,7 @@ export default defineComponent({
       return Object.values(this.$information?.storedStatuses ?? {}) ?? []
     },
     customFields() {
-      return Object.keys(this.allTickets[0].custom_fields ?? {}) ?? []
+      return Object.keys(this.allTickets[0]?.custom_fields ?? {}) ?? []
     }
   },
 

@@ -46,7 +46,7 @@
   }
 
   .btn-ghost {
-    @apply btn text-ink-muted hover:text-ink hover:bg-surface-2;
+    @apply btn text-ink-muted hover:text-primary-500 hover:bg-primary/10;
   }
 
   .btn-danger {
@@ -59,7 +59,7 @@
   }
 
   .actions-button {
-    @apply inline-grid place-items-center h-9 w-9 rounded-lg text-base text-ink-muted transition-colors hover:text-ink hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50;
+    @apply inline-grid place-items-center h-9 w-9 rounded-lg text-base text-ink-muted transition-colors hover:text-primary-500 hover:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50;
   }
 
   /* Form controls */

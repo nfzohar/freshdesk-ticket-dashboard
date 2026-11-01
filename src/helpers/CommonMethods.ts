@@ -6,6 +6,10 @@ import { configuration } from '@/stores/configuration'
 
 const toast = useToast()
 
+// Part-to-whole charts need a distinct color per segment to stay legible; bar and
+// line charts are a single series across categories and use one color throughout.
+export const ROUND_CHART_TYPES = ['pie', 'doughnut', 'polar-area']
+
 // Main authentication check method.
 export function checkAuthCredentials(username: String, password: String) {
   let authenticationSuccess = false
@@ -23,7 +27,7 @@ export function checkAuthCredentials(username: String, password: String) {
   }
 
   if (!username || !password) {
-    let theError = 'Incorrect credentials. Please, try again.'
+    const theError = 'Incorrect credentials. Please, try again.'
 
     toast.error(theError)
     console.error(theError)
@@ -35,7 +39,7 @@ export function checkAuthCredentials(username: String, password: String) {
   auth().setAuthState(authenticationSuccess)
 
   if (!authenticationSuccess) {
-    let theError = 'Incorrect credentials. Please, try again.'
+    const theError = 'Incorrect credentials. Please, try again.'
 
     toast.error(theError)
     console.error(theError)
@@ -183,7 +187,7 @@ export function filterParser(apiCallUrl: String, filtersList: Object) {
 
   fieldFilters?.forEach((fieldFilter) => {
     if (fieldFilter['value'] != '') {
-      let fieldParams = setFieldFilter(fieldFilter)
+      const fieldParams = setFieldFilter(fieldFilter)
       urlWithParameters.push(fieldParams)
     }
   })
@@ -200,12 +204,12 @@ export function filterParser(apiCallUrl: String, filtersList: Object) {
 
 // Ticket field filters parser.
 export function setFieldFilter(ticketFieldFilter: Object) {
-  let ticketField = ticketFieldFilter?.name
-  let filterValue = ticketFieldFilter?.value ?? ''
+  const ticketField = ticketFieldFilter?.name
+  const filterValue = ticketFieldFilter?.value ?? ''
 
   switch (typeof filterValue) {
     case 'string':
-      return `${ticketField}:'${filterValue}'`
+      return `${ticketField}:'${filterValue.replace(/'/g, "\\'")}'`
     default:
       return `${ticketField}:${filterValue}`
   }
@@ -213,7 +217,7 @@ export function setFieldFilter(ticketFieldFilter: Object) {
 
 // Date filters parser.
 export function setDateFilter(dateObject: { to: String; from: String; field: string }) {
-  let dateParams = []
+  const dateParams = []
 
   if (dateObject?.from) {
     dateParams.push(`${dateObject?.field}:>'${fdate(dateObject?.from, 'yyyy-MM-dd')}'`)

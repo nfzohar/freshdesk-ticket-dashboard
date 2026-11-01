@@ -33,6 +33,7 @@ import {
 } from 'vue-chartjs'
 import { defineComponent } from 'vue'
 import { theme } from '@/helpers/Theme'
+import { ROUND_CHART_TYPES } from '@/helpers/CommonMethods'
 
 Chart.register(
   Title,
@@ -99,7 +100,8 @@ export default defineComponent({
   data() {
     return {
       theme,
-      // Random start hue, so the panel's palette button still yields a new palette.
+      // Random start hue for segments after the first (always primary); the
+      // panel's palette button re-rolls this for a new look on round charts.
       paletteSeed: Math.random() * 360
     }
   },
@@ -118,7 +120,8 @@ export default defineComponent({
         text: token('--ink-muted'),
         grid: tokenAlpha('--line', 0.8),
         line: token('--ink'),
-        surface: token('--surface')
+        surface: token('--surface'),
+        primary: token('--primary')
       }
     },
     chartData() {
@@ -152,7 +155,7 @@ export default defineComponent({
         angleLines: { color: colors.grid },
         pointLabels: { color: colors.text }
       }
-      const isRound = ['pie', 'doughnut', 'polar-area'].includes(this.type)
+      const isRound = this.isRound
 
       return {
         responsive: true,
@@ -192,6 +195,11 @@ export default defineComponent({
     graphBorderColor(): Any {
       return ['line', 'bezier-line'].includes(this.type) ? this.themeColors.line : 'transparent'
     },
+    // Part-to-whole charts need one color per segment; bar/line charts are a
+    // single series across categories, so magnitude (bar length) carries the data.
+    isRound(): Boolean {
+      return ROUND_CHART_TYPES.includes(this.type)
+    },
     chartType(): String {
       if (this.type == 'pie') return 'PieChart'
       if (this.type == 'v-bar') return 'BarChart'
@@ -203,12 +211,20 @@ export default defineComponent({
       return 'BarChart'
     },
     datasetBackground() {
-      // Evenly spread hues (golden angle) with fixed saturation and lightness, so
-      // neighbouring bars stay distinct and every colour reads on both themes.
-      const lightness = this.theme.dark ? 62 : 52
-      let colors = []
+      // Bar/line charts are a single series across categories: every bar is the
+      // brand primary color, so magnitude (length), not hue, carries the data.
+      if (!this.isRound) {
+        return this.themeColors.primary
+      }
 
-      for (let i = 0; i < this.datasets?.length; i++) {
+      // Pie/doughnut/polar-area need a color per segment to stay legible. The
+      // first segment is always the brand primary; the rest spread via golden-
+      // angle hue rotation, with fixed saturation/lightness so every colour reads
+      // on both themes. The panel's palette button re-rolls the seed for variety.
+      const lightness = this.theme.dark ? 62 : 52
+      let colors = [this.themeColors.primary]
+
+      for (let i = 1; i < this.datasets?.length; i++) {
         const hue = (this.paletteSeed + i * 137.508) % 360
         colors[i] = `hsl(${hue.toFixed(0)} 65% ${lightness}%)`
       }

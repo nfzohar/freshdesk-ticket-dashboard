@@ -129,7 +129,7 @@ export default defineComponent({
 
     formatLabel(label: Any) {
       if ([true, false].includes(label)) {
-        return Boolean(label) ? 'Yes' : 'No'
+        return label ? 'Yes' : 'No'
       }
       return label
     }

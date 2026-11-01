@@ -14,7 +14,17 @@
           <i class="fa fa-chart-simple" />
         </span>
         <div class="min-w-0 text-center md:text-left">
-          <h1 class="truncate text-base font-semibold leading-5" v-text="appTitle" />
+          <div class="flex items-center justify-center md:justify-start gap-2">
+            <h1 class="truncate text-base font-semibold leading-5" v-text="appTitle" />
+            <span
+              v-if="resultsTruncated"
+              class="shrink-0 inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400"
+              :title="'Freshdesk search results are capped at 300 tickets. Showing a partial result — refine your filters to see everything.'"
+            >
+              <i class="fa fa-triangle-exclamation" />
+              Partial results
+            </span>
+          </div>
           <p
             class="truncate text-xs text-ink-muted"
             v-text="`Tickets from ${firstTicketDate} to ${lastTicketDate}`"
@@ -110,6 +120,11 @@ export default defineComponent({
     isFetchingTickets: {
       type: Boolean,
       required: true,
+      default: false
+    },
+    resultsTruncated: {
+      type: Boolean,
+      required: false,
       default: false
     }
   },

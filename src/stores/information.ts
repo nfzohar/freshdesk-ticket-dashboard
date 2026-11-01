@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia'
 import { colorIsDark, ticketFieldOptions } from '@/helpers/CommonMethods'
+import {
+  saveToLocalStorage,
+  loadFromLocalStorage,
+  removeFromLocalStorage
+} from '@/helpers/LocalStorageStore'
 
 const storeLocalStorageKey = 'stored_dashboard_information'
 
@@ -167,22 +172,19 @@ export const information = defineStore('information', {
     },
 
     saveConfigurationToStore() {
-      const storeData = {
+      saveToLocalStorage(storeLocalStorageKey, {
         filters: this.filters,
         dateFilters: this.dateFilters,
         ticketFields: this.ticketFields,
         savedFilterSets: this.savedFilterSets,
         adminTicketFields: this.adminTicketFields
-      }
-      localStorage.setItem(storeLocalStorageKey, JSON.stringify(storeData))
+      })
     },
 
     initializeStateFromStorage() {
-      let stateFromStore = localStorage.getItem(storeLocalStorageKey)
+      const stateFromStore = loadFromLocalStorage(storeLocalStorageKey)
 
       if (stateFromStore) {
-        stateFromStore = JSON.parse(stateFromStore)
-
         this.filters = stateFromStore?.filters
         this.dateFilters = stateFromStore?.dateFilters
         this.ticketFields = stateFromStore?.ticketFields
@@ -197,7 +199,7 @@ export const information = defineStore('information', {
       this.ticketFields = []
       this.savedFilterSets = []
       this.adminTicketFields = []
-      localStorage.removeItem(storeLocalStorageKey)
+      removeFromLocalStorage(storeLocalStorageKey)
     },
 
     saveTicketFields(ticket: Object) {

@@ -43,7 +43,7 @@ export default class ApiCall {
     }
 
     if (this.freshdeskDomainUrl) {
-      let results = await axios(this.freshdeskDomainUrl + path, config)
+      const results = await axios(this.freshdeskDomainUrl + path, config)
         .then((response) => {
           return response.data
         })
