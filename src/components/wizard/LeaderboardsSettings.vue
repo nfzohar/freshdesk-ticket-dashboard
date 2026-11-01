@@ -1,46 +1,60 @@
 <template>
-  <div class="flex flex-col items-center text-center gap-10 m-10">
-    <h2 class="w-full font-bold text-base lg:text-lg xl:text-2xl" v-text="pageTitle" />
+  <div class="mx-auto flex max-w-2xl flex-col gap-6 py-2">
+    <div>
+      <h3 class="text-base font-semibold" v-text="pageTitle" />
+      <p
+        class="mt-1 text-sm text-ink-muted"
+        v-text="'Choose how the agent and requester leaderboards look.'"
+      />
+    </div>
 
-    <div class="flex flex-col items-center w-full rounded-md text-lg gap-5">
-      <div class="flex items-center gap-x-3">
-        <span class="h-full w-full" v-html="'Shown users on leaderboards:'" />
+    <div class="flex flex-col gap-5">
+      <div>
+        <label
+          class="field-label"
+          for="leaderboard-length"
+          v-text="'Users shown on leaderboards'"
+        />
         <input
+          id="leaderboard-length"
           v-model="leaderboardLength"
           type="number"
+          min="1"
           :placeholder="'0'"
-          :title="'Count of minutes in a refresh interval.'"
-          :class="`w-20 h-10 rounded-md text-black text-xl px-1 ${inputBorder}`"
+          :title="'Count of users shown on each leaderboard.'"
+          class="input max-w-[10rem]"
         />
       </div>
 
       <a-checkbox
         :key="Number(showTrophies)"
         :the-value="showTrophies"
-        class="font-bold m-auto"
-        :label="'Show trophies on leaderbords'"
-        :title="'Toggle automatic refresh.'"
+        class="font-medium"
+        :label="'Show trophies on leaderboards'"
+        :title="'Toggle trophies on leaderboards.'"
         @changed="(value) => (showTrophies = value)"
       />
 
-      <div v-if="showTrophies" class="bg-secondary-600 w-full sm:w-1/3 px-4 py-3 rounded-md">
+      <div
+        v-if="showTrophies"
+        class="flex flex-col gap-4 rounded-xl border border-line bg-surface-2/60 p-5"
+      >
         <a-select
           :the-value="selectedTrophyIcon"
-          :label="'Trophy icon:'"
+          :label="'Trophy icon'"
           :options="trophyIconOptions"
           :label-field="'label'"
           :value-field="'value'"
-          label-class="font-semibold mb-1 bg-none"
-          :input-class="`w-full capitalize ${inputBorder}`"
+          :input-class="'capitalize'"
           @changed="(value) => (selectedTrophyIcon = value)"
         />
 
-        <div v-if="selectedTrophyIcon" class="flex items-center justify-between">
+        <div v-if="selectedTrophyIcon" class="flex items-center gap-6">
           <i
             v-for="(color, c) in trophyColors"
             :key="c"
             :title="`${c + 1}. place`"
-            class="text-3xl p-6"
+            class="text-3xl"
             :class="[selectedTrophyIcon, color]"
           />
         </div>
@@ -83,7 +97,7 @@ export default defineComponent({
     },
     token() {
       return `${this.leaderboardLength}${Number(this.showTrophies)}${this.selectedTrophyIcon}`
-    },
+    }
   },
 
   watch: {

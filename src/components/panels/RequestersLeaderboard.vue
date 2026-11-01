@@ -19,7 +19,7 @@
             :count="requester?.ticket_count"
           >
             <template v-if="showTrophies && Number(r) < 3" #card-icon>
-              <span class="text-5xl">
+              <span class="grid place-items-center h-9 w-9 rounded-lg bg-surface text-lg">
                 <i :class="`${trophyIcon} ${trophyColors[r]}`" />
               </span>
             </template>

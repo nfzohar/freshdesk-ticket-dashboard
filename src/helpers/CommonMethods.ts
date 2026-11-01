@@ -99,25 +99,14 @@ export function getAvailablePanelComponents() {
   return listOfPanelComponents
 }
 
-// Update a panel's instance in store state.
-export async function updatePanelInState(
-  rows: Array,
-  newValue: String,
-  panelId: String,
-  property: String
-) {
-  let tempRows = rows
+// Human-readable name of a panel component: 'TicketTagsList' -> 'Ticket Tags List'.
+export function panelLabel(component: string) {
+  return component?.split(/(?=[A-Z])/)?.join(' ') ?? ''
+}
 
-  tempRows.forEach((row) => {
-    row.forEach((panel) => {
-      if (panel.id == panelId) {
-        panel[property] = newValue
-      }
-    })
-  })
-
-  await configuration().updateLayoutGroups(rows)
-  return rows
+// Update one property of a panel (sort, display type, visibility) in the stored layout.
+export function updatePanelInState(panelId: string, property: string, newValue: any) {
+  configuration().updatePanel(panelId, { [property]: newValue })
 }
 
 // Generate a name, ticket_count dataset for graph display.

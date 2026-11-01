@@ -1,16 +1,30 @@
 <template>
-  <div :key="selectedTab" class="grid sm:grid-flow-col lg:auto-cols-auto gap-2 mb-2">
+  <nav :key="selectedTab" class="grid grid-cols-2 sm:grid-flow-col sm:auto-cols-fr gap-2 mb-6">
     <button
       v-for="(tabKeyword, i) in tabKeywords"
       :key="i"
-      class="capitalize rounded-md px-2 py-1 w-full h-full text-center bg-primary-500"
-      :class="[{ 'bg-primary-600': isCurrent(tabKeyword) }, textClass]"
+      class="flex items-center gap-3 rounded-lg border px-3 py-2.5 text-left text-sm font-medium transition-colors"
+      :class="[
+        isCurrent(tabKeyword)
+          ? 'border-primary-500 bg-primary/10 text-ink'
+          : 'border-line text-ink-muted',
+        selectTabOnClick ? 'hover:text-ink hover:bg-surface-2' : 'cursor-default'
+      ]"
+      :aria-current="isCurrent(tabKeyword) ? 'step' : undefined"
       @click="select(tabKeyword)"
-      v-text="tabKeyword"
-    />
-  </div>
+    >
+      <span
+        class="grid place-items-center shrink-0 h-6 w-6 rounded-full text-xs font-semibold"
+        :class="
+          isCurrent(tabKeyword) ? 'bg-primary-500 text-on-primary' : 'bg-surface-2 text-ink-muted'
+        "
+        v-text="i + 1"
+      />
+      <span class="capitalize truncate" v-text="tabKeyword" />
+    </button>
+  </nav>
 
-  <div class="block overflow-auto w-full sm:border-0">
+  <div class="block overflow-auto w-full">
     <template v-for="(tabKeyword, i) in tabKeywords" :key="i">
       <template v-if="isCurrent(tabKeyword)">
         <slot v-if="$slots[`tab_${i + 1}`]" :name="`tab_${i + 1}`" />

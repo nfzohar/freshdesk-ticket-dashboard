@@ -1,5 +1,11 @@
 <template>
-  <a-dialog :manual-open="open">
+  <a-dialog
+    :manual-open="open"
+    size="full"
+    icon="fa fa-grip"
+    :title="'Tickets per day'"
+    :subtitle="`Created tickets in ${selectedYear ?? '…'}, by day.`"
+  >
     <template #trigger>
       <button class="actions-button" :title="'Show open tickets grid view.'" @click="open = true">
         <i class="fa fa-grip" />
@@ -7,76 +13,51 @@
     </template>
 
     <template #content>
-      <div
-        :key="updateToken"
-        class="flex flex-col bg-secondary-600 w-90p xl:w-80p 2xl:w-65p gap-5 m-auto p-5 rounded-md border border-primary-500"
-        :class="[{ 'is-loading': (this.isLoading = false) }, textOnSecondaryColor]"
-      >
-        <div class="w-full flex m-auto items-center">
-          <div class="w-full flex gap-x-2 m-auto items-center">
-            <span class="font-bold" v-text="'Show ticket of year:'" />
+      <div :key="updateToken" class="flex flex-col gap-5">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div class="flex flex-wrap items-end gap-4">
             <a-select
-              :class="'w-full md:w-2/12'"
+              class="w-40"
               :options="yearsWithTickets"
               :show-null-value="false"
               :the-value="selectedYear"
-              :label="''"
+              :label="'Year'"
               @changed="(value) => (selectedYear = value)"
+            />
+            <a-checkbox
+              class="mb-2"
+              :the-value="showNumbers"
+              :label="'Show ticket counts'"
+              @changed="(value) => (showNumbers = value)"
             />
           </div>
 
-          <a-checkbox
-            class="block w-full"
-            :the-value="showNumbers"
-            :label="'Show ticket counts'"
-            @changed="(value) => (showNumbers = value)"
-          />
-
-          <div class="flex items-center gap-x-2">
-            <span class="font-bold" v-text="'Legend:'" />
-            <i
-              class="fa fa-square border border-primary-500 rounded-md text-primary-900"
-              :title="'Less than 10 tickets.'"
+          <div class="flex items-center gap-2 text-xs text-ink-muted">
+            <span v-text="'Fewer'" />
+            <span
+              v-for="(level, l) in legend"
+              :key="l"
+              class="h-4 w-4 rounded"
+              :class="level.class"
+              :title="level.title"
             />
-            <i
-              class="fa fa-square border border-primary-500 rounded-md text-primary-800"
-              :title="'Less than 25 tickets.'"
-            />
-            <i
-              class="fa fa-square border border-primary-500 rounded-md text-primary-700"
-              :title="'Between 25 and 50 tickets.'"
-            />
-            <i
-              class="fa fa-square border border-primary-500 rounded-md text-primary-600"
-              :title="'Between 50 to 100 tickets.'"
-            />
-            <i
-              class="fa fa-square border border-primary-500 rounded-md text-primary-500"
-              :title="'Between 100 to 200 tickets.'"
-            />
-            <i
-              class="fa fa-square border border-primary-500 rounded-md text-primary-400"
-              :title="'More than 200 tickets.'"
-            />
+            <span v-text="'More'" />
           </div>
         </div>
 
-        <div
-          class="grid grid-cols-12 items-start w-100p gap-x-5 m-auto h-80p overflow-y-scroll scrollbar-hide"
-        >
-          <div
-            v-for="(month, m) in months"
-            class="flex flex-col items-center gap-1 font-bold"
-            :key="m"
-          >
-            <span class="block lg:hidden" v-text="m + 1" />
-            <span class="hidden lg:block" v-text="month.label" />
+        <div class="grid grid-cols-12 items-start gap-x-2 lg:gap-x-4 max-h-[65vh] overflow-y-auto">
+          <div v-for="(month, m) in months" class="flex flex-col items-center gap-1" :key="m">
+            <span class="block lg:hidden text-xs font-medium text-ink-muted" v-text="m + 1" />
+            <span
+              class="hidden lg:block text-xs font-medium text-ink-muted"
+              v-text="month.label.slice(0, 3)"
+            />
 
             <div
               v-for="(day, d) in month.days"
-              class="w-10/12 h-5 border border-primary-600 rounded-md hover:border-2 bg-primary-600 text-center font-normal text-xs"
+              class="grid place-items-center w-full h-5 rounded text-[10px] tabular-nums transition hover:ring-2 hover:ring-primary/60"
               :class="ticketCountColor(dayTicketCount(m, d))"
-              :title="`${day}. ${month?.label} ${selectedYear}`"
+              :title="`${day}. ${month?.label} ${selectedYear}: ${dayTicketCount(m, d) ?? 0} tickets`"
               :key="d"
               v-text="showNumbers ? dayTicketCount(m, d) : ''"
             />
@@ -148,6 +129,17 @@ export default defineComponent({
   },
 
   computed: {
+    // Heatmap steps, lowest to highest. Class names are literal so Tailwind keeps them.
+    legend() {
+      return [
+        { max: 10, class: 'bg-primary/30 text-ink', title: '1 to 10 tickets.' },
+        { max: 25, class: 'bg-primary/50 text-ink', title: '11 to 25 tickets.' },
+        { max: 50, class: 'bg-primary/70 text-on-primary', title: '26 to 50 tickets.' },
+        { max: 100, class: 'bg-primary/90 text-on-primary', title: '51 to 100 tickets.' },
+        { max: 200, class: 'bg-primary text-on-primary', title: '101 to 200 tickets.' },
+        { max: Infinity, class: 'bg-primary-600 text-on-primary', title: 'More than 200 tickets.' }
+      ]
+    },
     textOnSecondaryColor(): String {
       return this.$information?.textOnSecondaryColor
     },
@@ -191,28 +183,10 @@ export default defineComponent({
     },
 
     ticketCountColor(ticketCount: number) {
-      if (typeof ticketCount != 'number') {
-        return
+      if (typeof ticketCount != 'number' || ticketCount <= 0) {
+        return 'bg-surface-2 text-ink-muted'
       }
-
-      if (ticketCount <= 10) {
-        return 'bg-primary-900'
-      }
-      if (ticketCount > 10 && ticketCount <= 25) {
-        return 'bg-primary-800'
-      }
-      if (ticketCount > 25 && ticketCount <= 50) {
-        return 'bg-primary-700'
-      }
-      if (ticketCount > 50 && ticketCount <= 100) {
-        return 'bg-primary-600'
-      }
-      if (ticketCount > 100 && ticketCount <= 200) {
-        return 'bg-primary-500'
-      }
-      if (ticketCount > 200 && ticketCount <= 300) {
-        return 'bg-primary-400'
-      }
+      return this.legend.find((level) => ticketCount <= level.max)?.class
     }
   }
 })

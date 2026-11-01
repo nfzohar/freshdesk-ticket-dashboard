@@ -1,16 +1,7 @@
 <template>
   <div :key="Number(theValue)">
-    <h1 class="font-semibold" :class="labelClass" v-text="label" />
-    <div class="flex items-center gap-x-5 w-full">
-      <div class="flex flex-col w-full">
-        <input
-          v-model="inputValue"
-          type="date"
-          class="rounded-md bg-primary-600 shadow-primary-800 p-1 w-full"
-          :class="(inputClass, primaryColorText)"
-        />
-      </div>
-    </div>
+    <label class="field-label" :class="labelClass" v-text="label" />
+    <input v-model="inputValue" type="date" class="input" :class="inputClass" :aria-label="label" />
   </div>
 </template>
 

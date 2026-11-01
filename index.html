@@ -4,9 +4,20 @@
     <meta charset="UTF-8" />
     <title>Freshdesk Ticket Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Apply the saved theme before first paint to avoid a light/dark flash.
+      // Keep the storage key in sync with src/helpers/Theme.ts.
+      try {
+        var preference = localStorage.getItem('theme_preference') || 'system'
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (preference == 'dark' || (preference == 'system' && prefersDark)) {
+          document.documentElement.classList.add('dark')
+        }
+      } catch (e) {}
+    </script>
   </head>
 
-  <body claas="bg-secondary-500 h-full w-full">
+  <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

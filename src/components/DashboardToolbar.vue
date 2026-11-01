@@ -1,36 +1,41 @@
 <template>
-  <div
-    class="w-full h-32 md:h-20 mb-5 px-1 border-b-2 border-primary-500 shadow-primary-500 transition-all"
-    :class="[
-      primaryColorText,
-      textOnSecondaryColor,
-      { '-mt-32 md:-mt-24 ': autoHide && !modalsOpen && !toolbarShow }
-    ]"
+  <header
+    class="relative z-20 w-full h-28 md:h-16 shrink-0 border-b border-line bg-surface/80 backdrop-blur transition-[margin] duration-300"
+    :class="{ '-mt-28 md:-mt-16': autoHide && !modalsOpen && !toolbarShow }"
     @mouseleave="hideTopBar"
   >
     <div
-      class="flex flex-col md:flex-row items-center justify-between gap-y-2 py-3 px-1 w-full rounded-md"
+      class="flex flex-col md:flex-row items-center justify-between gap-2 h-full px-4 py-2 md:py-0"
     >
-      <div :class="textOnSecondaryColor">
-        <h1 class="text-xl md:text-2xl font-bold w-full md:w-max text-center" v-text="appTitle" />
+      <div class="flex items-center gap-3 min-w-0 max-w-full">
         <span
-          class="text-xs sm:text-sm w-1/2 sm:w-max md:flex md:text-sm font-semibold items-center text-center gap-x-2"
-          v-text="`Tickets from ${firstTicketDate} to ${lastTicketDate}`"
-        />
+          class="hidden sm:grid place-items-center h-9 w-9 shrink-0 rounded-lg bg-primary-500 text-on-primary"
+        >
+          <i class="fa fa-chart-simple" />
+        </span>
+        <div class="min-w-0 text-center md:text-left">
+          <h1 class="truncate text-base font-semibold leading-5" v-text="appTitle" />
+          <p
+            class="truncate text-xs text-ink-muted"
+            v-text="`Tickets from ${firstTicketDate} to ${lastTicketDate}`"
+          />
+        </div>
       </div>
 
-      <div
-        :key="Number(isLoading)"
-        :class="`flex items-center mx-2 gap-3 justify-between w-max ${primaryColorText}`"
-      >
-        <button class="actions-button" :title="'Refresh page'" @click.stop="$emit('refresh')">
+      <nav :key="Number(isLoading)" class="flex items-center gap-1" :aria-label="'Dashboard tools'">
+        <button class="actions-button" :title="'Refresh tickets'" @click.stop="$emit('refresh')">
           <i :class="`fa fa-rotate ${isLoading ? 'animate-spin' : ''}`" />
         </button>
 
-        <ticket-excel-exporter
-          :all-tickets="allTickets"
-          @startExport="$emit('startLoading')"
-          @finishExport="$emit('stopLoading')"
+        <ticket-filter-modal
+          @open="modalsOpen = true"
+          @close="modalsOpen = false"
+          @filtersUpdated="$emit('refresh')"
+        />
+        <all-tickets-list
+          :tickets="allTickets"
+          @open="modalsOpen = true"
+          @close="modalsOpen = false"
         />
         <open-tickets-graph
           :tickets="allTickets"
@@ -46,35 +51,47 @@
           @open="modalsOpen = true"
           @close="modalsOpen = false"
         />
-        <all-tickets-list
-          :tickets="allTickets"
-          @open="modalsOpen = true"
-          @close="modalsOpen = false"
+        <ticket-excel-exporter
+          :all-tickets="allTickets"
+          @startExport="$emit('startLoading')"
+          @finishExport="$emit('stopLoading')"
         />
-        <ticket-filter-modal
-          @open="modalsOpen = true"
-          @close="modalsOpen = false"
-          @filtersUpdated="$emit('refresh')"
-        />
+
+        <span class="mx-1 h-6 w-px bg-line" aria-hidden="true" />
+
+        <button
+          class="actions-button hidden md:inline-grid"
+          :title="'Edit layout: move, resize, add and remove panels'"
+          @click="$emit('editLayout')"
+        >
+          <i class="fa fa-pen-ruler" />
+        </button>
+        <theme-toggle />
+        <help-section @open="modalsOpen = true" @close="modalsOpen = false" />
         <dashboard-settings-modal
           @reloadDashboard="$emit('reload')"
           @openWizard="$emit('openWizard')"
+          @editLayout="$emit('editLayout')"
           @refetch="$emit('refetch')"
           @open="modalsOpen = true"
           @close="modalsOpen = false"
         />
-        <help-section @open="modalsOpen = true" @close="modalsOpen = false" />
-      </div>
+      </nav>
     </div>
-  </div>
+  </header>
 
-  <div v-if="autoHide" class="absolute h-5 w-full bg-none" @mouseenter="toolbarShow = true" />
+  <div
+    v-if="autoHide"
+    class="absolute top-0 z-10 h-4 w-full bg-none"
+    @mouseenter="toolbarShow = true"
+  />
 </template>
 
 <script lang="ts">
 import { format } from 'date-fns'
 import { defineComponent } from 'vue'
 import HelpSection from '@/components/HelpSection.vue'
+import ThemeToggle from '@/components/general/ThemeToggle.vue'
 import AllTicketsList from '@/components/AllTicketsList.vue'
 import TicketFilterModal from '@/components/TicketFilters.vue'
 import OpenTicketsGraph from '@/components/OpenTicketsGraph.vue'
@@ -99,6 +116,7 @@ export default defineComponent({
 
   components: {
     HelpSection,
+    ThemeToggle,
     AllTicketsList,
     OpenTicketsGraph,
     TicketFilterModal,
@@ -107,7 +125,15 @@ export default defineComponent({
     ResolvedStatisticsGraph
   },
 
-  emits: ['reload', 'refresh', 'startLoading', 'stopLoading', 'openWizard', 'refetch'],
+  emits: [
+    'reload',
+    'refresh',
+    'startLoading',
+    'stopLoading',
+    'openWizard',
+    'refetch',
+    'editLayout'
+  ],
 
   data() {
     return {

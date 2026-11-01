@@ -35,30 +35,29 @@
 
     <div
       v-if="tempStop"
-      :class="`flex items-center justify-between gap-x-24 rounded-md m-auto w-11/12 p-5 -mt-10 ${optionsFormStyle}`"
+      class="card flex flex-wrap items-center justify-between gap-x-10 gap-y-3 m-auto w-11/12 px-5 py-3 -mt-10"
     >
-      <span class="block uppercase font-bold opacity-50" v-text="'Carousel options'" />
+      <span
+        class="text-xs font-semibold uppercase tracking-wide text-ink-muted"
+        v-text="'Carousel options'"
+      />
 
       <a-checkbox
         :the-value="active"
         :checked="active"
-        class="font-bold m-auto"
+        class="font-medium"
         :label="'Spin the carousel'"
         :title="'Toggle carousel spin.'"
         @changed="(value) => (active = value)"
       />
 
-      <div>
-        <span class="font-bold mr-3" v-text="'Minutes per graph:'" />
-        <input
-          v-model="singleSlideTime"
-          class="text-black bg-white px-2 rounded-md"
-          type="number"
-        />
-      </div>
+      <label class="flex items-center gap-3 text-sm font-medium">
+        <span v-text="'Minutes per graph'" />
+        <input v-model="singleSlideTime" class="input w-24 py-1.5" type="number" min="1" />
+      </label>
 
-      <button @click="tempStop = false">
-        <i class="fa fa-times" />
+      <button class="actions-button" :title="'Hide carousel options'" @click="tempStop = false">
+        <i class="fa fa-xmark" />
       </button>
     </div>
   </div>
@@ -70,6 +69,7 @@ import { useToast } from 'vue-toastification'
 import ACheckbox from '@/components/general/ACheckbox.vue'
 import ACarousel from '@/components/general/ACarousel.vue'
 import { updatePanelInState } from '@/helpers/CommonMethods'
+import { panelsInReadingOrder } from '@/helpers/LayoutGrid'
 
 export default defineComponent({
   name: 'SpinLayout',
@@ -87,19 +87,16 @@ export default defineComponent({
     return {
       active: true,
       tempStop: false,
-      carouselItems: [],
       singleSlideTime: 2
     }
   },
 
   computed: {
-    carouselItemsFromState(): Array {
-      return Object.values(this.$configuration?.layoutGroups)
-    },
+    // Slides follow the grid's reading order; counters are pinned above the carousel.
     panels(): Array {
-      return this.carouselItemsFromState
-        ?.flat()
-        .filter((panel) => panel?.component != 'TicketCounters')
+      return panelsInReadingOrder(this.$configuration?.layoutPanels).filter(
+        (panel) => panel?.component != 'TicketCounters'
+      )
     },
     panelIds() {
       return this.panels?.map((panel) => panel?.id)
@@ -135,10 +132,6 @@ export default defineComponent({
     }
   },
 
-  mounted() {
-    this.carouselItems = this.carouselItemsFromState
-  },
-
   methods: {
     setGraphWidth(panel: Object) {
       let halpWidthViews = ['pie', 'doughnut']
@@ -148,13 +141,12 @@ export default defineComponent({
           ? 'w-1/3'
           : 'w-7/12'
         : halpWidthViews.includes(panel?.displayType)
-        ? 'w-1/2'
-        : 'w-full'
+          ? 'w-1/2'
+          : 'w-full'
     },
 
-    async updatePanel(newValue: String, panelId: String, property: String) {
-      await updatePanelInState(this.carouselItems, newValue, panelId, property)
-      this.carouselItems = this.carouselItemsFromState
+    updatePanel(newValue: any, panelId: string, property: string) {
+      updatePanelInState(panelId, property, newValue)
     }
   }
 })

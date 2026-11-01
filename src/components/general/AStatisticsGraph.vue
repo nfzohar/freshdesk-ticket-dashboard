@@ -32,6 +32,7 @@ import {
   PolarArea as PolarAreaChart
 } from 'vue-chartjs'
 import { defineComponent } from 'vue'
+import { theme } from '@/helpers/Theme'
 
 Chart.register(
   Title,
@@ -80,7 +81,13 @@ export default defineComponent({
     customClass: {
       type: String,
       required: false,
-      default: 'w-full m-auto p-2 border-primary-700 border bg-secondary-500 rounded-md'
+      default: 'w-full m-auto p-2'
+    },
+    // Stretch to the parent's size instead of keeping the chart's aspect ratio.
+    fill: {
+      type: Boolean,
+      required: false,
+      default: false
     },
     datasetsThroughProp: {
       type: Boolean,
@@ -89,7 +96,31 @@ export default defineComponent({
     }
   },
 
+  data() {
+    return {
+      theme,
+      // Random start hue, so the panel's palette button still yields a new palette.
+      paletteSeed: Math.random() * 360
+    }
+  },
+
   computed: {
+    // Read from the theme tokens, so charts follow light/dark mode.
+    themeColors() {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.theme.dark
+      const style = getComputedStyle(document.documentElement)
+      const token = (name: string) => `rgb(${style.getPropertyValue(name).trim()})`
+      const tokenAlpha = (name: string, alpha: number) =>
+        `rgb(${style.getPropertyValue(name).trim()} / ${alpha})`
+
+      return {
+        text: token('--ink-muted'),
+        grid: tokenAlpha('--line', 0.8),
+        line: token('--ink'),
+        surface: token('--surface')
+      }
+    },
     chartData() {
       let chartsData = {
         labels: this.datasetLabels,
@@ -109,16 +140,34 @@ export default defineComponent({
       return chartsData
     },
     chartOptions() {
+      const colors = this.themeColors
+      const axis = {
+        ticks: { color: colors.text },
+        grid: { color: colors.grid },
+        border: { color: colors.grid }
+      }
+      const radialAxis = {
+        ticks: { color: colors.text, backdropColor: 'transparent' },
+        grid: { color: colors.grid },
+        angleLines: { color: colors.grid },
+        pointLabels: { color: colors.text }
+      }
+      const isRound = ['pie', 'doughnut', 'polar-area'].includes(this.type)
+
       return {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: !this.fill,
         tension: this.graphTension,
         indexAxis: this.graphIndexAxis,
+        borderColor: colors.surface,
+        elements: { bar: { borderRadius: 6 } },
+        scales: this.type == 'polar-area' ? { r: radialAxis } : isRound ? {} : { x: axis, y: axis },
         plugins: {
           legend: {
             display: this.showGraphLegend,
             position: this.legendPosition,
-            title: 'Tickets'
+            title: 'Tickets',
+            labels: { color: colors.text, usePointStyle: true }
           }
         }
       }
@@ -141,9 +190,7 @@ export default defineComponent({
       )
     },
     graphBorderColor(): Any {
-      let lineColor = this.$information?.isSecondaryColorDark ? '#ffffff' : '#000000'
-
-      return ['line', 'bezier-line'].includes(this.type) ? lineColor : 'transparent'
+      return ['line', 'bezier-line'].includes(this.type) ? this.themeColors.line : 'transparent'
     },
     chartType(): String {
       if (this.type == 'pie') return 'PieChart'
@@ -156,14 +203,14 @@ export default defineComponent({
       return 'BarChart'
     },
     datasetBackground() {
+      // Evenly spread hues (golden angle) with fixed saturation and lightness, so
+      // neighbouring bars stay distinct and every colour reads on both themes.
+      const lightness = this.theme.dark ? 62 : 52
       let colors = []
 
       for (let i = 0; i < this.datasets?.length; i++) {
-        let randomNumber = Math.random()
-        randomNumber *= randomNumber
-
-        let newColor = Math.floor(randomNumber * 0xfffff * 100000)
-        colors[i] = `#${newColor.toString(16).slice(0, 3)}`
+        const hue = (this.paletteSeed + i * 137.508) % 360
+        colors[i] = `hsl(${hue.toFixed(0)} 65% ${lightness}%)`
       }
       return colors
     }

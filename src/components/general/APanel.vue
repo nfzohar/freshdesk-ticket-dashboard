@@ -1,25 +1,43 @@
 <template>
-  <div :class="`w-full h-min rounded-md ${accentSecondaryBg} ${panelBorder}`">
-    <div class="flex items-center justify-between py-1 px-2">
-      <h1
-        class="text-xl font-bold capitalize cursor-pointer"
+  <section
+    class="card w-full overflow-hidden"
+    :class="panelFill ? 'h-full flex flex-col' : 'h-min'"
+  >
+    <header class="flex shrink-0 items-center justify-between gap-2 py-2 pl-4 pr-2">
+      <!-- In the grid, panel height is set by resizing, so collapsing is turned off. -->
+      <h2
+        v-if="panelFill"
+        class="truncate text-sm font-semibold capitalize"
+        :title="title"
         v-text="title"
-        @click="toggleVisibility"
       />
+      <button
+        v-else
+        class="flex items-center gap-2 min-w-0 text-left"
+        :title="isOpen ? 'Collapse panel' : 'Expand panel'"
+        :aria-expanded="isOpen"
+        @click="toggleVisibility"
+      >
+        <i
+          class="fa fa-chevron-down text-xs text-ink-muted transition-transform"
+          :class="{ '-rotate-90': !isOpen }"
+        />
+        <h2 class="truncate text-sm font-semibold capitalize" v-text="title" />
+      </button>
 
-      <div v-if="showViewSwitch" class="flex items-center gap-x-2">
+      <div v-if="showViewSwitch" class="flex items-center gap-0.5">
         <template v-if="!selectedViewDefault">
           <button
-            class="graph-icon transition-transform hover:rotate-45"
+            class="actions-button h-8 w-8 text-sm"
             :title="'Generate new graph color palette'"
             @click="updateToken++"
           >
-            <i class="fa fa-brush" />
+            <i class="fa fa-palette" />
           </button>
 
           <button
             v-if="isSortable"
-            class="graph-icon transition-transform"
+            class="actions-button h-8 w-8 text-sm"
             :title="sortTitle"
             :key="selectedSortBy"
             @click="setSort()"
@@ -28,27 +46,36 @@
           </button>
         </template>
 
-        <button class="graph-icon" :title="'Switch display type'" @click="nextView()">
+        <button
+          class="actions-button h-8 w-8 text-sm"
+          :title="'Switch display type'"
+          @click="nextView()"
+        >
           <i class="fa fa-shuffle" />
         </button>
       </div>
-    </div>
+    </header>
 
-    <div v-if="isOpen" class="w-full h-auto p-1">
-      <hr class="mx-1 border border-primary-500" />
+    <div
+      v-if="isOpen || panelFill"
+      class="w-full border-t border-line"
+      :class="panelFill ? 'flex-1 min-h-0 overflow-y-auto scrollbar-hide' : 'h-auto'"
+    >
       <slot v-if="selectedViewDefault" name="defaultView" />
 
-      <a-statistics-graph
-        v-else
-        :key="(selectedView, selectedSortBy, updateToken)"
-        :type="selectedView"
-        :custom-class="'p-5'"
-        :dataset-title="title"
-        :datasets="dataset?.values"
-        :dataset-labels="dataset?.labels"
-      />
+      <div v-else :class="panelFill ? 'relative h-full p-4' : 'p-4'">
+        <a-statistics-graph
+          :key="(selectedView, selectedSortBy, updateToken)"
+          :type="selectedView"
+          :custom-class="''"
+          :fill="panelFill"
+          :dataset-title="title"
+          :datasets="dataset?.values"
+          :dataset-labels="dataset?.labels"
+        />
+      </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -60,6 +87,9 @@ export default defineComponent({
   name: 'APanel',
 
   components: { AStatisticsGraph },
+
+  // Provided by the grid layout: the panel fills its grid cell instead of sizing to content.
+  inject: { panelFill: { default: false } },
 
   emits: ['updatedDisplayType', 'updatedGraphSort', 'toggleVisibility', 'panelUpdated'],
 
@@ -184,9 +214,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-.graph-icon {
-  @apply w-7 h-7 rounded-full border border-primary-500 hover:bg-primary-500;
-}
-</style>

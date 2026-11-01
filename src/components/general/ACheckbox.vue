@@ -1,14 +1,14 @@
 <template>
-  <div class="flex items-center my-1">
+  <label class="inline-flex items-center gap-2.5 my-1 cursor-pointer select-none">
     <input
       v-model="inputValue"
       type="checkbox"
       :checked="inputValue"
-      class="rounded-md w-5 h-5 mr-2"
+      class="h-4 w-4 shrink-0 rounded accent-primary-500 cursor-pointer"
       :class="inputClass"
     />
-    <label :class="labelClass" v-text="label" />
-  </div>
+    <span class="text-sm" :class="labelClass" v-text="label" />
+  </label>
 </template>
 
 <script lang="ts">

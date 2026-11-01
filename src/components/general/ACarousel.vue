@@ -1,15 +1,15 @@
 <template>
   <div class="flex items-center w-full h-full">
-    <button class="p-5 text-5xl" @click="index--">
-      <i class="fa fa-caret-left" />
+    <button class="carousel-nav" :title="'Previous panel'" @click="index--">
+      <i class="fa fa-chevron-left" />
     </button>
 
     <template v-for="(slideId, s) in slides" :key="s">
       <slot v-if="index == s" :id="slideId" :name="`slide_${s}`" />
     </template>
 
-    <button class="p-5 text-5xl" @click="index++">
-      <i class="fa fa-caret-right" />
+    <button class="carousel-nav" :title="'Next panel'" @click="index++">
+      <i class="fa fa-chevron-right" />
     </button>
   </div>
 </template>
@@ -89,3 +89,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.carousel-nav {
+  @apply grid place-items-center shrink-0 m-4 h-12 w-12 rounded-full border border-line bg-surface text-lg text-ink-muted shadow-sm transition-colors hover:text-ink hover:bg-surface-2;
+}
+</style>

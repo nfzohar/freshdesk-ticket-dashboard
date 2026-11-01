@@ -1,65 +1,69 @@
 <template>
-  <div class="flex items-start justify-between w-80vh border-primary-500 border-b pb-2">
-    <h1 class="text-3xl font-semibold" v-text="`#${theTicket?.id}: ${theTicket?.subject}`" />
-    <button
-      v-if="showBackButton"
-      :class="`primary-button py-1 px-3 hover:font-bold border-none ${primaryTextClass}`"
-      @click.stop="$emit('closeDetails')"
-      v-text="'Back'"
-    />
+  <div class="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-line">
+    <div class="flex items-start gap-2 min-w-0">
+      <button
+        v-if="showBackButton"
+        class="actions-button shrink-0"
+        :title="'Back to the ticket list'"
+        @click.stop="$emit('closeDetails')"
+      >
+        <i class="fa fa-arrow-left" />
+      </button>
+      <div class="min-w-0">
+        <span class="chip tabular-nums" v-text="`#${theTicket?.id ?? ''}`" />
+        <h3 class="mt-1.5 text-lg font-semibold leading-snug" v-text="theTicket?.subject" />
+      </div>
+    </div>
+
+    <a
+      class="btn-secondary shrink-0"
+      :href="ticketUrl"
+      :target="'_blank'"
+      rel="noopener"
+      :title="'For more information, open this ticket in your Freshdesk.'"
+    >
+      <span v-text="'Open in Freshdesk'" />
+      <i class="fa fa-arrow-up-right-from-square text-xs" />
+    </a>
   </div>
 
-  <div
-    :key="theTicket?.id"
-    :class="[
-      `w-full scrollbar-hide overflow-y-scroll h-full`,
-      { 'is-loading': isLoading },
-      secondaryTextClass
-    ]"
-  >
-    <div
-      :class="`flex flex-col md:flex-row-reverse items-start gap-5 h-full py-3 ${secondaryTextClass}`"
-    >
+  <div :key="theTicket?.id" :class="['w-full pt-4', { 'is-loading min-h-[40vh]': isLoading }]">
+    <div class="flex flex-col lg:flex-row items-start gap-5">
+      <!-- Ticket HTML is sanitized; kept on a light "paper" surface since email markup assumes it. -->
       <div
-        class="grid grid-cols-3 gap-3 md:block w-full md:w-3/12 h-80vh scrollbar-hide overflow-y-scroll"
-      >
-        <template v-for="(field, f) in ticketFields" :key="f">
-          <div v-if="field?.show" class="py-1">
-            <span class="block w-full font-bold capitalize" v-text="field?.label" />
+        class="w-full lg:flex-1 max-h-[65vh] overflow-y-auto rounded-xl border border-line bg-white p-5 text-sm text-neutral-900"
+        v-html="ticketDescription"
+      />
 
-            <div :class="`rounded-md p-3 text-center ${secondaryBgAccentColor}`">
-              <span class="w-auto text-center font-semibold" v-text="field?.value ?? 'N/A'" />
+      <dl class="w-full lg:w-72 shrink-0 grid grid-cols-2 lg:grid-cols-1 gap-3">
+        <template v-for="(field, f) in ticketFields" :key="f">
+          <div v-if="field?.show" class="rounded-lg bg-surface-2/70 px-3 py-2">
+            <dt class="text-xs font-medium text-ink-muted capitalize" v-text="field?.label" />
+            <dd class="mt-0.5 flex items-center gap-2 text-sm">
+              <span class="truncate" v-text="field?.value ?? 'N/A'" />
               <a
                 v-if="field?.url"
-                :class="'mx-2 hover:text-primary-500'"
+                class="text-ink-muted hover:text-ink"
                 :href="field?.url"
                 :target="'_blank'"
+                rel="noopener"
+                :title="`Open ${field?.label} in Freshdesk`"
               >
-                <i class="fa fa-external-link" />
+                <i class="fa fa-arrow-up-right-from-square text-xs" />
               </a>
-            </div>
+            </dd>
           </div>
         </template>
 
-        <div v-for="(field, f) in customFields" :key="f" class="py-1">
-          <span class="w-full font-bold capitalize" v-text="field?.label" />
-          <div :class="`rounded-md p-3 text-center ${secondaryBgAccentColor}`">
-            <span class="w-auto text-center font-semibold" v-text="field?.value ?? 'N/A'" />
-          </div>
+        <div
+          v-for="(field, f) in customFields"
+          :key="`cf-${f}`"
+          class="rounded-lg bg-surface-2/70 px-3 py-2"
+        >
+          <dt class="text-xs font-medium text-ink-muted capitalize" v-text="field?.label" />
+          <dd class="mt-0.5 text-sm truncate" v-text="field?.value ?? 'N/A'" />
         </div>
-        <a
-          class="block w-full text-center hover:text-primary-500 hover:font-bold mt-5 text-base px-1"
-          :href="ticketUrl"
-          :target="'_blank'"
-          :title="'For more information, open this ticket in your Freshdesk.'"
-          v-html="`View ticket in Freshdesk <i class='fa fa-external-link' />`"
-        />
-      </div>
-
-      <div
-        class="block bg-white text-black w-full h-80vh scrollbar-hide overflow-y-scroll md:w-9/12 p-5 rounded-lg scrollbar-hide"
-        v-html="ticketDescription"
-      />
+      </dl>
     </div>
   </div>
 </template>

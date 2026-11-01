@@ -1,5 +1,13 @@
 <template>
-  <a-dialog :manual-open="true">
+  <a-dialog
+    :manual-open="open"
+    size="xl"
+    icon="fa fa-filter"
+    :title="'Filters'"
+    :subtitle="'Narrow down the tickets shown on the dashboard.'"
+    @open="$emit('open')"
+    @close="$emit('close')"
+  >
     <template #trigger>
       <button class="actions-button" :title="'Filters'" @click="open = true">
         <i class="fa fa-filter" />
@@ -7,48 +15,23 @@
     </template>
 
     <template #content>
-      <div
-        class="flex flex-col gap-5 m-auto h-90vh overflow-y-scroll scrollbar-hide w-9/12 bg-secondary-500 border-primary-500 border rounded-md p-5"
-        :class="[secondaryColorText, { 'is-loading': isLoading }]"
-        @keydown.esc="open = false"
-      >
-        <div class="flex items-center justify-between w-full">
-          <h1 class="text-3xl font-bold cursor-pointer" v-text="'Filters'" />
-          <div class="flex gap-5">
-            <button
-              :class="`filters-action ${primaryColorText}`"
-              v-text="'Reset filters'"
-              @click="updateFilters([])"
-            />
-            <button
-              :class="`filters-action ${primaryColorText}`"
-              v-text="'Apply filters'"
-              @click="updateFilters(allCurrentFilters)"
-            />
-          </div>
-        </div>
-
-        <div class="flex items-start p-0 m-0">
-          <div class="grid grid-cols-1 w-full h-full overflow-y-scroll scrollbar-hide p-2">
+      <div class="flex flex-col gap-4" :class="{ 'is-loading': isLoading }">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          <div class="flex flex-col gap-4 lg:col-span-2">
             <a-filter-section
               v-for="(date, d) in dates"
               :key="d"
               :section-title="date?.title"
-              :body-class="'flex flex-col lg:flex-row items-center justify-between p-2'"
+              :body-class="'grid grid-cols-2 gap-3'"
             >
               <a-date-select
                 :the-value="date['from']"
-                :label="'From:'"
-                :class="'w-full'"
-                :label-class="'text-sm font-normal'"
+                :label="'From'"
                 @changed="(value) => (date.from = value)"
               />
-              <span class="hidden lg:block font-bold text-2xl px-4" v-text="'-'" />
               <a-date-select
                 :the-value="date['to']"
-                :label="'To:'"
-                :class="'w-full'"
-                :label-class="'text-sm font-normal'"
+                :label="'To'"
                 @changed="(value) => (date.to = value)"
               />
             </a-filter-section>
@@ -56,8 +39,9 @@
 
           <a-filter-section
             :key="filters?.length"
+            class="lg:col-span-3"
             :section-title="'Ticket fields'"
-            :body-class="'grid grid-cols-1 lg:grid-cols-2 gap-5 w-full h-50vh overflow-y-scroll scrollbar-hide p-2'"
+            :body-class="'grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[50vh] overflow-y-auto pr-1'"
           >
             <template v-for="(filter, f) in filters" :key="f">
               <a-select
@@ -67,7 +51,6 @@
                 :options="filter?.choices"
                 :show-null-value="true"
                 :null-value-label="'All'"
-                :input-class="'bg-primary-500'"
                 :label-field="ticketFieldsLabel(filter)"
                 :value-field="ticketFieldsValue(filter)"
                 @changed="(value) => (filter.value = value)"
@@ -76,52 +59,65 @@
           </a-filter-section>
         </div>
 
-        <div class="bg-secondary-500 w-full p-4 h-full">
-          <div class="flex items-center justify-between border-b border-primary-600 py-1">
-            <h1 class="w-full text-lg font-bold capitalize" v-text="'Saved filter presets'" />
-            <div class="flex items-center w-min">
-              <input
-                class="bg-transparent border border-primary-500 rounded-l-md px-2 outline-none"
-                :placeholder="'New filter preset name...'"
-                type="text"
-                v-model="filterPresetName"
-                @keydown.enter="addNewPreset(filters, dates)"
-              />
-              <button
-                class="w-max px-1 font-bold border capitalize border-primary-500 rounded-r-md hover:bg-primary-500"
-                :title="'Save current filters as a preset.'"
-                v-text="'Save'"
-                @click="addNewPreset(filters, dates)"
-              />
-            </div>
-          </div>
-
-          <div
-            :key="filters?.length"
-            class="grid gap-5 items-center p-3 bg-secondary-600 rounded-md"
-            :class="{ 'grid-cols-5': filterPresets?.length }"
-          >
-            <span
-              v-if="!filterPresets?.length"
-              class="block opacity-50 w-full"
-              v-text="'No presets created yet.'"
+        <a-filter-section :section-title="'Saved presets'" :body-class="'flex flex-col gap-3'">
+          <div class="flex gap-2">
+            <input
+              v-model="filterPresetName"
+              class="input"
+              type="text"
+              :placeholder="'Name the current filters to save them as a preset…'"
+              :aria-label="'Preset name'"
+              @keydown.enter="addNewPreset(filters, dates)"
             />
             <button
-              v-for="(preset, p) in filterPresets"
-              :key="p"
-              class="flex justify-between items-center w-full px-2 border border-primary-500 rounded-md bg-primary-500 hover:bg-primary-600"
-              :class="primaryColorText"
-              @click="updateFilters(preset)"
+              class="btn-secondary shrink-0"
+              :title="'Save current filters as a preset.'"
+              @click="addNewPreset(filters, dates)"
             >
-              <span v-text="preset?.name" />
-              <button
-                @click.stop="removePreset(preset?.name)"
-                v-html="`<i class='fa fa-times'/>`"
-              />
+              <i class="fa fa-bookmark" />
+              <span v-text="'Save'" />
             </button>
           </div>
-        </div>
+
+          <div :key="filters?.length" class="flex flex-wrap gap-2">
+            <span
+              v-if="!filterPresets?.length"
+              class="text-sm text-ink-muted"
+              v-text="'No presets created yet.'"
+            />
+            <div
+              v-for="(preset, p) in filterPresets"
+              :key="p"
+              class="inline-flex items-center rounded-full border border-line bg-surface-2 text-sm"
+            >
+              <button
+                class="pl-3 pr-1 py-1 font-medium hover:text-primary-500"
+                :title="'Apply this preset'"
+                @click="updateFilters(preset)"
+                v-text="preset?.name"
+              />
+              <button
+                class="grid place-items-center h-7 w-7 rounded-full text-ink-muted hover:text-ink hover:bg-surface"
+                :title="`Delete preset ${preset?.name}`"
+                @click.stop="removePreset(preset?.name)"
+              >
+                <i class="fa fa-xmark text-xs" />
+              </button>
+            </div>
+          </div>
+        </a-filter-section>
       </div>
+    </template>
+
+    <template #footer>
+      <button class="btn-ghost" @click="updateFilters([])">
+        <i class="fa fa-rotate-left" />
+        <span v-text="'Reset filters'" />
+      </button>
+      <button class="btn-primary" @click="updateFilters(allCurrentFilters)">
+        <i class="fa fa-check" />
+        <span v-text="'Apply filters'" />
+      </button>
     </template>
   </a-dialog>
 </template>
@@ -138,14 +134,14 @@ export default defineComponent({
 
   components: { AFilterSection, ASelect, ADialog, ADateSelect },
 
-  emits: ['filtersUpdated'],
+  emits: ['filtersUpdated', 'open', 'close'],
 
   data() {
     return {
       filters: new Array(),
       filterPresetName: '',
       isLoading: false,
-      open: true,
+      open: false,
       dates: {
         createdAt: {
           title: 'Created at',

@@ -1,28 +1,33 @@
 <template>
-  <div class="flex items-center text-center gap-10">
-    <div
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <button
       v-for="(option, o) in options"
       :key="o"
-      class="flex flex-col w-full p-5 gap-y-3 lg:p-10 border border-primary-500 rounded-md"
+      class="group flex flex-col items-start gap-4 rounded-xl border border-line bg-surface p-6 text-left transition hover:border-primary-500 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+      @mouseenter="option.animate = true"
+      @mouseleave="option.animate = false"
+      @click="option.function"
     >
-      <h2 class="uppercase font-bold text-base lg:text-lg xl:text-2xl" v-text="option?.title" />
-      <p v-text="option?.description" :class="secondaryColorText" />
-      <button
-        class="flex flex-col items-center border-4 border-primary-600 bg-primary-500 rounded-md py-5 px-10 m-auto font-bold"
-        :class="`hover:bg-primary-600 hover:border-primary-500 ${primaryColorText}`"
-        @mouseenter="option.animate = true"
-        @mouseleave="option.animate = false"
-        @click="option.function"
+      <span
+        class="grid place-items-center h-12 w-12 rounded-xl bg-primary/10 text-primary-500 text-xl"
       >
-        <i class="text-7xl p-5" :class="[option?.icon, { 'animate-bounce': option.animate }]" />
+        <i :class="[option?.icon, { 'motion-safe:animate-bounce': option.animate }]" />
+      </span>
+      <span>
+        <span class="block text-base font-semibold" v-text="option?.title" />
+        <span class="block mt-1 text-sm text-ink-muted" v-text="option?.description" />
+      </span>
+      <span class="btn-primary mt-auto">
         <span v-text="option?.button" />
-      </button>
-    </div>
+        <i class="fa fa-arrow-right" />
+      </span>
+    </button>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { presetPanels } from '@/helpers/LayoutGrid'
 
 export default defineComponent({
   name: 'ConfigPresetOrCustomSelect',
@@ -88,71 +93,12 @@ export default defineComponent({
       this.$toast.success('Dashboard configuration was updated.')
     },
 
-    generateNewPanelId(): String {
-      return String(Math.random() * 10000).split('.')[0]
-    },
-
     setLayoutPanelsPreset() {
       let layout = {
         autoHideToolbar: true,
-        component: 'rows-layout',
+        component: 'grid-layout',
         visibleTicketCounts: [],
-        groups: [
-          [
-            {
-              id: this.generateNewPanelId(),
-              component: 'TicketCounters',
-              displayType: 'default',
-              visible: true,
-              sortBy: '',
-              data: {}
-            }
-          ],
-          [
-            {
-              id: this.generateNewPanelId(),
-              component: 'TicketTypesList',
-              displayType: 'v-bar',
-              visible: true,
-              sortBy: '',
-              data: {}
-            },
-            {
-              id: this.generateNewPanelId(),
-              component: 'TicketTagsList',
-              displayType: 'h-bar',
-              visible: true,
-              sortBy: '',
-              data: {}
-            },
-            {
-              id: this.generateNewPanelId(),
-              component: 'TicketGroupsList',
-              displayType: 'default',
-              visible: true,
-              sortBy: '',
-              data: {}
-            }
-          ],
-          [
-            {
-              id: this.generateNewPanelId(),
-              component: 'AgentsLeaderboard',
-              displayType: 'default',
-              visible: true,
-              sortBy: '',
-              data: {}
-            },
-            {
-              id: this.generateNewPanelId(),
-              component: 'RequestersLeaderboard',
-              displayType: 'default',
-              visible: true,
-              sortBy: '',
-              data: {}
-            }
-          ]
-        ]
+        panels: presetPanels()
       }
       this.$configuration.updateLayout(layout)
       this.$toast.success('Dashboard configuration was updated.')

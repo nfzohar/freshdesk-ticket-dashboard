@@ -2,26 +2,111 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  padding: 0;
-  margin: 0;
-  @apply bg-secondary-100;
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    padding: 0;
+    margin: 0;
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
 }
 
-.dashboard-body {
-  @apply w-screen h-screen overflow-hidden bg-secondary-500;
+@layer components {
+  .dashboard-body {
+    @apply w-screen h-screen overflow-hidden bg-canvas text-ink;
+  }
+
+  /* Surfaces */
+  .card {
+    @apply rounded-xl border border-line bg-surface shadow-sm;
+  }
+
+  .panel-body {
+    @apply grid grid-cols-1 gap-2 items-center w-full bg-transparent p-3;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-500 text-on-primary hover:bg-primary-600 shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply btn border border-line bg-surface text-ink hover:bg-surface-2;
+  }
+
+  .btn-ghost {
+    @apply btn text-ink-muted hover:text-ink hover:bg-surface-2;
+  }
+
+  .btn-danger {
+    @apply btn border border-red-500/30 text-red-600 hover:bg-red-500/10 dark:text-red-400;
+  }
+
+  /* Legacy names, restyled. */
+  .primary-button {
+    @apply btn-primary;
+  }
+
+  .actions-button {
+    @apply inline-grid place-items-center h-9 w-9 rounded-lg text-base text-ink-muted transition-colors hover:text-ink hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50;
+  }
+
+  /* Form controls */
+  .input {
+    @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-muted/70 transition-colors focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary/25;
+  }
+
+  .field-label {
+    @apply block mb-1.5 text-sm font-medium text-ink;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs font-medium text-ink;
+  }
+
+  .spinner {
+    @apply inline-block h-10 w-10 rounded-full border-4 border-line border-t-primary-500 animate-spin;
+  }
+
+  .skeleton {
+    @apply rounded-lg bg-surface-2 animate-pulse;
+  }
 }
 
-.panel-body {
-  @apply grid grid-cols-1 gap-5 items-center justify-between w-full bg-transparent p-2 rounded-md shadow-primary-600;
+/* Dashboard grid (grid-layout-plus). Doubled class beats the library's injected defaults. */
+.dashboard-grid.vgl-layout {
+  --vgl-placeholder-bg: rgb(var(--primary));
+  --vgl-placeholder-opacity: 18%;
+  --vgl-item-dragging-opacity: 92%;
+  --vgl-item-resizing-opacity: 92%;
+  --vgl-resizer-size: 22px;
+  --vgl-resizer-border-color: rgb(var(--primary));
+  --vgl-resizer-border-width: 3px;
 }
 
-.primary-button {
-  @apply border rounded-md bg-primary-500;
+.dashboard-grid .vgl-item--placeholder {
+  border-radius: 0.75rem;
 }
 
-.actions-button {
-  @apply rounded-md text-center text-lg bg-primary-500 border border-primary-600 hover:bg-primary-600 shadow-primary-600 h-10 w-10;
+/* Above the edit overlay, so the corner stays grabbable. */
+.dashboard-grid .vgl-item__resizer {
+  z-index: 20;
+}
+
+.dashboard-grid .vgl-item--dragging,
+.dashboard-grid .vgl-item--resizing {
+  @apply shadow-2xl rounded-xl;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -41,46 +126,31 @@ body {
 .is-loading {
   position: relative;
   pointer-events: none;
-  text-shadow: none;
-  color: transparent;
-  -webkit-transition: all 0s linear;
-  transition: all 0s linear;
   cursor: progress;
 }
 
 .is-loading:before {
   position: absolute;
   content: '';
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 0.28571429rem;
+  inset: 0;
   z-index: 100;
-  opacity: 0.8;
-  @apply bg-secondary-500;
+  background: rgb(var(--canvas) / 0.7);
+  backdrop-filter: blur(2px);
 }
 
 .is-loading:after {
   content: '';
   position: absolute;
-  top: 1%;
-  left: 1%;
-  right: 1%;
-  bottom: 1%;
+  inset: 0;
   margin: auto;
-  width: 200px;
-  height: 200px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  border-top: 30px solid #767676;
-  border-bottom: 30px solid #767676;
-
-  border-right: 30px solid transparent;
-  border-left: 30px solid transparent;
-  animation: spinner 0.6s linear infinite;
+  border: 4px solid rgb(var(--line));
+  animation: spinner 0.7s linear infinite;
   z-index: 101;
 
-  @apply border-y-primary-500;
+  @apply border-t-primary-500;
 }
 
 @keyframes spinner {
@@ -110,5 +180,12 @@ body {
   to {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-loading:after,
+  .spinner {
+    animation-duration: 1.5s;
   }
 }

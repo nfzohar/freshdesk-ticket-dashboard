@@ -1,44 +1,46 @@
 <template>
-  <a-overlay :closable="closable" @close="$emit('close')">
-    <div class="w-11/12 md:w-11/12 h-11/12 m-auto sm:py-10">
-      <h1 class="text-5xl w-full text-left p-5 font-bold" v-text="'Configuration Wizard'" />
+  <a-overlay
+    size="xl"
+    icon="fa fa-wand-magic-sparkles"
+    :title="'Configuration wizard'"
+    :subtitle="subtitle"
+    :closable="closable"
+    @close="$emit('close')"
+  >
+    <config-preset-or-custom-select
+      v-if="!page"
+      @buildCustom="page = 1"
+      @usePreset="page = steps.length + 1"
+    />
+    <tabs
+      v-else
+      :key="page"
+      :tab-keywords="steps"
+      :def-selected-tab="page"
+      :select-tab-on-click="layoutDefined"
+      @selectedTabIndex="(value) => (page = value)"
+    >
+      <template #tab_1>
+        <auto-refresh-settings />
+      </template>
+      <template #tab_2>
+        <leaderboards-settings />
+      </template>
+      <template #tab_3>
+        <layout-selection />
+      </template>
+    </tabs>
 
-      <div
-        :class="`px-5 ${secondaryColorText} ${page ? 'border border-primary-500 rounded-md py-5' : ''}`"
-      >
-        <config-preset-or-custom-select
-          v-if="!page"
-          @buildCustom="page = 1"
-          @usePreset="page = 5"
-        />
-        <tabs
-          v-else
-          :key="page"
-          :tab-keywords="steps"
-          :def-selected-tab="page"
-          :select-tab-on-click="layoutGroupsAreDefined"
-          @selectedTabIndex="(value) => (page = value)"
-        >
-          <template #tab_1>
-            <auto-refresh-settings />
-          </template>
-          <template #tab_2>
-            <leaderboards-settings />
-          </template>
-          <template #tab_3>
-            <layout-selection />
-          </template>
-          <template #tab_4>
-            <layout-setup />
-          </template>
-        </tabs>
-      </div>
-
-      <div v-if="page" :class="`flex justify-between w-full py-5 px-3 ${primaryColorText}`">
-        <button class="wizard-navigation" v-text="'Back'" @click="page--" />
-        <button class="wizard-navigation" v-text="page < 4 ? 'Next' : 'Save'" @click="page++" />
-      </div>
-    </div>
+    <template v-if="page" #footer>
+      <button class="btn-secondary" @click="page--">
+        <i class="fa fa-arrow-left" />
+        <span v-text="'Back'" />
+      </button>
+      <button class="btn-primary" @click="page++">
+        <span v-text="page < steps.length ? 'Next' : 'Finish'" />
+        <i :class="page < steps.length ? 'fa fa-arrow-right' : 'fa fa-check'" />
+      </button>
+    </template>
   </a-overlay>
 </template>
 
@@ -46,7 +48,6 @@
 import { defineComponent } from 'vue'
 import Tabs from '@/components/wizard/Tabs.vue'
 import AOverlay from '@/components/general/AOverlay.vue'
-import LayoutSetup from '@/components/wizard/LayoutSetup.vue'
 import LayoutSelection from '@/components/wizard/LayoutSelection.vue'
 import AutoRefreshSettings from '@/components/wizard/AutoRefreshSettings.vue'
 import LeaderboardsSettings from '@/components/wizard/LeaderboardsSettings.vue'
@@ -72,50 +73,38 @@ export default defineComponent({
     AutoRefreshSettings,
     LeaderboardsSettings,
     LayoutSelection,
-    LayoutSetup,
     Tabs
   },
 
   data() {
     return {
       page: 0,
-      steps: [
-        'Auto Refresh Settings',
-        'Leaderboards Settings',
-        'Layout Orientation',
-        'Layout Setup'
-      ]
+      steps: ['Auto Refresh Settings', 'Leaderboards Settings', 'Layout Orientation']
     }
   },
 
   computed: {
-    layoutGroupsAreDefined(): Boolean {
-      return this.$configuration?.layoutGroups?.length ? true : false
+    layoutDefined(): Boolean {
+      return this.$configuration?.layoutPanels?.length > 0
     },
-    primaryColorText(): String {
-      return this.$information?.textOnPrimaryColor
-    },
-    secondaryColorText(): String {
-      return this.$information?.textOnSecondaryColor
+    subtitle(): String {
+      return this.page && this.page <= this.steps.length
+        ? `Step ${this.page} of ${this.steps.length} · ${this.steps[this.page - 1]}`
+        : 'Start from a preset or build your own dashboard layout.'
     }
   },
 
   watch: {
     page() {
-      if (this.page == 5) {
+      // Panels are arranged afterwards, in the dashboard's edit mode.
+      if (this.page > this.steps.length) {
         this.$emit('finished')
       }
     }
   },
 
   created() {
-    this.page = this.layoutGroupsAreDefined ? 1 : 0
+    this.page = this.layoutDefined ? 1 : 0
   }
 })
 </script>
-
-<style scoped>
-.wizard-navigation {
-  @apply w-52 px-4 py-2 border border-primary-600 bg-primary-500 rounded-md font-semibold;
-}
-</style>

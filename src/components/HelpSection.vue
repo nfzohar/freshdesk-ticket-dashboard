@@ -1,21 +1,21 @@
 <template>
-  <a-dialog :manual-open="open">
+  <a-dialog
+    :manual-open="open"
+    size="lg"
+    icon="fa fa-circle-question"
+    :title="'Help'"
+    :subtitle="'How the dashboard works.'"
+  >
     <template #trigger>
       <button class="actions-button" :title="'Help'" @click="open = true">
-        <i class="fa fa-question-circle" />
+        <i class="fa fa-circle-question" />
       </button>
     </template>
 
     <template #content>
-      <div
-        class="m-auto w-8/12 bg-secondary-500 h-80vh overflow-y-scroll border-primary-500 border rounded-md p-5"
-        :class="'text-white'"
-      >
-        <h1 class="text-2xl font-bold cursor-pointer" v-text="'Help'" />
-        <hr class="my-2 border-t-primary-500" />
-
-        <div class="flex flex-col">
-          <a-section :section-title="'About'">
+      <div class="text-sm leading-relaxed">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a-section :section-title="'About'" body-class="text-ink-muted">
             <p>
               This application was built with the intent of helping admins setup a quick and simple
               statistics overview. It was designed with general use in mind, to provide as much
@@ -23,28 +23,29 @@
             </p>
           </a-section>
 
-          <a-section :section-title="'Layout'" body-class="flex flex-col gap-4 p-5">
+          <a-section :section-title="'Layout'" body-class="flex flex-col gap-3 text-ink-muted">
             <p>
-              The layout consists of multiple configurable panels (Type, Tags, Groups...). Panels
-              are grouped into rows or columns, depending on the currently selected layout.
+              The layout consists of configurable panels (Type, Tags, Groups...) arranged on a grid.
             </p>
-            <i>
-              The layout can be modified through the
-              <a href="/setup"><u v-text="'Configuration wizard'" /></a>, found in the Settings
-              form.
-            </i>
+            <p>
+              Use <b class="text-ink" v-text="'Edit layout'" /> in the toolbar to move panels by
+              dragging them, resize them from their bottom-right corner, and add or remove panels.
+              Changes apply when you save.
+            </p>
           </a-section>
 
-          <a-section :section-title="'Configuration wizard'" body-class="flex flex-col gap-4 p-5">
+          <a-section
+            :section-title="'Setup wizard'"
+            body-class="flex flex-col gap-3 text-ink-muted"
+          >
             <p>
-              The configuration wizard walks you through elements that make up the layout, including
-              selecting a prefered dashboard layout (rows, colums, carousel...) and configuring
-              panels in the selected layout.
+              The setup wizard covers automatic refresh, leaderboards and the layout type: a free
+              grid, or a carousel that rotates through the panels.
             </p>
-            <i> It also allows updating automatic refresh settings and dashboard properties. </i>
+            <i>It can be rerun from the Settings dialog.</i>
           </a-section>
 
-          <a-section :section-title="'Filters'" body-class="flex flex-col gap-4 p-5">
+          <a-section :section-title="'Filters'" body-class="flex flex-col gap-3 text-ink-muted">
             <p>
               The filters form allows filtering by any of your freshdesk's ticket fields. With the
               exception of date filters, all filters are generated from ticet fields, present in
@@ -56,17 +57,21 @@
             >
           </a-section>
 
-          <a-section :section-title="'Other'" body-class="flex flex-col gap-4 p-5">
+          <a-section
+            :section-title="'Other'"
+            class="md:col-span-2"
+            body-class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-ink-muted"
+          >
             <div>
-              <h1 class="font-bold" v-text="'Excel export'" />
+              <h4 class="font-medium text-ink" v-text="'Excel export'" />
               <p v-text="'All loaded tickets can be exported into an Excel file.'" />
             </div>
             <div>
-              <h1 class="font-bold" v-text="'View tickets'" />
+              <h4 class="font-medium text-ink" v-text="'View tickets'" />
               <p v-text="'View a list of all tickets and view ticket details.'" />
             </div>
             <div>
-              <h1 class="font-bold" v-text="'Graph of open/closed tickets'" />
+              <h4 class="font-medium text-ink" v-text="'Graph of open/closed tickets'" />
               <p v-text="'View a graph of all open and closed tickets by year.'" />
             </div>
           </a-section>

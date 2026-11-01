@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { migrateLayout, type DashboardPanel } from '@/helpers/LayoutGrid'
 
 const storeLocalStorageKey = 'stored_configuration'
 
@@ -16,8 +17,8 @@ export const configuration = defineStore('configuration', {
     layout: {
       autoHideToolbar: true,
       visibleTicketCounts: [],
-      component: 'rows-layout',
-      groups: []
+      component: 'grid-layout',
+      panels: [] as DashboardPanel[]
     }
   }),
 
@@ -31,8 +32,8 @@ export const configuration = defineStore('configuration', {
     autoHideToolbar(): Boolean {
       return this.layout?.autoHideToolbar
     },
-    layoutGroups(): Array {
-      return this.layout?.groups
+    layoutPanels(): DashboardPanel[] {
+      return this.layout?.panels ?? []
     },
     layoutComponent(): String {
       return this.layout?.component
@@ -57,9 +58,18 @@ export const configuration = defineStore('configuration', {
       this.saveConfigurationToStore()
     },
 
-    updateLayoutGroups(layoutGroups: Array) {
-      this.layout.groups = layoutGroups
+    updateLayoutPanels(panels: DashboardPanel[]) {
+      this.layout.panels = panels
       this.saveConfigurationToStore()
+    },
+
+    updatePanel(panelId: string, changes: Partial<DashboardPanel>) {
+      const panel = this.layout?.panels?.find((panel) => panel.id == panelId)
+
+      if (panel) {
+        Object.assign(panel, changes)
+        this.saveConfigurationToStore()
+      }
     },
 
     updateVisibleStatuses(visibleCounts: Array) {
@@ -92,7 +102,7 @@ export const configuration = defineStore('configuration', {
       if (configurationFromStore) {
         configurationFromStore = JSON.parse(configurationFromStore)
 
-        this.layout = configurationFromStore?.layout
+        this.layout = migrateLayout(configurationFromStore?.layout) ?? this.layout
         this.autoRefresh = configurationFromStore?.autoRefresh
         this.leaderboards = configurationFromStore?.leaderboards
       }

@@ -1,16 +1,16 @@
 <template>
   <div class="flex flex-col items-start w-full">
-    <label :class="[labelClass, textSecondaryClass]" v-text="label" />
+    <label v-if="label" class="field-label" :class="labelClass" v-text="label" />
     <select
       v-model="inputValue"
-      class="rounded-md w-full bg-primary-500 border-primary-700 shadow-primary-700 p-1 cursor-pointer"
-      :class="[inputClass, textPrimaryClass]"
+      class="input cursor-pointer"
+      :class="inputClass"
+      :aria-label="label || undefined"
     >
       <option v-if="showNullValue" :value="''" v-text="nullValueLabel" />
       <option
         v-for="(option, o) in options"
         :key="o"
-        class="bg-primary-500 border-primary-500 hover:bg-primary-500 hover:font-bold hover:text-secondary-500"
         :value="valueField ? get(option, valueField) : option"
         v-text="labelField ? get(option, labelField) : option"
       />

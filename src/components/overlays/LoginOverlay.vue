@@ -1,77 +1,82 @@
 <template>
-  <a-overlay>
-    <div
-      class="flex flex-col md:flex-row m-auto text-center w-9/12 sm:w-7/12 md:w-9/12 xl:w-7/12 2xl:w-5/12 md:gap-x-8 shadow-lg rounded-lg p-5 bg-secondary-500 border border-primary-500"
-    >
-      <logo-icon :pt-width="200" :pt-height="200" />
+  <a-overlay size="sm" body-class="px-6 pb-6 pt-2">
+    <template #headerActions>
+      <theme-toggle />
+    </template>
 
-      <div class="flex flex-col w-full">
-        <p
-          class="py-3 opacity-50 w-full md:text-3xl md:text-left font-semibold text-primary-500"
-          v-text="appTitle"
-        />
-        <hr class="md:hidden w-full my-2 border-primary-500" />
+    <form class="flex flex-col" @submit.prevent="authenticate()">
+      <div class="flex flex-col items-center text-center mb-6">
+        <logo-icon :pt-width="48" :pt-height="48" />
+        <h2 class="mt-4 text-xl font-semibold" v-text="appTitle" />
+        <p class="mt-1 text-sm text-ink-muted" v-text="subtitle" />
+      </div>
 
-        <div class="block w-full bg-none">
-          <div v-if="!freshdeskDomainUrl" class="grid grid-cols-1 text-left m-auto px-1 py-2">
-            <label v-text="'Freshdesk Domain Url:'" />
-            <input
-              v-model="domainUrl"
-              type="text"
-              class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base text-black"
-              :placeholder="'https://your-domain.freshdesk.com/api/v2/'"
-              autofocus
-            />
-          </div>
-
-          <div v-if="!freshdeskApiKey" class="grid grid-cols-1 text-left m-auto px-1 py-2">
-            <label v-text="'Freshdesk API Key:'" />
-            <input
-              v-model="apiKey"
-              type="text"
-              class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base text-black"
-              :placeholder="'Your Freshdesk API key...'"
-            />
-          </div>
-
-          <template v-if="freshdeskDomainUrl && freshdeskApiKey">
-            <span
-              v-if="!userCredentialsSet"
-              class="block font-semibold my-3"
-              v-text="'Credentials not set in env file!'"
-            />
-
-            <section v-else @keydown.enter="authenticate()">
-              <div class="grid grid-cols-1 text-left m-auto px-1 py-2">
-                <label v-text="'Username:'" />
-                <input
-                  v-model="username"
-                  type="text"
-                  class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base text-black"
-                  :placeholder="'john.doe@mail.com'"
-                  autofocus
-                />
-              </div>
-              <div class="grid grid-cols-1 text-left m-auto px-1 py-2">
-                <label v-text="'Password:'" />
-                <input
-                  v-model="password"
-                  type="password"
-                  class="w-full border-2 border-gray-200 rounded-md px-2 py-1 text-base text-black"
-                  :placeholder="'********'"
-                />
-              </div>
-            </section>
-          </template>
-
-          <button
-            class="primary-button mt-5 w-full bg-primary-500 hover:bg-primary-600 text-secondary-500 border-secondary-500 py-2 px-10"
-            v-text="'Login'"
-            @click.stop="authenticate()"
+      <div class="flex flex-col gap-4">
+        <div v-if="!freshdeskDomainUrl">
+          <label class="field-label" for="login-domain" v-text="'Freshdesk domain URL'" />
+          <input
+            id="login-domain"
+            v-model="domainUrl"
+            type="url"
+            class="input"
+            :placeholder="'https://your-domain.freshdesk.com/api/v2/'"
+            autofocus
           />
         </div>
+
+        <div v-if="!freshdeskApiKey">
+          <label class="field-label" for="login-key" v-text="'API key'" />
+          <input
+            id="login-key"
+            v-model="apiKey"
+            type="password"
+            class="input"
+            autocomplete="off"
+            :placeholder="'Your Freshdesk API key'"
+          />
+          <p
+            class="mt-1.5 text-xs text-ink-muted"
+            v-text="'Found in Freshdesk under Profile settings → View API key.'"
+          />
+        </div>
+
+        <template v-if="freshdeskDomainUrl && freshdeskApiKey">
+          <p
+            v-if="!userCredentialsSet"
+            class="rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm"
+            v-text="'Credentials not set in env file!'"
+          />
+
+          <template v-else>
+            <div>
+              <label class="field-label" for="login-username" v-text="'Username'" />
+              <input
+                id="login-username"
+                v-model="username"
+                type="text"
+                class="input"
+                autocomplete="username"
+                :placeholder="'john.doe@mail.com'"
+                autofocus
+              />
+            </div>
+            <div>
+              <label class="field-label" for="login-password" v-text="'Password'" />
+              <input
+                id="login-password"
+                v-model="password"
+                type="password"
+                class="input"
+                autocomplete="current-password"
+                :placeholder="'••••••••'"
+              />
+            </div>
+          </template>
+        </template>
       </div>
-    </div>
+
+      <button type="submit" class="btn-primary w-full mt-6 py-2.5" v-text="'Sign in'" />
+    </form>
   </a-overlay>
 </template>
 
@@ -79,12 +84,13 @@
 import { defineComponent } from 'vue'
 import LogoIcon from '@/components/general/TheLogo.vue'
 import AOverlay from '@/components/general/AOverlay.vue'
+import ThemeToggle from '@/components/general/ThemeToggle.vue'
 import { checkAuthCredentials } from '@/helpers/CommonMethods'
 
 export default defineComponent({
   name: 'LoginOverlay',
 
-  components: { LogoIcon, AOverlay },
+  components: { LogoIcon, AOverlay, ThemeToggle },
 
   data() {
     return {
@@ -110,6 +116,11 @@ export default defineComponent({
     },
     appTitle(): String {
       return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
+    },
+    subtitle(): String {
+      return this.freshdeskDomainUrl && this.freshdeskApiKey
+        ? 'Sign in to view the dashboard.'
+        : 'Connect your Freshdesk account to get started.'
     }
   },
 

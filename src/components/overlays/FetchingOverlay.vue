@@ -1,11 +1,11 @@
 <template>
-  <a-overlay>
-    <div class="flex flex-col w-full m-auto">
-      <div class="is-loading w-full m-auto" />
-      <span
-        class="w-full text-center p-24 font-bold text-xl animate-pulse"
-        v-text="`${message}...`"
-      />
+  <a-overlay size="sm" body-class="px-6 py-8">
+    <div class="flex flex-col items-center text-center gap-4" role="status" aria-live="polite">
+      <span class="spinner" aria-hidden="true" />
+      <div>
+        <h2 class="text-base font-semibold" v-text="'Loading your Freshdesk setup'" />
+        <p class="mt-1 text-sm text-ink-muted" v-text="`${message}…`" />
+      </div>
     </div>
   </a-overlay>
 </template>

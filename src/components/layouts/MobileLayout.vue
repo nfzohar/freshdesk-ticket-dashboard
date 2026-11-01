@@ -22,6 +22,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { updatePanelInState } from '@/helpers/CommonMethods'
+import { panelsInReadingOrder } from '@/helpers/LayoutGrid'
 
 export default defineComponent({
   name: 'MobileLayout',
@@ -34,26 +35,17 @@ export default defineComponent({
   },
 
   data() {
-    return { columns: [] }
-  },
-
-  computed: {
-    columnsFromState(): Object {
-      return this.$configuration?.layoutGroups
-    },
-    panels(): Array {
-      return this.columns.flat()
-    }
+    return { panels: [] as any[] }
   },
 
   mounted() {
-    this.columns = this.columnsFromState
+    // Panels stack in the grid's reading order.
+    this.panels = panelsInReadingOrder(this.$configuration?.layoutPanels)
   },
 
   methods: {
-    async updatePanel(newValue: String, panelId: String, property: String) {
-      await updatePanelInState(this.columns, newValue, panelId, property)
-      this.columns = this.columnsFromState
+    updatePanel(newValue: any, panelId: string, property: string) {
+      updatePanelInState(panelId, property, newValue)
     }
   }
 })

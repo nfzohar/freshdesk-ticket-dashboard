@@ -1,15 +1,16 @@
 <template>
   <div
     :key="visibleCounters?.length"
-    :class="`grid grid-cols-2 md:grid-cols-3 gap-5 w-full rounded-md overflow-y-scroll scrollbar-hide ${conditionalStyle}`"
+    :class="`grid gap-3 w-full overflow-y-auto scrollbar-hide ${conditionalStyle}`"
   >
     <template v-for="(status, s) in visibleCounters" :key="(s, visibleCounters?.length)">
-      <div
-        class="block rounded-md w-full h-full bg-primary-500 text-center align-middle font-bold p-5"
-        :class="`text-${darkPrimaryColor ? 'white' : 'black'}`"
-      >
-        <span class="block text-6xl w-full h-16" v-text="generateTicketCount(status)" />
-        <span v-text="status" />
+      <div class="card relative w-full h-full overflow-hidden px-5 py-4">
+        <span class="absolute inset-x-0 top-0 h-1 bg-primary-500" aria-hidden="true" />
+        <span class="block text-sm font-medium text-ink-muted truncate" v-text="status" />
+        <span
+          class="block mt-1 text-4xl font-semibold tabular-nums tracking-tight"
+          v-text="generateTicketCount(status)"
+        />
       </div>
     </template>
   </div>
@@ -52,14 +53,11 @@ export default defineComponent({
       return labels
     },
     conditionalStyle() {
-      if (this.layout == 'rows-layout' || this.layout == 'spin-layout') {
-        return 'lg:flex flex-row max-w-screen items-center justify-between'
+      if (this.layout == 'spin-layout') {
+        return 'grid-cols-2 md:grid-cols-3 lg:flex flex-row max-w-screen items-center justify-between'
       }
-      if (this.layout == 'columns-layout') {
-        let grid = this.visibleCounters?.length > 7 ? 'grid grid-cols-2' : 'sm:flex flex-col'
-        return `h-full ${grid}`
-      }
-      return ''
+      // Grid and mobile: as many tiles per row as fit, filling the panel's cell.
+      return 'h-full content-start grid-cols-[repeat(auto-fit,minmax(9rem,1fr))]'
     }
   },
 

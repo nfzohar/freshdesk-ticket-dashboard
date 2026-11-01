@@ -126,20 +126,22 @@ export const information = defineStore('information', {
     trophyColors(): Array {
       return this.leaderboardsTrophy?.colors
     },
+    // Theme-aware classes: the surface/ink tokens switch with light and dark mode,
+    // and on-primary is derived from the primary colour at build time.
     textOnPrimaryColor(): String {
-      return `text-${this.isPrimaryColorDark ? 'white' : 'black'}`
+      return 'text-on-primary'
     },
     textOnSecondaryColor(): String {
-      return `text-${this.isSecondaryColorDark ? 'white' : 'black'}`
+      return 'text-ink'
     },
     bgAccentPrimaryColor(): String {
-      return `bg-primary-${this.isPrimaryColorDark ? '600' : '400'}`
+      return 'bg-primary-600'
     },
     bgAccentSecondaryColor(): String {
-      return `bg-secondary-${this.isSecondaryColorDark ? '600' : '400'}`
+      return 'bg-surface-2'
     },
     conditionalPrimaryBorder(): String {
-      return this.isSecondaryColorDark ? 'border-none' : 'border border-primary-500'
+      return 'border border-line'
     }
   },
 

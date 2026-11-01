@@ -1,19 +1,23 @@
 <template>
   <div
-    class="flex items-center justify-between rounded-md w-full h-full bg-primary-500 border-secondary-600 px-3 py-2"
-    :class="`text-${primaryColorIsDark ? 'white' : 'black'}`"
+    class="flex items-center gap-3 w-full h-full rounded-lg bg-surface-2/70 px-3 py-2.5 transition-colors hover:bg-surface-2"
   >
-    <div class="flex flex-col w-full h-full">
-      <span class="font-bold" v-text="name ?? 'N/A'" />
-      <span v-if="subtitle" class="text-xs mb-2" v-text="subtitle" />
+    <slot v-if="$slots['card-icon']" :name="'card-icon'" />
+
+    <div class="flex flex-col min-w-0 flex-1">
+      <span class="truncate text-sm font-medium" :title="name" v-text="name ?? 'N/A'" />
       <span
-        class="text-sm"
-        :class="{ 'font-semibold': subtitle }"
-        v-text="`${countLabel}: ${count}`"
+        v-if="subtitle"
+        class="truncate text-xs text-ink-muted"
+        :title="subtitle"
+        v-text="subtitle"
       />
     </div>
 
-    <slot v-if="$slots['card-icon']" :name="'card-icon'" />
+    <div class="flex flex-col items-end shrink-0" :title="countLabel">
+      <span class="text-lg font-semibold tabular-nums leading-6" v-text="count ?? 0" />
+      <span class="text-[11px] text-ink-muted" v-text="countLabel" />
+    </div>
   </div>
 </template>
 

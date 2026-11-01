@@ -20,16 +20,25 @@
         @refresh="loadTickets"
         @openWizard="openWizard(true)"
         @refetch="fetchingFields = true"
+        @editLayout="editMode = true"
       />
       <div class="block md:hidden overflow-hidden scrollbar-hide min-h-screen w-screen">
         <mobile-layout :key="resizeToken" :all-tickets="allTickets" />
       </div>
-      <div class="hidden md:block overflow-hidden scrollbar-hide min-h-screen w-screen">
-        <component :key="resizeToken" :is="dashboardLayout" :all-tickets="allTickets" />
+      <div class="hidden md:block flex-1 min-h-0 overflow-hidden scrollbar-hide w-screen">
+        <!-- The grid tracks its own width; re-keying it on resize would drop unsaved edits. -->
+        <component
+          :key="dashboardLayout == 'grid-layout' ? reloadToken : resizeToken"
+          :is="dashboardLayout"
+          :all-tickets="allTickets"
+          v-bind="layoutProps"
+        />
       </div>
     </div>
 
-    <!-- Overlays sit outside the dashboard: .is-loading disables pointer events on its children. -->
+    <dashboard-skeleton v-else />
+
+    <!-- Overlays are teleported to <body>, so the dashboard's .is-loading can't block them. -->
     <login-overlay v-if="!authenticated" />
     <configuration-wizard
       v-else-if="wizardOpen"
@@ -45,7 +54,9 @@
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import { filterParser } from '@/helpers/CommonMethods'
+import { presetPanels } from '@/helpers/LayoutGrid'
 import ToolBar from '@/components/DashboardToolbar.vue'
+import DashboardSkeleton from '@/components/general/DashboardSkeleton.vue'
 import MobileLayout from '@/components/layouts/MobileLayout.vue'
 import LoginOverlay from '@/components/overlays/LoginOverlay.vue'
 import FetchingOverlay from '@/components/overlays/FetchingOverlay.vue'
@@ -54,7 +65,14 @@ import ConfigurationWizard from '@/components/overlays/ConfigurationWizard.vue'
 export default defineComponent({
   name: 'TheDashboard',
 
-  components: { ToolBar, MobileLayout, LoginOverlay, FetchingOverlay, ConfigurationWizard },
+  components: {
+    ToolBar,
+    MobileLayout,
+    LoginOverlay,
+    FetchingOverlay,
+    DashboardSkeleton,
+    ConfigurationWizard
+  },
 
   data() {
     return {
@@ -78,6 +96,9 @@ export default defineComponent({
       searchPageSize: 30,
       searchMaxPages: 10,
       wizardOpen: false,
+      editMode: false,
+      // Set after the custom wizard path: open edit mode once the dashboard is ready.
+      editAfterReady: false,
       wizardClosable: false,
       fetchingFields: false
     }
@@ -88,7 +109,7 @@ export default defineComponent({
       return this.$auth?.authenticated
     },
     layoutDefined(): boolean {
-      return this.$configuration?.layoutGroups?.length > 0
+      return this.$configuration?.layoutPanels?.length > 0
     },
     // Tickets are only fetched while the dashboard itself is showing. A closable
     // wizard (opened from settings) keeps the dashboard running behind it.
@@ -103,8 +124,14 @@ export default defineComponent({
     allTickets(): Object {
       return this.tickets?.flat() ?? []
     },
-    dashboardLayout(): Object {
-      return this.$configuration?.layoutComponent
+    // Edit mode always uses the grid, also when the carousel is the chosen layout.
+    dashboardLayout(): string {
+      return this.editMode ? 'grid-layout' : this.$configuration?.layoutComponent
+    },
+    layoutProps(): Record<string, any> {
+      return this.dashboardLayout == 'grid-layout'
+        ? { editMode: this.editMode, onExitEdit: () => (this.editMode = false) }
+        : {}
     },
     anyFiltersSet(): Boolean {
       return (
@@ -149,6 +176,14 @@ export default defineComponent({
       immediate: true,
       handler(isReady: boolean) {
         isReady ? this.startDashboard() : this.stopDashboard()
+
+        if (isReady && this.editAfterReady) {
+          this.editAfterReady = false
+          this.editMode = true
+        }
+        if (!isReady) {
+          this.editMode = false
+        }
       }
     }
   },
@@ -191,11 +226,16 @@ export default defineComponent({
 
     closeWizard() {
       this.wizardOpen = false
-      // Layouts read their groups on mount; remount to show wizard changes.
+      // Layouts read their panels on mount; remount to show wizard changes.
       this.reloadToken++
     },
 
     finishWizard() {
+      // The custom path has no panels yet: start from the preset panels in edit mode.
+      if (!this.layoutDefined) {
+        this.$configuration.updateLayoutPanels(presetPanels())
+        this.editAfterReady = true
+      }
       this.wizardOpen = false
       this.fetchingFields = true
     },
@@ -282,7 +322,10 @@ export default defineComponent({
       let intervalLength = 1000 * 60 * this.autoRefresh?.perMinutes
 
       this.refreshIntervalId = setInterval(() => {
-        this.loadTickets()
+        // Skip while editing: the loading state would block dragging.
+        if (!this.editMode) {
+          this.loadTickets()
+        }
       }, intervalLength)
     },
 

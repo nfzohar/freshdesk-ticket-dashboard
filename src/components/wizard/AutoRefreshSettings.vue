@@ -1,26 +1,36 @@
 <template>
-  <div class="flex flex-col items-center text-center gap-10 m-10">
-    <h2 class="w-full font-bold text-base lg:text-lg xl:text-2xl" v-text="pageTitle" />
+  <div class="mx-auto flex max-w-2xl flex-col gap-6 py-2">
+    <div>
+      <h3 class="text-base font-semibold" v-text="'Automatic refresh'" />
+      <p class="mt-1 text-sm text-ink-muted" v-text="pageTitle" />
+    </div>
 
-    <div class="flex flex-col items-center w-full rounded-md text-lg gap-5" :key="(Number(autoRefreshActive), perMinutes)">
+    <div class="flex flex-col gap-5" :key="(Number(autoRefreshActive), perMinutes)">
       <a-checkbox
         :the-value="autoRefreshActive"
         :checked="autoRefreshActive"
-        class="font-bold m-auto"
+        class="font-medium"
         :label="'Refresh dashboard every few minutes'"
         :title="'Toggle automatic refresh.'"
         @changed="(value) => (autoRefreshActive = value)"
       />
 
-      <div v-if="autoRefreshActive" class="bg-secondary-600 p-5 rounded-md">
+      <div
+        v-if="autoRefreshActive"
+        class="flex flex-col gap-5 rounded-xl border border-line bg-surface-2/60 p-5"
+      >
         <div>
-          <span v-text="'Set refresh interval with shortcuts:'" />
-          <div :key="perMinutes" class="grid grid-cols-3 gap-5 my-5">
+          <span class="field-label" v-text="'Refresh interval'" />
+          <div :key="perMinutes" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
             <button
               v-for="(shortcut, s) in intervalShortcuts"
               :key="s"
-              class="border border-primary-600 bg-primary-500 py-2 px-3 rounded-md hover:bg-primary-600 hover:border-primary-500"
-              :class="{ 'border-primary-500 bg-primary-600': shortcut.value == perMinutes }"
+              class="rounded-lg border px-3 py-2 text-sm font-medium transition-colors"
+              :class="
+                shortcut.value == perMinutes
+                  ? 'border-primary-500 bg-primary-500 text-on-primary'
+                  : 'border-line bg-surface hover:bg-surface-2'
+              "
               v-text="shortcut.label"
               @click="setAutorefreshViaShortcut(shortcut.value)"
             />
@@ -28,19 +38,19 @@
         </div>
 
         <div>
-          <span class="block w-full mb-5" v-html="'or set a custom (minutes) refresh interval:'" />
-          <input
-            v-model="perMinutes"
-            type="number"
-            :placeholder="'0'"
-            :title="'Count of minutes in a refresh interval.'"
-            class="w-52 h-14 rounded-md text-black text-2xl px-1"
-          />
-          <button
-            class="border border-primary-600 bg-primary-500 p-3 mx-2 rounded-md text-2xl hover:bg-primary-600 hover:border-primary-500"
-            v-text="'Set'"
-            @click="setNewAutoRefreshSettings()"
-          />
+          <label class="field-label" for="refresh-minutes" v-text="'Custom interval (minutes)'" />
+          <div class="flex gap-2">
+            <input
+              id="refresh-minutes"
+              v-model="perMinutes"
+              type="number"
+              min="1"
+              :placeholder="'0'"
+              :title="'Count of minutes in a refresh interval.'"
+              class="input max-w-[10rem]"
+            />
+            <button class="btn-secondary" v-text="'Set'" @click="setNewAutoRefreshSettings()" />
+          </div>
         </div>
       </div>
     </div>

@@ -1,146 +1,163 @@
 <template>
-  <a-dialog :manual-open="open">
+  <a-dialog
+    :manual-open="open"
+    size="lg"
+    icon="fa fa-gear"
+    :title="'Settings'"
+    :subtitle="'Changes are saved automatically.'"
+    @open="$emit('open')"
+    @close="$emit('close')"
+  >
     <template #trigger>
       <button class="actions-button" :title="'Settings'" @click="open = true">
-        <i class="fa fa-cog" />
+        <i class="fa fa-gear" />
       </button>
     </template>
 
     <template #content>
-      <div
-        class="m-auto w-11/12 md:w-8/12 bg-secondary-500 border-primary-500 h-80vh md:h-auto overflow-y-scroll scrollbar-hide border rounded-md p-5"
-        :class="`text-${secondaryColorDark ? 'white' : 'black'}`"
-      >
-        <div class="grid grid-cols-1 md:grid-cols-2">
-          <a-setting-section :section-title="'Manage dashboard layout'">
-            <a-checkbox
-              :key="Number(refreshIsActive)"
-              class="w-9/12 font-bold pr-2 mb-2"
-              :the-value="refreshIsActive"
-              :label="'Refresh per minutes'"
-              :title="'Toggle automatic refresh.'"
-              @changed="(value) => (refreshIsActive = value)"
-            />
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a-setting-section :section-title="'Appearance'" body-class="flex flex-col gap-2">
+          <theme-toggle variant="segmented" />
+          <p class="text-xs text-ink-muted" v-text="'System follows your device setting.'" />
+        </a-setting-section>
+
+        <a-setting-section :section-title="'Toolbar'" body-class="flex flex-col">
+          <a-checkbox
+            :the-value="autoHideToolbar"
+            :label="'Hide the toolbar after a few seconds'"
+            :title="'Toggle autohide dashboard toolbar.'"
+            @changed="(value) => (autoHideToolbar = value)"
+          />
+        </a-setting-section>
+
+        <a-setting-section :section-title="'Auto refresh'" body-class="flex flex-col gap-3">
+          <a-checkbox
+            :key="Number(refreshIsActive)"
+            :the-value="refreshIsActive"
+            :label="'Refresh tickets automatically'"
+            :title="'Toggle automatic refresh.'"
+            @changed="(value) => (refreshIsActive = value)"
+          />
+          <div>
+            <label class="field-label" for="settings-refresh" v-text="'Interval (minutes)'" />
             <input
+              id="settings-refresh"
               v-model="refreshPerMinutes"
               type="number"
+              min="1"
               :title="'Count of minutes in a refresh interval.'"
-              class="w-3/12 rounded-md text-black px-1"
+              class="input max-w-[10rem]"
               @change="refreshIsActive = false"
             />
-          </a-setting-section>
+          </div>
+        </a-setting-section>
 
-          <a-setting-section :section-title="'Autohide toolbar'">
-            <a-checkbox
-              class="w-auto font-bold pr-2 mb-2"
-              :the-value="autoHideToolbar"
-              :label="'Automatically hide the toolbar after a few seconds.'"
-              :title="'Toggle autohide dashboard toolbar.'"
-              @changed="(value) => (autoHideToolbar = value)"
+        <a-setting-section :section-title="'Leaderboards'" body-class="flex flex-col gap-3">
+          <a-checkbox
+            :the-value="throphiesVisible"
+            :label="'Show trophies on leaderboards'"
+            :title="'Toggle trophy visibility on leaderboards.'"
+            @changed="(value) => (throphiesVisible = value)"
+          />
+          <div class="grid grid-cols-2 gap-3">
+            <a-select
+              :the-value="leaderboardsTrophyIcon"
+              :label="'Trophy icon'"
+              :options="trophyiconOptions"
+              :label-field="'label'"
+              :value-field="'value'"
+              :show-null-value="false"
+              :input-class="'capitalize'"
+              @changed="(value) => (leaderboardsTrophyIcon = value)"
             />
-          </a-setting-section>
-
-          <a-setting-section :section-title="'Visible ticket status counters'">
-            <div class="w-full">
-              <div class="flex items-center justify-between w-full py-1">
-                <button
-                  class="hover:text-primary-500 hover:underline"
-                  :title="'Set all statuses as visible.'"
-                  v-text="'Select all'"
-                  @click="visibleStatusCounters = statusLabels"
-                />
-                <button
-                  class="hover:text-primary-500 hover:underline"
-                  :title="'Remove all visible statuses.'"
-                  v-text="'Clear all'"
-                  @click="visibleStatusCounters = []"
-                />
-              </div>
-
-              <div class="flex flex-row w-full gap-2">
-                <ul
-                  class="border border-primary-500 w-1/2 rounded-md p-2 bg-secondary-700 min-h-52 max-h-96 overflow-y-scroll scrollbar-hide"
-                >
-                  <li class="font-bold border-b border-primary-500 mb-1" v-text="'All statuses'" />
-                  <li
-                    v-if="visibleStatusCounters?.length == statusLabels?.length"
-                    v-text="'All selected.'"
-                  />
-                  <template v-for="(status, a) in statusLabels" :key="a">
-                    <li
-                      v-if="!visibleStatusCounters?.includes(status)"
-                      class="p-1 cursor-pointer hover:text-primary-500"
-                      v-text="status"
-                      @click="toggleVisibleStatuses(status)"
-                    />
-                  </template>
-                </ul>
-
-                <ul
-                  class="border border-primary-500 w-1/2 rounded-md p-2 bg-secondary-700 min-h-52 max-h-96 overflow-y-scroll scrollbar-hide"
-                >
-                  <li
-                    class="font-bold border-b border-primary-500 mb-1"
-                    v-text="'Visible statuses'"
-                  />
-                  <li v-if="!visibleStatusCounters?.length" v-text="'None selected.'" />
-                  <li
-                    v-for="(status, a) in visibleStatusCounters"
-                    :key="a"
-                    class="p-1 cursor-pointer hover:text-primary-500"
-                    v-text="status"
-                    @click="toggleVisibleStatuses(status)"
-                  />
-                </ul>
-              </div>
-            </div>
-          </a-setting-section>
-
-          <a-setting-section :section-title="'Leaderboards settings'">
-            <div class="flex items-center flex-col gap-y-5">
-              <a-checkbox
-                class="w-full font-bold pr-2 mb-2"
-                :the-value="throphiesVisible"
-                :label="'Show trophies on leaderboars.'"
-                :title="'Toggle trophy visibility on leaderboards.'"
-                @changed="(value) => (throphiesVisible = value)"
+            <div>
+              <label class="field-label" for="settings-leaderboard-length" v-text="'Length'" />
+              <input
+                id="settings-leaderboard-length"
+                v-model="leaderboardslength"
+                type="number"
+                min="1"
+                :title="'Count of entries shown on the leaderboards.'"
+                class="input"
               />
-              <a-select
-                :the-value="leaderboardsTrophyIcon"
-                :label="'Trophy icon:'"
-                :options="trophyiconOptions"
-                :label-field="'label'"
-                :value-field="'value'"
-                label-class="w-full font-semibold mb-1 bg-none"
-                :input-class="`w-full capitalize text-${primaryColorDark ? 'white' : 'black'}`"
-                @changed="(value) => (leaderboardsTrophyIcon = value)"
-              />
-              <div class="flex flex-col w-full">
-                <span class="block w-full" v-text="'Leaderbords length:'" />
-                <input
-                  v-model="leaderboardslength"
-                  type="number"
-                  :title="'Count of entries, shown on the leaderbords.'"
-                  class="w-full rounded-md text-black px-1"
-                />
-              </div>
             </div>
-          </a-setting-section>
-        </div>
+          </div>
+        </a-setting-section>
 
-        <div class="grid grid-cols-3 2xl:grid-cols-6 justify-between md:items-center gap-4 px-5">
-          <button
-            v-for="(action, a) in actions"
-            :key="a"
-            :title="action.title"
-            class="flex items-center gap-x-1 h-full primary-button settings-button text-center hover:font-semibold"
-            :class="`text-${primaryColorDark ? 'white' : 'black'}`"
-            @click.stop="action.function"
-          >
-            <i :class="action.icon" />
-            <span v-text="action.name" />
-          </button>
-        </div>
+        <a-setting-section
+          class="md:col-span-2"
+          :section-title="'Visible ticket status counters'"
+          body-class="flex flex-col gap-3"
+        >
+          <div class="flex items-center justify-between gap-2 text-sm">
+            <span
+              class="text-ink-muted"
+              v-text="`${visibleStatusCounters?.length ?? 0} of ${statusLabels?.length ?? 0} shown`"
+            />
+            <div class="flex gap-1">
+              <button
+                class="btn-ghost px-2 py-1"
+                :title="'Set all statuses as visible.'"
+                v-text="'Select all'"
+                @click="visibleStatusCounters = statusLabels"
+              />
+              <button
+                class="btn-ghost px-2 py-1"
+                :title="'Remove all visible statuses.'"
+                v-text="'Clear'"
+                @click="visibleStatusCounters = []"
+              />
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button
+              v-for="(status, a) in statusLabels"
+              :key="a"
+              class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium transition-colors"
+              :class="
+                visibleStatusCounters?.includes(status)
+                  ? 'border-primary-500 bg-primary-500 text-on-primary'
+                  : 'border-line bg-surface text-ink-muted hover:text-ink hover:bg-surface-2'
+              "
+              :aria-pressed="visibleStatusCounters?.includes(status)"
+              @click="toggleVisibleStatuses(status)"
+            >
+              <i
+                class="fa text-xs"
+                :class="visibleStatusCounters?.includes(status) ? 'fa-check' : 'fa-plus'"
+              />
+              <span v-text="status" />
+            </button>
+          </div>
+        </a-setting-section>
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-for="(action, a) in actions.filter((action) => action.side == 'left')"
+          :key="a"
+          :title="action.title"
+          :class="action.variant"
+          @click.stop="action.function"
+        >
+          <i :class="action.icon" />
+          <span v-text="action.name" />
+        </button>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-for="(action, a) in actions.filter((action) => action.side == 'right')"
+          :key="a"
+          :title="action.title"
+          :class="action.variant"
+          @click.stop="action.function"
+        >
+          <i :class="action.icon" />
+          <span v-text="action.name" />
+        </button>
       </div>
     </template>
   </a-dialog>
@@ -152,13 +169,14 @@ import ASelect from '@/components/general/ASelect.vue'
 import ADialog from '@/components/general/ADialog.vue'
 import ACheckbox from '@/components/general/ACheckbox.vue'
 import ASettingSection from '@/components/general/ASection.vue'
+import ThemeToggle from '@/components/general/ThemeToggle.vue'
 
 export default defineComponent({
   name: 'DashboardSettings',
 
-  components: { ASettingSection, ACheckbox, ADialog, ASelect },
+  components: { ASettingSection, ACheckbox, ADialog, ASelect, ThemeToggle },
 
-  emits: ['reloadDashboard', 'openWizard', 'refetch'],
+  emits: ['reloadDashboard', 'openWizard', 'refetch', 'editLayout', 'open', 'close'],
 
   data() {
     return {
@@ -175,39 +193,59 @@ export default defineComponent({
 
       actions: [
         {
-          name: 'Logout',
+          name: 'Log out',
           title: 'Logout and delete your API credentials.',
-          icon: 'fa fa-sign-out-alt',
+          icon: 'fa fa-right-from-bracket',
+          side: 'left',
+          variant: 'btn-ghost',
           function: () => this.logout()
         },
         {
-          name: 'Clear all info',
-          title: 'Clear all stored information.',
+          name: 'Clear all data',
+          title: 'Clear all stored information and log out.',
           icon: 'fa fa-broom',
+          side: 'left',
+          variant: 'btn-danger',
           function: () => this.clearSavedInfo()
         },
         {
-          name: 'Configuration wizard',
-          title: 'To edit layout, rerun the configuration wizard.',
-          icon: 'fa fa-hat-wizard',
+          name: 'Edit layout',
+          title: 'Move, resize, add and remove panels on the dashboard.',
+          icon: 'fa fa-pen-ruler',
+          side: 'right',
+          variant: 'btn-secondary',
+          function: () => this.runAndClose(() => this.$emit('editLayout'))
+        },
+        {
+          name: 'Setup wizard',
+          title: 'Rerun the setup wizard: refresh, leaderboards and layout type.',
+          icon: 'fa fa-wand-magic-sparkles',
+          side: 'right',
+          variant: 'btn-secondary',
           function: () => this.runAndClose(() => this.$emit('openWizard'))
         },
         {
-          name: 'Refetch information',
-          title: 'Refetch information from Freshdesk.',
-          icon: 'fa fa-redo-alt',
+          name: 'Refetch',
+          title: 'Refetch ticket fields, agents and groups from Freshdesk.',
+          icon: 'fa fa-cloud-arrow-down',
+          side: 'right',
+          variant: 'btn-secondary',
           function: () => this.runAndClose(() => this.$emit('refetch'))
         },
         {
           name: 'Reload',
-          title: 'Manually reload entire dashboard.',
-          icon: 'fa fa-repeat',
+          title: 'Manually reload the entire dashboard.',
+          icon: 'fa fa-rotate',
+          side: 'right',
+          variant: 'btn-secondary',
           function: () => this.$emit('reloadDashboard')
         },
         {
-          name: 'Save',
-          title: 'Save properties and close the form.',
-          icon: 'fa fa-repeat',
+          name: 'Done',
+          title: 'Close settings.',
+          icon: 'fa fa-check',
+          side: 'right',
+          variant: 'btn-primary',
           function: () => (this.open = false)
         }
       ]
@@ -327,9 +365,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-.settings-button {
-  @apply text-center bg-primary-500 border-none hover:bg-primary-600 p-2 xl:py-2 xl:px-5 shadow-primary-600;
-}
-</style>

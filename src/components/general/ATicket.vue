@@ -1,60 +1,52 @@
 <template>
-  <div
+  <article
     :title="'Show details'"
-    :class="`bg-primary-500 p-3 hover:bg-primary-400 border-primary-600 rounded-md shadow-primary-700 cursor-pointer ${primaryColorText}`"
+    class="group cursor-pointer rounded-xl border border-line bg-surface p-4 transition hover:border-primary/60 hover:bg-surface-2/60"
   >
     <template v-if="mode == 'panel-content'">
-      <h3
-        :class="`block font-bold text-base border-0 border-b-2 w-full h-7 overflow-x-hidden break-keep`"
-        v-text="subject"
-      />
+      <h3 class="truncate text-sm font-semibold" :title="subject" v-text="subject" />
 
-      <div class="flex flex-col items-left w-full text-sm justify-between">
-        <div class="flex flex-col items-left w-max text-sm justify-between">
-          <span><b>Submitted by:</b> {{ requester }}</span>
-          <span v-if="tags?.length"><b>Tags</b>: {{ tags }}</span>
-        </div>
+      <div class="mt-1 flex flex-col text-xs text-ink-muted">
+        <span class="truncate"
+          >Submitted by <span class="text-ink">{{ requester }}</span></span
+        >
+        <span v-if="tags?.length" class="truncate">Tags: {{ tags }}</span>
+      </div>
 
-        <div :class="`flex items-end gap-x-2 mt-1 w-max ${primaryColorText}`">
-          <span
-            title="Ticket status"
-            :class="`font-bold text-xs border w-max text-center rounded-md px-3 py-1 border-primary-500 ${primaryAccentedBg}`"
-            v-text="status"
-          />
-          <span
-            title="Ticket type"
-            :class="`font-bold text-xs border w-max text-center rounded-md px-3 py-1 border-primary-500 ${primaryAccentedBg}`"
-            v-text="type"
-          />
-        </div>
+      <div class="mt-3 flex flex-wrap items-center gap-1.5">
+        <span title="Ticket status" class="chip">
+          <span class="h-1.5 w-1.5 rounded-full bg-primary-500" aria-hidden="true" />
+          {{ status }}
+        </span>
+        <span title="Ticket type" class="chip" v-text="type" />
       </div>
     </template>
 
     <template v-else>
-      <h3 class="block font-bold text-lg" v-text="`#${id}: ${subject}`" />
-      <hr class="my-1 border-t-2" />
-
-      <div class="flex items-center justify-between">
-        <div class="flex flex-col gap-y-1 w-auto text-base">
-          <span><b>Submitted by:</b> {{ requester }}</span>
-          <span v-if="tags?.length"><b>Tags</b>: {{ tags }}</span>
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h3 class="text-sm font-semibold">
+            <span class="text-ink-muted tabular-nums" v-text="`#${id}`" />
+            {{ subject }}
+          </h3>
+          <div class="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-ink-muted">
+            <span
+              >Submitted by <span class="text-ink">{{ requester }}</span></span
+            >
+            <span v-if="tags?.length">Tags: {{ tags }}</span>
+          </div>
         </div>
 
-        <div :class="`flex items-center gap-x-2 justify-between p-2 w-auto ${primaryColorText}`">
-          <span
-            title="Ticket status"
-            :class="`ticket-label border-primary-500 ${primaryAccentedBg}`"
-            v-text="status"
-          />
-          <span
-            title="Ticket type"
-            :class="`ticket-label border-primary-500 ${primaryAccentedBg}`"
-            v-text="type"
-          />
+        <div class="flex shrink-0 items-center gap-1.5">
+          <span title="Ticket status" class="chip">
+            <span class="h-1.5 w-1.5 rounded-full bg-primary-500" aria-hidden="true" />
+            {{ status }}
+          </span>
+          <span title="Ticket type" class="chip" v-text="type" />
         </div>
       </div>
     </template>
-  </div>
+  </article>
 </template>
 
 <script lang="ts">
@@ -112,9 +104,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-.ticket-label {
-  @apply w-auto m-auto font-bold border rounded-md px-2 py-1;
-}
-</style>

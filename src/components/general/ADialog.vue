@@ -3,35 +3,35 @@
     <slot :name="'trigger'" />
   </div>
 
-  <div v-if="open">
-    <dialog
-      class="absolute bg-opacity-50 bg-secondary-500 top-0 w-screen h-screen"
-      :class="customClass"
-      :open="open"
-      @close="closeDialog"
-    >
-      <div class="absolute right-2 top-10 cursor-pointer">
-        <div
-          class="mx-5 bg-secondary-500 border border-primary-500 rounded-md"
-          @click.stop="closeDialog"
-        >
-          <i class="fa fa-times text-3xl px-2 py-1 text-primary-500" />
-        </div>
-      </div>
+  <a-overlay
+    v-if="open"
+    closable
+    :title="title"
+    :subtitle="subtitle"
+    :icon="icon"
+    :size="size"
+    :body-class="bodyClass"
+    @close="closeDialog"
+  >
+    <slot :name="'content'" />
 
-      <div class="m-auto w-12/12 pt-10 h-full opacity-1 rounded-md z-10">
-        <slot :name="'content'" />
-      </div>
-    </dialog>
-  </div>
+    <template v-if="$slots.headerActions" #headerActions>
+      <slot name="headerActions" />
+    </template>
+    <template v-if="$slots.footer" #footer>
+      <slot name="footer" />
+    </template>
+  </a-overlay>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { listenForKey } from '@/helpers/CommonMethods'
+import AOverlay from '@/components/general/AOverlay.vue'
 
 export default defineComponent({
   name: 'ADialog',
+
+  components: { AOverlay },
 
   emits: ['open', 'close'],
 
@@ -41,17 +41,36 @@ export default defineComponent({
       required: false,
       default: false
     },
-    customClass: {
+    title: {
       type: String,
       required: false,
       default: ''
+    },
+    subtitle: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    icon: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    size: {
+      type: String,
+      required: false,
+      default: 'lg'
+    },
+    bodyClass: {
+      type: String,
+      required: false,
+      default: 'px-6 py-5'
     }
   },
 
   data() {
     return {
-      open: false,
-      removeEscListener: undefined as (() => void) | undefined
+      open: false
     }
   },
 
@@ -59,18 +78,6 @@ export default defineComponent({
     manualOpen() {
       this.manualOpen ? this.openDialog() : this.closeDialog()
     }
-  },
-
-  mounted() {
-    this.removeEscListener = listenForKey('Escape', () => {
-      if (this.open) {
-        this.closeDialog()
-      }
-    })
-  },
-
-  beforeUnmount() {
-    this.removeEscListener?.()
   },
 
   methods: {

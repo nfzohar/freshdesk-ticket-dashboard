@@ -1,5 +1,11 @@
 <template>
-  <a-dialog :manual-open="open">
+  <a-dialog
+    :manual-open="open"
+    size="full"
+    icon="fa fa-chart-line"
+    :title="'Resolution statistics'"
+    :subtitle="`Tickets created between ${firstTicketDate} and ${lastTicketDate}.`"
+  >
     <template #trigger>
       <button
         class="actions-button"
@@ -11,43 +17,32 @@
     </template>
 
     <template #content>
-      <div
-        :key="updateToken"
-        class="flex flex-col bg-secondary-600 w-90p xl:w-80p 2xl:w-65p gap-5 m-auto p-5 rounded-md border border-primary-500"
-      >
-        <div class="w-full flex items-center justify-between">
+      <div :key="updateToken" class="flex flex-col gap-5">
+        <div class="flex flex-wrap items-end gap-4">
           <a-select
-            :class="'w-max'"
+            class="w-40"
             :options="yearsFromTickets"
             :show-null-value="false"
             :the-value="selectedYear"
-            :label="'Show ticket of year:'"
+            :label="'Year'"
             @changed="(value) => (selectedYear = value)"
           />
-
-          <div
-            :class="`flex flex-col text-center bg-secondary-500 p-3 w-auto h-full rounded-md ${textOnSecondaryColor}`"
-            :title="`Viewing graph for tickets, created between ${firstTicketDate} and ${lastTicketDate}.`"
-          >
-            <b v-text="`Tickets date range:`" />
-            <span v-text="`${firstTicketDate} - ${lastTicketDate}`" />
-          </div>
-
           <a-select
-            :class="'w-max'"
+            class="w-56"
             :options="graphTypes"
             :show-null-value="false"
             :the-value="selectedGraphType"
-            :label="'Graph type:'"
+            :label="'Graph type'"
             :value-field="'value'"
             :label-field="'label'"
             @changed="(value) => (selectedGraphType = value)"
           />
         </div>
 
-        <div :class="'w-100p m-auto h-70p'">
+        <div class="w-full rounded-xl border border-line p-4">
           <a-statistics-graph
-            :class="'w-auto h-90p'"
+            class="w-full max-h-[60vh]"
+            :custom-class="''"
             :type="selectedGraphType"
             :display-graph-legend="true"
             :datasets-through-prop="true"
@@ -231,7 +226,7 @@ export default defineComponent({
 
     findStatusId(label: String) {
       return this.statuses?.filter((status) => status?.value == label)[0]?.id
-    },
+    }
   }
 })
 </script>

@@ -1,38 +1,37 @@
 <template>
-  <a-dialog>
+  <a-dialog
+    size="xl"
+    icon="fa fa-list"
+    :title="'Tickets'"
+    :subtitle="`${tickets?.length ?? 0} tickets loaded`"
+  >
     <template #trigger>
-      <button
-        class="actions-button fa fa-list"
-        :title="'Show list of all tickets'"
-        @click="setTicketId(null)"
-      />
+      <button class="actions-button" :title="'Show list of all tickets'" @click="setTicketId(null)">
+        <i class="fa fa-list" />
+      </button>
     </template>
 
     <template #content>
-      <div
-        class="m-auto w-11/12 lg:w-10/12 xl:w-8/12 2xl:w-7/12 h-90vh bg-secondary-500 border-primary-500 border rounded-md p-5 overflow-hidden text-white"
-        :key="(tickets?.length, selectedTicketId)"
-      >
+      <div :key="(tickets?.length, selectedTicketId)">
         <ticket-details
           v-if="selectedTicketId"
           :ticket-id="selectedTicketId"
           @closeDetails="setTicketId(null)"
         />
         <template v-else>
-          <div class="flex items-center justify-between">
-            <span class="text-left font-bold" v-text="'Tickets'" />
-            <span class="w-auto text-right" v-html="`Showing: <b>${tickets?.length}</b>`" />
-          </div>
-
-          <hr class="my-2 border border-primary-500" />
           <div
             v-if="tickets?.length"
-            class="flex flex-col gap-y-4 w-full h-80vh rounded-md shadow-primary-600 scrollbar-hide overflow-y-scroll"
+            class="flex flex-col gap-2 max-h-[70vh] overflow-y-auto pr-1 -mr-1"
           >
             <template v-for="(ticket, t) in tickets" :key="t">
               <a-ticket v-if="ticket?.id" :the-ticket="ticket" @click="setTicketId(ticket?.id)" />
             </template>
           </div>
+          <p
+            v-else
+            class="py-10 text-center text-sm text-ink-muted"
+            v-text="'No tickets loaded.'"
+          />
         </template>
       </div>
     </template>

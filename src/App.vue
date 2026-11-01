@@ -5,7 +5,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import TheDashboard from './views/Dashboard.vue'
-import { colorIsDark } from './helpers/CommonMethods'
 
 export default defineComponent({
   name: 'App',
@@ -14,16 +13,11 @@ export default defineComponent({
 
   mounted() {
     this.setFavicon()
-    this.setTextColorByBAckgroud()
     this.setEnvVarColors()
     this.setEnvTitle()
   },
 
   methods: {
-    setTextColorByBAckgroud() {
-      let bgIsDark = colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR)
-      document.body.style.color = bgIsDark ? 'white' : 'black'
-    },
     setEnvVarColors() {
       let root = document.querySelector(':root')
 
