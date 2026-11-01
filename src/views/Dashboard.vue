@@ -1,28 +1,43 @@
 <template>
-  <div
-    :key="reloadToken"
-    class="flex flex-col transition-colors dashboard-body"
-    :class="[
-      { 'is-loading': isLoading },
-      { 'cursor-loading': keepFetching },
-      { 'cursor-none': hiddenCursor }
-    ]"
-    @mousemove="hideCursor"
-  >
-    <tool-bar
-      :all-tickets="allTickets"
-      :is-fetching-tickets="keepFetching"
-      @startLoading="startLoading"
-      @stopLoading="stopLoading"
-      @reload="reloadToken++"
-      @refresh="loadTickets"
+  <div class="dashboard-body">
+    <div
+      v-if="ready"
+      :key="reloadToken"
+      class="flex flex-col transition-colors dashboard-body"
+      :class="[
+        { 'is-loading': isLoading },
+        { 'cursor-loading': keepFetching },
+        { 'cursor-none': hiddenCursor }
+      ]"
+      @mousemove="hideCursor"
+    >
+      <tool-bar
+        :all-tickets="allTickets"
+        :is-fetching-tickets="keepFetching"
+        @startLoading="startLoading"
+        @stopLoading="stopLoading"
+        @reload="reloadToken++"
+        @refresh="loadTickets"
+        @openWizard="openWizard(true)"
+        @refetch="fetchingFields = true"
+      />
+      <div class="block md:hidden overflow-hidden scrollbar-hide min-h-screen w-screen">
+        <mobile-layout :key="resizeToken" :all-tickets="allTickets" />
+      </div>
+      <div class="hidden md:block overflow-hidden scrollbar-hide min-h-screen w-screen">
+        <component :key="resizeToken" :is="dashboardLayout" :all-tickets="allTickets" />
+      </div>
+    </div>
+
+    <!-- Overlays sit outside the dashboard: .is-loading disables pointer events on its children. -->
+    <login-overlay v-if="!authenticated" />
+    <configuration-wizard
+      v-else-if="wizardOpen"
+      :closable="wizardClosable"
+      @close="closeWizard"
+      @finished="finishWizard"
     />
-    <div class="block md:hidden overflow-hidden scrollbar-hide min-h-screen w-screen">
-      <mobile-layout :key="resizeToken" :all-tickets="allTickets" />
-    </div>
-    <div class="hidden md:block overflow-hidden scrollbar-hide min-h-screen w-screen">
-      <component :key="resizeToken" :is="dashboardLayout" :all-tickets="allTickets" />
-    </div>
+    <fetching-overlay v-else-if="fetchingFields" @done="fetchingFields = false" />
   </div>
 </template>
 
@@ -32,11 +47,14 @@ import ApiCall from '@/helpers/APICallHelper'
 import { filterParser } from '@/helpers/CommonMethods'
 import ToolBar from '@/components/DashboardToolbar.vue'
 import MobileLayout from '@/components/layouts/MobileLayout.vue'
+import LoginOverlay from '@/components/overlays/LoginOverlay.vue'
+import FetchingOverlay from '@/components/overlays/FetchingOverlay.vue'
+import ConfigurationWizard from '@/components/overlays/ConfigurationWizard.vue'
 
 export default defineComponent({
   name: 'TheDashboard',
 
-  components: { ToolBar, MobileLayout },
+  components: { ToolBar, MobileLayout, LoginOverlay, FetchingOverlay, ConfigurationWizard },
 
   data() {
     return {
@@ -46,6 +64,8 @@ export default defineComponent({
       apiCallUrl: '',
       startYear: '',
       timeoutId: null,
+      fetchRun: 0,
+      fetchTimeoutId: undefined as ReturnType<typeof setTimeout> | undefined,
       isLoading: true,
       keepFetching: true,
       hiddenCursor: false,
@@ -53,11 +73,33 @@ export default defineComponent({
       updateToken: 0,
       reloadToken: 0,
       resizeToken: 0,
-      perPage: 100
+      perPage: 100,
+      // Freshdesk's search endpoint ignores per_page: 30 results per page, max 10 pages.
+      searchPageSize: 30,
+      searchMaxPages: 10,
+      wizardOpen: false,
+      wizardClosable: false,
+      fetchingFields: false
     }
   },
 
   computed: {
+    authenticated(): boolean {
+      return this.$auth?.authenticated
+    },
+    layoutDefined(): boolean {
+      return this.$configuration?.layoutGroups?.length > 0
+    },
+    // Tickets are only fetched while the dashboard itself is showing. A closable
+    // wizard (opened from settings) keeps the dashboard running behind it.
+    ready(): boolean {
+      return (
+        this.authenticated &&
+        this.layoutDefined &&
+        !this.fetchingFields &&
+        !(this.wizardOpen && !this.wizardClosable)
+      )
+    },
     allTickets(): Object {
       return this.tickets?.flat() ?? []
     },
@@ -90,26 +132,78 @@ export default defineComponent({
       this.updateToken++
     },
     'autoRefresh.active'() {
-      this.initiateRefreshInterval()
+      if (this.ready) {
+        this.initiateRefreshInterval()
+      }
+    },
+    authenticated(isAuthenticated: boolean) {
+      if (isAuthenticated) {
+        // After login, fetch fresh ticket fields; first run the wizard if there is no layout yet.
+        this.layoutDefined ? (this.fetchingFields = true) : this.openWizard(false)
+      } else {
+        this.wizardOpen = false
+        this.fetchingFields = false
+      }
+    },
+    ready: {
+      immediate: true,
+      handler(isReady: boolean) {
+        isReady ? this.startDashboard() : this.stopDashboard()
+      }
     }
   },
 
   created() {
-    if (!this.$auth.authenticated) {
-      this.$router.push('/')
+    if (this.authenticated && !this.layoutDefined) {
+      this.openWizard(false)
     }
     this.windowResizeListener()
   },
 
-  async mounted() {
-    this.startYear = this.statStartYear
-
-    await this.loadTickets()
-    this.initiateRefreshInterval()
+  beforeUnmount() {
+    this.stopDashboard()
+    clearTimeout(this.timeoutId)
+    window.removeEventListener('resize', this.onWindowResize)
   },
 
   methods: {
+    startDashboard() {
+      this.startYear = this.statStartYear
+      this.startLoading()
+      this.loadTickets()
+      this.initiateRefreshInterval()
+    },
+
+    stopDashboard() {
+      // Invalidate any fetch chain still waiting on a response.
+      this.fetchRun++
+      clearTimeout(this.fetchTimeoutId)
+      clearInterval(this.refreshIntervalId)
+      this.keepFetching = false
+      this.tickets = []
+      this.ticketsTemp = []
+    },
+
+    openWizard(closable: boolean) {
+      this.wizardClosable = closable
+      this.wizardOpen = true
+    },
+
+    closeWizard() {
+      this.wizardOpen = false
+      // Layouts read their groups on mount; remount to show wizard changes.
+      this.reloadToken++
+    },
+
+    finishWizard() {
+      this.wizardOpen = false
+      this.fetchingFields = true
+    },
+
     async loadTickets() {
+      // Start a new fetch chain; any previous one stops at its next step.
+      this.fetchRun++
+      clearTimeout(this.fetchTimeoutId)
       this.keepFetching = true
       this.apiCallUrl = `tickets?updated_since=${this.startYear}&include=requester,stats&per_page=${this.perPage}`
 
@@ -125,43 +219,63 @@ export default defineComponent({
       this.ticketsTemp = []
 
       try {
-        await this.fetchTickets()
+        await this.fetchTickets(this.fetchRun)
       } catch (error) {
         this.keepFetching = false
         this.stopLoading()
       }
     },
 
-    async fetchTickets() {
+    async fetchTickets(run: number) {
       await ApiCall.get(`${this.apiCallUrl}&page=${this.page}`).then((response) => {
+        if (run != this.fetchRun) {
+          return
+        }
+
         if (response) {
           this.ticketsTemp[this.page] = Object.values(response?.results ?? response)
         }
 
-        if (this.ticketsTemp[this.page]?.length < this.perPage) {
+        if (this.isLastPage(response)) {
           this.keepFetching = false
 
-          if (this.ticketsTemp?.length) {
+          if (this.ticketsTemp.flat().length) {
             this.refershTicketsFromTemp()
           } else {
             this.stopLoading()
             this.$toast.clear()
             this.$toast.error('No tickets to display found.')
           }
+          return
         }
 
-        if (this.keepFetching) {
-          this.page++
-          setTimeout(() => {
-            this.fetchTickets()
-          }, 6000)
-        }
+        this.page++
+        this.fetchTimeoutId = setTimeout(() => {
+          this.fetchTickets(run)
+        }, 6000)
       })
     },
 
+    isLastPage(response: any) {
+      // Failed request: stop and show what was fetched so far.
+      if (!response) {
+        return true
+      }
+
+      if (Array.isArray(response?.results)) {
+        return (
+          this.page * this.searchPageSize >= (response?.total ?? 0) ||
+          this.page >= this.searchMaxPages
+        )
+      }
+
+      return this.ticketsTemp[this.page]?.length < this.perPage
+    },
+
     initiateRefreshInterval() {
+      clearInterval(this.refreshIntervalId)
+
       if (!this.autoRefresh?.active || this.autoRefresh?.perMinutes <= 0) {
-        clearInterval(this.refreshIntervalId)
         return
       }
 
@@ -180,16 +294,19 @@ export default defineComponent({
 
       this.setInformationTicketFields()
 
-      setTimeout(async () => {
-        this.ticketsTemp = []
+      // ticketsTemp is reset at the start of each fetch run; clearing it here
+      // could wipe pages of a run started within these 3 seconds.
+      setTimeout(() => {
         this.stopLoading()
       }, 3000)
     },
 
     windowResizeListener() {
-      window.addEventListener('resize', () => {
-        this.resizeToken++
-      })
+      window.addEventListener('resize', this.onWindowResize)
+    },
+
+    onWindowResize() {
+      this.resizeToken++
     },
 
     setInformationTicketFields() {

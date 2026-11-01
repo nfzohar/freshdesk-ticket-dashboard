@@ -1,7 +1,7 @@
 <template>
-  <div class="flex transition-colors dashboard-body">
+  <a-overlay>
     <div
-      class="flex flex-col md:flex-row m-auto text-center w-9/12 sm:w-7/12 md:w-9/12 xl:w-7/12 2xl:w-5/12 md:gap-x-8 shadow-lg rounded-lg p-5 bg-none border border-primary-500"
+      class="flex flex-col md:flex-row m-auto text-center w-9/12 sm:w-7/12 md:w-9/12 xl:w-7/12 2xl:w-5/12 md:gap-x-8 shadow-lg rounded-lg p-5 bg-secondary-500 border border-primary-500"
     >
       <logo-icon :pt-width="200" :pt-height="200" />
 
@@ -72,18 +72,19 @@
         </div>
       </div>
     </div>
-  </div>
+  </a-overlay>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import LogoIcon from '@/components/general/TheLogo.vue'
+import AOverlay from '@/components/general/AOverlay.vue'
 import { checkAuthCredentials } from '@/helpers/CommonMethods'
 
 export default defineComponent({
-  name: 'LoginPage',
+  name: 'LoginOverlay',
 
-  components: { LogoIcon },
+  components: { LogoIcon, AOverlay },
 
   data() {
     return {
@@ -116,18 +117,13 @@ export default defineComponent({
     domainUrl() {
       let domain = this.domainUrl
 
-      if (domain.charAt(domain.length - 1) != '/') {
-        domain.concat('/')
+      if (domain && domain.charAt(domain.length - 1) != '/') {
+        domain = domain.concat('/')
       }
       this.$auth.setNewDomainUrl(domain)
     },
     apiKey() {
       this.$auth.setNewApiKey(this.apiKey)
-    },
-    '$auth.authenticated'() {
-      if (this.$auth?.authenticated) {
-        this.redirectAfterAuth()
-      }
     }
   },
 
@@ -147,12 +143,7 @@ export default defineComponent({
     }
   },
 
-  mounted() {
-    if (this.$auth?.authenticated) {
-      this.redirectAfterAuth()
-    }
-  },
-
+  // The dashboard watches the auth state and takes over once it is set.
   methods: {
     authenticate() {
       if (this.freshdeskDomainUrl && this.freshdeskApiKey) {
@@ -160,13 +151,12 @@ export default defineComponent({
         return
       }
 
-      this.$auth.setAuthState(this.$auth?.domain && this.$auth?.api_key)
-      this.redirectAfterAuth()
-    },
+      if (!this.$auth?.domain || !this.$auth?.api_key) {
+        this.$toast.error('Please enter your Freshdesk domain url and API key.')
+        return
+      }
 
-    redirectAfterAuth() {
-      let layoutDefined = this.$configuration.theLayout?.groups.length > 0
-      this.$router.push(layoutDefined ? '/loading' : '/setup')
+      this.$auth.setAuthState(true)
     }
   }
 })

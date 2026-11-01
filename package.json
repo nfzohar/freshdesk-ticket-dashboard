@@ -18,6 +18,7 @@
     "buffer": "^6.0.3",
     "chart.js": "^4.4.0",
     "date-fns": "^2.30.0",
+    "dompurify": "^3.2.4",
     "dotenv": "^16.3.1",
     "lodash": "^4.17.21",
     "pinia": "^2.1.7",
@@ -28,7 +29,6 @@
     "vue": "^3.3.4",
     "vue-api-query": "^1.10.0",
     "vue-chartjs": "^5.2.0",
-    "vue-router": "^4.2.5",
     "vue-toastification": "^2.0.0-rc.5",
     "write-excel-file": "^1.4.29",
     "yarn": "^1.22.19"

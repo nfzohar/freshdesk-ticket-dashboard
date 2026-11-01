@@ -66,6 +66,7 @@
 
 <script lang="ts">
 import { get } from 'lodash'
+import DOMPurify from 'dompurify'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import { fdate } from '@/helpers/CommonMethods'
@@ -103,7 +104,7 @@ export default defineComponent({
 
   computed: {
     ticketDescription(): String {
-      return this.theTicket?.description
+      return DOMPurify.sanitize(this.theTicket?.description ?? '')
     },
     primaryTextClass(): String {
       return this.$information?.textOnPrimaryColor

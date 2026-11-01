@@ -58,6 +58,8 @@
         />
         <dashboard-settings-modal
           @reloadDashboard="$emit('reload')"
+          @openWizard="$emit('openWizard')"
+          @refetch="$emit('refetch')"
           @open="modalsOpen = true"
           @close="modalsOpen = false"
         />
@@ -105,7 +107,7 @@ export default defineComponent({
     ResolvedStatisticsGraph
   },
 
-  emits: ['reload', 'refresh', 'startLoading', 'stopLoading'],
+  emits: ['reload', 'refresh', 'startLoading', 'stopLoading', 'openWizard', 'refetch'],
 
   data() {
     return {

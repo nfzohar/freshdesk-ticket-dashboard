@@ -93,6 +93,7 @@ export default defineComponent({
   methods: {
     findTopRequesters() {
       let requesters = groupBy(this.tickets, 'requester.name')
+      this.topRequesters = []
 
       Object.keys(requesters).forEach((requester) => {
         this.topRequesters.push({

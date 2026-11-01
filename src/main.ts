@@ -3,7 +3,6 @@ import AToast from '@/components/general/AToast.vue'
 import { useToast } from 'vue-toastification'
 import Toast from 'vue-toastification'
 import { createPinia } from 'pinia'
-import router from './router'
 import App from './App.vue'
 
 import './index.css'
@@ -19,9 +18,6 @@ const app = createApp(App)
 //Register store
 app.use(pinia)
 app.use(plugin)
-
-//Register router
-app.use(router)
 
 //Register Toast in app
 app.use(Toast, {

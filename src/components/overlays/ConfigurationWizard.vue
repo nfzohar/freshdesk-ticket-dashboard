@@ -1,6 +1,6 @@
 <template>
-  <div class="dashboard-body sm:py-10">
-    <div class="w-11/12 md:w-11/12 h-11/12 m-auto">
+  <a-overlay :closable="closable" @close="$emit('close')">
+    <div class="w-11/12 md:w-11/12 h-11/12 m-auto sm:py-10">
       <h1 class="text-5xl w-full text-left p-5 font-bold" v-text="'Configuration Wizard'" />
 
       <div
@@ -39,12 +39,13 @@
         <button class="wizard-navigation" v-text="page < 4 ? 'Next' : 'Save'" @click="page++" />
       </div>
     </div>
-  </div>
+  </a-overlay>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import Tabs from '@/components/wizard/Tabs.vue'
+import AOverlay from '@/components/general/AOverlay.vue'
 import LayoutSetup from '@/components/wizard/LayoutSetup.vue'
 import LayoutSelection from '@/components/wizard/LayoutSelection.vue'
 import AutoRefreshSettings from '@/components/wizard/AutoRefreshSettings.vue'
@@ -54,7 +55,19 @@ import ConfigPresetOrCustomSelect from '@/components/wizard/ConfigPresetOrCustom
 export default defineComponent({
   name: 'ConfigurationWizard',
 
+  emits: ['close', 'finished'],
+
+  props: {
+    // False on first setup: the dashboard cannot render without a layout.
+    closable: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
+
   components: {
+    AOverlay,
     ConfigPresetOrCustomSelect,
     AutoRefreshSettings,
     LeaderboardsSettings,
@@ -90,7 +103,7 @@ export default defineComponent({
   watch: {
     page() {
       if (this.page == 5) {
-        this.$router.replace('/loading')
+        this.$emit('finished')
       }
     }
   },

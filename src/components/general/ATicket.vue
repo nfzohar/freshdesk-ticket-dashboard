@@ -11,8 +11,8 @@
 
       <div class="flex flex-col items-left w-full text-sm justify-between">
         <div class="flex flex-col items-left w-max text-sm justify-between">
-          <span v-html="`<b>Submitted by:</b> ${requester}`" />
-          <span v-if="tags?.length" v-html="`<b>Tags</b>: ${tags}`" />
+          <span><b>Submitted by:</b> {{ requester }}</span>
+          <span v-if="tags?.length"><b>Tags</b>: {{ tags }}</span>
         </div>
 
         <div :class="`flex items-end gap-x-2 mt-1 w-max ${primaryColorText}`">
@@ -36,8 +36,8 @@
 
       <div class="flex items-center justify-between">
         <div class="flex flex-col gap-y-1 w-auto text-base">
-          <span v-html="`<b>Submitted by:</b> ${requester}`" />
-          <span v-if="tags?.length" v-html="`<b>Tags</b>: ${tags}`" />
+          <span><b>Submitted by:</b> {{ requester }}</span>
+          <span v-if="tags?.length"><b>Tags</b>: {{ tags }}</span>
         </div>
 
         <div :class="`flex items-center gap-x-2 justify-between p-2 w-auto ${primaryColorText}`">

@@ -41,7 +41,9 @@ export default defineComponent({
 
   data() {
     return {
-      index: 0
+      index: 0,
+      intervalId: undefined as ReturnType<typeof setInterval> | undefined,
+      removeKeyListeners: [] as (() => void)[]
     }
   },
 
@@ -65,18 +67,25 @@ export default defineComponent({
   },
 
   created() {
-    listenForKey('ArrowLeft', () => this.index--)
-    listenForKey('ArrowRight', () => this.index++)
+    this.removeKeyListeners = [
+      listenForKey('ArrowLeft', () => this.index--),
+      listenForKey('ArrowRight', () => this.index++)
+    ]
   },
 
   mounted() {
     let i = 0
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       if (this.spinCarousel) {
         i > this.slides?.length - 1 ? (i = 0) : (this.index = i)
         i++
       }
     }, this.slideDuration)
+  },
+
+  beforeUnmount() {
+    clearInterval(this.intervalId)
+    this.removeKeyListeners.forEach((removeListener) => removeListener())
   }
 })
 </script>

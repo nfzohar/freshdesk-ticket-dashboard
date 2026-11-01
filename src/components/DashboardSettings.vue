@@ -158,7 +158,7 @@ export default defineComponent({
 
   components: { ASettingSection, ACheckbox, ADialog, ASelect },
 
-  emits: ['reloadDashboard'],
+  emits: ['reloadDashboard', 'openWizard', 'refetch'],
 
   data() {
     return {
@@ -190,13 +190,13 @@ export default defineComponent({
           name: 'Configuration wizard',
           title: 'To edit layout, rerun the configuration wizard.',
           icon: 'fa fa-hat-wizard',
-          function: () => this.$router.push('/setup')
+          function: () => this.runAndClose(() => this.$emit('openWizard'))
         },
         {
           name: 'Refetch information',
           title: 'Refetch information from Freshdesk.',
           icon: 'fa fa-redo-alt',
-          function: () => this.$router.replace('/loading')
+          function: () => this.runAndClose(() => this.$emit('refetch'))
         },
         {
           name: 'Reload',
@@ -308,15 +308,21 @@ export default defineComponent({
         : (this.visibleStatusCounters = this.visibleStatusCounters.filter((s) => s != status))
     },
 
+    runAndClose(action: Function) {
+      this.open = false
+      action()
+    },
+
+    // Logging out shows the login overlay; the dashboard watches the auth state.
     clearSavedInfo() {
+      this.$configuration.$reset()
       this.$configuration.deleteStoredConfiguration()
       this.$information.deleteStoredConfiguration()
-      this.$router.push('/logout')
+      this.$auth.logout()
     },
 
     logout() {
       this.$auth.logout()
-      this.$router.push('/logout')
     }
   }
 })

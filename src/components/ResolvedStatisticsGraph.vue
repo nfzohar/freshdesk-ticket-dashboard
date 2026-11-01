@@ -176,9 +176,11 @@ export default defineComponent({
   },
 
   created() {
-    window.addEventListener('resize', () => {
-      this.updateToken++
-    })
+    window.addEventListener('resize', this.onWindowResize)
+  },
+
+  beforeUnmount() {
+    window.removeEventListener('resize', this.onWindowResize)
   },
 
   mounted() {
@@ -187,6 +189,10 @@ export default defineComponent({
   },
 
   methods: {
+    onWindowResize() {
+      this.updateToken++
+    },
+
     splitTicketsByYear() {
       this.ticketsByYear = groupBy(this.tickets, (ticket) => fdate(ticket?.created_at, 'y'))
       this.yearsFromTickets = Object.keys(this.ticketsByYear)

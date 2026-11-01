@@ -156,18 +156,21 @@ export function isOdd(number: number) {
 }
 
 // Use date-fns's format function on a date string and provide custom format.
-export function fdate(date: string, dateFormat: string = 'yyyy. M. D') {
+export function fdate(date: string, dateFormat: string = 'yyyy. M. d') {
   return date ? format(new Date(date), dateFormat) : '-'
 }
 
-// Add an event listener for keystroke.
+// Add an event listener for keystroke. Returns a function that removes the listener.
 export function listenForKey(eventKey = '', performFunction: Function) {
-  document.addEventListener('keydown', (event) => {
+  const listener = (event: KeyboardEvent) => {
     if (event?.key == eventKey) {
       event.preventDefault()
       performFunction()
     }
-  })
+  }
+
+  document.addEventListener('keydown', listener)
+  return () => document.removeEventListener('keydown', listener)
 }
 
 // Fetch choices of a ticekt field with given label.

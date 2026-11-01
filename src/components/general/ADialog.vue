@@ -50,7 +50,8 @@ export default defineComponent({
 
   data() {
     return {
-      open: false
+      open: false,
+      removeEscListener: undefined as (() => void) | undefined
     }
   },
 
@@ -61,7 +62,15 @@ export default defineComponent({
   },
 
   mounted() {
-    listenForKey('escKey', () => this.closeDialog())
+    this.removeEscListener = listenForKey('Escape', () => {
+      if (this.open) {
+        this.closeDialog()
+      }
+    })
+  },
+
+  beforeUnmount() {
+    this.removeEscListener?.()
   },
 
   methods: {

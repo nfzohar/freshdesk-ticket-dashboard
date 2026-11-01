@@ -30,16 +30,6 @@ export default defineComponent({
     }
   },
 
-  data() {
-    return { groupedByStatus: [] }
-  },
-
-  watch: {
-    'tickets.length'() {
-      this.statusGroupedTickets = groupBy(this.tickets, 'status')
-    }
-  },
-
   computed: {
     layout(): String {
       return this.$configuration?.layoutComponent
@@ -94,7 +84,7 @@ export default defineComponent({
 
     getStatusId(statusLabel: string) {
       return this.statuses?.length
-        ? this.statuses?.filter((status) => status.label == statusLabel)[0].id ?? 0
+        ? this.statuses?.filter((status) => status.label == statusLabel)[0]?.id ?? 0
         : 0
     }
   }

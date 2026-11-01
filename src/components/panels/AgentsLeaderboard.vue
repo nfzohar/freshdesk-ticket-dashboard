@@ -46,8 +46,8 @@ export default defineComponent({
 
   data() {
     return {
-      sortedAgents: [],
-      allAgents: []
+      sortedAgents: [] as any[],
+      allAgents: [] as any[]
     }
   },
 
@@ -95,14 +95,15 @@ export default defineComponent({
 
       this.allAgents.forEach((agent) => {
         if (agent) {
-          let tempAgent = agent
-          tempAgent['ticket_count'] = ticketsByAgent[agent.id]?.length
-
-          this.sortedAgents.push(tempAgent)
+          // Copy, so the agent objects in the information store stay untouched.
+          this.sortedAgents.push({
+            ...agent,
+            ticket_count: ticketsByAgent[agent.id]?.length ?? 0
+          })
         }
       })
 
-      this.sortedAgents = sortBy(this.sortedAgents, 'ticket_count')
+      this.sortedAgents = sortBy(this.sortedAgents, 'ticket_count').reverse()
     }
   }
 })
