@@ -71,6 +71,7 @@ export default defineComponent({
       await this.setAutorefreshPreset()
       await this.setLeaderbordsPreset()
       await this.setLayoutPanelsPreset()
+      this.$toast.success('Dashboard configuration was updated.')
       this.$emit('usePreset')
     },
 
@@ -80,7 +81,6 @@ export default defineComponent({
         perMinutes: 0
       }
       this.$configuration.updateAutoRefreshSettings(autoRefreshPreset)
-      this.$toast.success('Dashboard configuration was updated.')
     },
 
     setLeaderbordsPreset() {
@@ -90,7 +90,6 @@ export default defineComponent({
         trophyIcon: 'fa fa-trophy'
       }
       this.$configuration.updateLeaderboardSettings(leaderboardsPreset)
-      this.$toast.success('Dashboard configuration was updated.')
     },
 
     setLayoutPanelsPreset() {
@@ -101,7 +100,6 @@ export default defineComponent({
         panels: presetPanels()
       }
       this.$configuration.updateLayout(layout)
-      this.$toast.success('Dashboard configuration was updated.')
     }
   }
 })

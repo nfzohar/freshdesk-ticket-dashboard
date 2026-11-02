@@ -163,7 +163,7 @@ export default defineComponent({
       }
     },
     statStartYear(): string {
-      let year = import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970'
+      let year = import.meta.env?.VITE_FRESHDESK_START_YEAR || '2010'
       return new Date(year).toISOString()
     },
     // Fetch the next page right away while there's ample rate-limit budget left;

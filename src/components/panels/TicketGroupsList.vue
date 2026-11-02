@@ -64,7 +64,7 @@ export default defineComponent({
         if (group) {
           this.ticketGroups.push({
             name: group?.name,
-            ticket_count: Number(ticketsGrouped[group?.id]?.length)
+            ticket_count: ticketsGrouped[group?.id]?.length ?? 0
           })
         }
       })

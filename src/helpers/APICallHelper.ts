@@ -4,6 +4,10 @@ import { useToast } from 'vue-toastification'
 
 const toast = useToast()
 
+// Fallback wait on a 429 with no readable Retry-After header (e.g. not exposed
+// cross-origin via Access-Control-Expose-Headers).
+const DEFAULT_RETRY_AFTER_SECONDS = 15
+
 export default class ApiCall {
   protected freshdeskDomainUrl = auth().domain
   protected freshdeskApiKey = auth().api_key
@@ -71,6 +75,15 @@ export default class ApiCall {
       const response = await this.performRawApiCall(method, path, params, typeOfContent)
       return response?.data
     } catch (e: any) {
+      if (e?.response?.status == 429) {
+        const retryAfter = Number(this.readHeader(e.response.headers, 'retry-after'))
+        const delaySeconds = retryAfter || DEFAULT_RETRY_AFTER_SECONDS
+
+        toast.info(`Freshdesk API rate limit reached. Resuming in ${delaySeconds}s…`)
+        await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000))
+        return this.performApiCall(method, path, params, typeOfContent)
+      }
+
       const errorData = e.toJSON ? e.toJSON() : e
 
       errorData.message
@@ -79,5 +92,11 @@ export default class ApiCall {
             timeout: 60000
           })
     }
+  }
+
+  // AxiosHeaders (what a browser response actually carries) only reliably exposes
+  // header values through get(), not plain bracket access — this works for either.
+  readHeader(headers: any, name: string) {
+    return typeof headers?.get == 'function' ? headers.get(name) : headers?.[name]
   }
 }
