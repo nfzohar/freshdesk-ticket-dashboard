@@ -7,10 +7,17 @@ const toast = useToast()
 // Fallback wait on a 429 with no readable Retry-After header (e.g. not exposed
 // cross-origin via Access-Control-Expose-Headers).
 const DEFAULT_RETRY_AFTER_SECONDS = 15
+// Freshdesk's edge rate-limiter sometimes returns the 429 without a CORS header at
+// all, which the browser can't distinguish from a real connection failure — it
+// just surfaces an opaque "Network Error" with no response. Retry those too, since
+// most of the time it's really a rate limit, but cap it so a genuine outage still
+// surfaces an error instead of retrying forever.
+const MAX_OPAQUE_NETWORK_RETRIES = 5
 
 export default class ApiCall {
   protected freshdeskDomainUrl = auth().domain
   protected freshdeskApiKey = auth().api_key
+  protected opaqueNetworkRetries = 0
 
   get(path: string) {
     return this.performApiCall('get', path)
@@ -70,16 +77,27 @@ export default class ApiCall {
     path: string,
     params: any = [],
     typeOfContent: string = 'application/json'
-  ) {
+  ): Promise<any> {
     try {
       const response = await this.performRawApiCall(method, path, params, typeOfContent)
+      this.opaqueNetworkRetries = 0
       return response?.data
     } catch (e: any) {
-      if (e?.response?.status == 429) {
-        const retryAfter = Number(this.readHeader(e.response.headers, 'retry-after'))
+      const isRateLimited = e?.response?.status == 429
+      const isOpaqueNetworkError =
+        !e?.response && e?.request && this.opaqueNetworkRetries < MAX_OPAQUE_NETWORK_RETRIES
+
+      if (isRateLimited || isOpaqueNetworkError) {
+        const retryAfter = Number(this.readHeader(e?.response?.headers, 'retry-after'))
         const delaySeconds = retryAfter || DEFAULT_RETRY_AFTER_SECONDS
 
-        toast.info(`Freshdesk API rate limit reached. Resuming in ${delaySeconds}s…`)
+        if (isOpaqueNetworkError) {
+          this.opaqueNetworkRetries++
+          toast.info(`Connection issue with Freshdesk. Retrying in ${delaySeconds}s…`)
+        } else {
+          toast.info(`Freshdesk API rate limit reached. Resuming in ${delaySeconds}s…`)
+        }
+
         await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000))
         return this.performApiCall(method, path, params, typeOfContent)
       }

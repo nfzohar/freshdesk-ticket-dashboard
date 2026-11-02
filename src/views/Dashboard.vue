@@ -71,6 +71,11 @@ const RATE_LIMIT_SAFETY_BUFFER = 10
 const RATE_LIMIT_BACKOFF_DELAY = 5000
 // Fallback wait on a 429 with no Retry-After header.
 const DEFAULT_RETRY_AFTER_SECONDS = 15
+// Freshdesk's edge rate-limiter sometimes returns the 429 without a CORS header,
+// which the browser surfaces as an opaque "Network Error" with no readable response
+// at all. Retry those too (it's usually really a rate limit), capped so a genuine
+// outage still stops the fetch instead of retrying forever.
+const MAX_OPAQUE_NETWORK_RETRIES = 5
 
 export default defineComponent({
   name: 'TheDashboard',
@@ -109,6 +114,7 @@ export default defineComponent({
       // Requests left in Freshdesk's current rate-limit window, from the most
       // recent response's X-RateLimit-Remaining header; null until first known.
       rateLimitRemaining: null as number | null,
+      opaqueNetworkRetries: 0,
       wizardOpen: false,
       editMode: false,
       // Set after the custom wizard path: open edit mode once the dashboard is ready.
@@ -280,6 +286,7 @@ export default defineComponent({
       this.page = 1
       this.ticketsTemp = []
       this.resultsTruncated = false
+      this.opaqueNetworkRetries = 0
 
       try {
         await this.fetchTickets(this.fetchRun)
@@ -306,6 +313,7 @@ export default defineComponent({
         return
       }
 
+      this.opaqueNetworkRetries = 0
       this.trackRateLimit(raw?.headers)
       const response = raw?.data
 
@@ -336,13 +344,23 @@ export default defineComponent({
     // A 429 waits out exactly what Freshdesk's Retry-After header asks for and
     // resumes the same run; any other failure stops and shows what was fetched so far.
     handleFetchError(error: any, run: number) {
-      if (error?.response?.status == 429) {
+      const isRateLimited = error?.response?.status == 429
+      const isOpaqueNetworkError =
+        !error?.response && error?.request && this.opaqueNetworkRetries < MAX_OPAQUE_NETWORK_RETRIES
+
+      if (isRateLimited || isOpaqueNetworkError) {
         // Retry-After often isn't readable cross-origin unless Freshdesk opts it into
         // Access-Control-Expose-Headers; the fallback below covers that case safely.
-        const retryAfter = Number(this.readHeader(error.response.headers, 'retry-after'))
+        const retryAfter = Number(this.readHeader(error?.response?.headers, 'retry-after'))
         const delaySeconds = retryAfter || DEFAULT_RETRY_AFTER_SECONDS
 
-        this.$toast.info(`Freshdesk API rate limit reached. Resuming in ${delaySeconds}s…`)
+        if (isOpaqueNetworkError) {
+          this.opaqueNetworkRetries++
+          this.$toast.info(`Connection issue with Freshdesk. Retrying in ${delaySeconds}s…`)
+        } else {
+          this.$toast.info(`Freshdesk API rate limit reached. Resuming in ${delaySeconds}s…`)
+        }
+
         this.fetchTimeoutId = setTimeout(() => this.fetchTickets(run), delaySeconds * 1000)
         return
       }
