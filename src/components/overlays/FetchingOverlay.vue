@@ -11,9 +11,12 @@
 </template>
 
 <script lang="ts">
+import { chunk } from 'lodash'
 import { defineComponent } from 'vue'
 import ApiCall from '@/helpers/APICallHelper'
 import AOverlay from '@/components/general/AOverlay.vue'
+
+const FIELD_OPTIONS_CONCURRENCY = 5
 
 export default defineComponent({
   name: 'FetchingOverlay',
@@ -63,34 +66,41 @@ export default defineComponent({
       this.$emit('done')
     },
 
-    fetchTicketFieldOptions() {
-      const requests = this.adminTicketFields?.map((ticketField) => {
-        let index = ticketField?.label?.toLocaleLowerCase()
-        this.message = `Fetching options for ${index} ticket field`
+    async fetchTicketFieldOptions() {
+      // Freshdesk accounts can be rate-limited as low as 40 requests/minute; firing
+      // one request per ticket field at once can burn the whole budget in a single
+      // burst and 429 the ticket fetch that follows. Batch them instead.
+      const batches = chunk(this.adminTicketFields ?? [], FIELD_OPTIONS_CONCURRENCY)
 
-        if (index == 'agent') {
-          return ApiCall.get('agents?per_page=100').then((response) => {
-            ticketField['choices'] = Object.values(response ?? [])
-          })
-        } else if (index == 'group') {
-          return ApiCall.get('groups?per_page=100').then((response) => {
-            ticketField['choices'] = Object.values(response ?? [])
-          })
-        } else {
-          return ApiCall.get(`admin/ticket_fields/${ticketField?.id}?include=section`).then(
-            (response) => {
-              ticketField['choices'] = Object.values(response?.choices ?? [])
+      for (const batch of batches) {
+        const requests = batch.map((ticketField) => {
+          let index = ticketField?.label?.toLocaleLowerCase()
+          this.message = `Fetching options for ${index} ticket field`
 
-              if (index == 'status') {
-                let statuses = ticketField['choices'].map((choice: any) => choice.label)
-                this.$configuration.updateVisibleStatuses(statuses)
+          if (index == 'agent') {
+            return ApiCall.get('agents?per_page=100').then((response) => {
+              ticketField['choices'] = Object.values(response ?? [])
+            })
+          } else if (index == 'group') {
+            return ApiCall.get('groups?per_page=100').then((response) => {
+              ticketField['choices'] = Object.values(response ?? [])
+            })
+          } else {
+            return ApiCall.get(`admin/ticket_fields/${ticketField?.id}?include=section`).then(
+              (response) => {
+                ticketField['choices'] = Object.values(response?.choices ?? [])
+
+                if (index == 'status') {
+                  let statuses = ticketField['choices'].map((choice: any) => choice.label)
+                  this.$configuration.updateVisibleStatuses(statuses)
+                }
               }
-            }
-          )
-        }
-      })
+            )
+          }
+        })
 
-      return Promise.allSettled(requests ?? [])
+        await Promise.allSettled(requests)
+      }
     }
   }
 })
