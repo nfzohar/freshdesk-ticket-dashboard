@@ -102,22 +102,22 @@ export default defineComponent({
   },
 
   computed: {
-    freshdeskDomainUrl(): String {
+    freshdeskDomainUrl(): string {
       return import.meta.env.VITE_FRESHDESK_DOMAIN_URL ?? ''
     },
-    freshdeskApiKey(): String {
+    freshdeskApiKey(): string {
       return import.meta.env.VITE_FRESHDESK_API_KEY ?? ''
     },
-    userCredentialsSet(): Boolean {
+    userCredentialsSet(): boolean {
       return (
         import.meta.env.VITE_ACCESS_CONTROL_USERNAME != '' &&
         import.meta.env.VITE_ACCESS_CONTROL_PASSWORD != ''
       )
     },
-    appTitle(): String {
+    appTitle(): string {
       return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
     },
-    subtitle(): String {
+    subtitle(): string {
       return this.freshdeskDomainUrl && this.freshdeskApiKey
         ? 'Sign in to view the dashboard.'
         : 'Connect your Freshdesk account to get started.'

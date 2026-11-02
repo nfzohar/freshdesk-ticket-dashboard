@@ -88,10 +88,10 @@ export default defineComponent({
   },
 
   computed: {
-    textPrimaryClass(): String {
+    textPrimaryClass(): string {
       return this.$information?.textOnPrimaryColor
     },
-    textSecondaryClass(): String {
+    textSecondaryClass(): string {
       return this.$information?.textOnSecondaryColor
     }
   },

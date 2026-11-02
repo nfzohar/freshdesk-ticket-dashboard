@@ -33,12 +33,12 @@ export default defineComponent({
 
   data() {
     return {
-      uniqueSources: []
+      uniqueSources: [] as any[]
     }
   },
 
   computed: {
-    ticketSources(): Array {
+    ticketSources(): Array<any> {
       return this.$information?.storedSources ?? []
     }
   },
@@ -70,7 +70,7 @@ export default defineComponent({
       this.uniqueSources = sortBy(this.uniqueSources, 'ticket_count').reverse()
     },
 
-    getSourceLabel(sourceId: Number) {
+    getSourceLabel(sourceId: number) {
       let sourceObject = this.ticketSources.filter((source) => source?.value == sourceId)
       return get(sourceObject, '[0].label')
     }

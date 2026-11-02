@@ -34,12 +34,12 @@ export default defineComponent({
 
   data() {
     return {
-      uniquePriorities: []
+      uniquePriorities: [] as any[]
     }
   },
 
   computed: {
-    ticketPriorities(): Array {
+    ticketPriorities(): Array<any> {
       return this.$information?.storedPriorities ?? []
     }
   },
@@ -71,7 +71,7 @@ export default defineComponent({
       this.uniquePriorities = sortBy(this.uniquePriorities, 'ticket_count').reverse()
     },
 
-    getPriorityLabel(priorityId: Number) {
+    getPriorityLabel(priorityId: number) {
       let priorityObject = this.ticketPriorities.filter((priority) => priority?.value == priorityId)
       return get(priorityObject, '[0].label')
     }

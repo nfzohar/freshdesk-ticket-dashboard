@@ -95,7 +95,7 @@ export default defineComponent({
 
   data() {
     return {
-      theTicket: [],
+      theTicket: {} as any,
       isLoading: true
     }
   },
@@ -107,16 +107,16 @@ export default defineComponent({
   },
 
   computed: {
-    ticketDescription(): String {
+    ticketDescription(): string {
       return DOMPurify.sanitize(this.theTicket?.description ?? '')
     },
-    primaryTextClass(): String {
+    primaryTextClass(): string {
       return this.$information?.textOnPrimaryColor
     },
-    secondaryTextClass(): String {
+    secondaryTextClass(): string {
       return this.$information?.textOnSecondaryColor
     },
-    secondaryBgAccentColor(): String {
+    secondaryBgAccentColor(): string {
       return this.$information?.bgAccentSecondaryColor
     },
     freshdeskWebUrl() {
@@ -125,19 +125,19 @@ export default defineComponent({
     ticketUrl(): string {
       return `${this.freshdeskWebUrl}tickets/${this.theTicket?.id}`
     },
-    status(): String {
+    status(): string {
       let statuses = this.$information?.storedStatuses
       return this.findValueOf(statuses, this.theTicket?.status, 'label')
     },
-    source(): String {
+    source(): string {
       let sources = this.$information?.storedSources
       return this.findValueOf(sources, this.theTicket?.source, 'label')
     },
-    priority(): String {
+    priority(): string {
       let prorities = this.$information?.storedPriorities
       return this.findValueOf(prorities, this.theTicket?.priority, 'label', 'value')
     },
-    customFields(): Array {
+    customFields(): Array<any> {
       let customFieldsList = new Array()
 
       if (this.theTicket?.custom_fields) {
@@ -150,7 +150,7 @@ export default defineComponent({
       }
       return customFieldsList
     },
-    ticketFields(): Array {
+    ticketFields(): Array<any> {
       return [
         {
           show: true,
@@ -232,9 +232,9 @@ export default defineComponent({
     },
 
     findValueOf(
-      listOfValues: Object,
-      searchValue: String,
-      returnvalue: String,
+      listOfValues: any,
+      searchValue: string,
+      returnvalue: string,
       compareValue = 'id'
     ) {
       let all = Object.values(listOfValues)

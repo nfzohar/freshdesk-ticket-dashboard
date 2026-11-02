@@ -38,8 +38,8 @@ export default defineComponent({
 
   data() {
     return {
-      groups: [],
-      ticketGroups: Array()
+      groups: [] as any[],
+      ticketGroups: [] as any[]
     }
   },
 

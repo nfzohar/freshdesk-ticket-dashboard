@@ -182,7 +182,7 @@ export default defineComponent({
     return {
       open: false,
       autoHideToolbar: false,
-      visibleStatusCounters: [],
+      visibleStatusCounters: [] as any[],
 
       refreshPerMinutes: 0,
       refreshIsActive: false,
@@ -246,36 +246,38 @@ export default defineComponent({
           icon: 'fa fa-check',
           side: 'right',
           variant: 'btn-primary',
-          function: () => (this.open = false)
+          function: () => {
+            this.open = false
+          }
         }
       ]
     }
   },
 
   computed: {
-    trophyiconOptions(): Array {
+    trophyiconOptions(): Array<any> {
       return this.$information?.trophyIcons
     },
-    visibleTicketCounters(): Object {
+    visibleTicketCounters(): any {
       return this.$configuration?.visibleTicketCounts ?? []
     },
-    primaryColorDark(): String {
+    primaryColorDark(): boolean {
       return this.$information?.isPrimaryColorDark
     },
-    secondaryColorDark(): String {
+    secondaryColorDark(): boolean {
       return this.$information?.isSecondaryColorDark
     },
-    refreshWatchToken(): String {
+    refreshWatchToken(): string {
       return `${this.refreshPerMinutes}${Number(this.refreshIsActive)}`
     },
-    leaderboardsWatchToken(): String {
+    leaderboardsWatchToken(): string {
       return `${Number(this.throphiesVisible)}${this.leaderboardsTrophyIcon}${
         this.leaderboardslength
       }`
     },
-    statusLabels(): Array {
+    statusLabels(): Array<any> {
       let statuses = Object.values(this.$information?.storedStatuses ?? [])
-      let labels = statuses.map((status) => status?.label)
+      let labels = statuses.map((status: any) => status?.label)
 
       labels.unshift('All', 'Unresolved')
       return labels.sort()
@@ -340,7 +342,7 @@ export default defineComponent({
       this.$configuration.updateLeaderboardSettings(newSettings)
     },
 
-    toggleVisibleStatuses(status: String) {
+    toggleVisibleStatuses(status: string) {
       !this.visibleStatusCounters.includes(status)
         ? this.visibleStatusCounters.push(status)
         : (this.visibleStatusCounters = this.visibleStatusCounters.filter((s) => s != status))

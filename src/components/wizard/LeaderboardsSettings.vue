@@ -83,16 +83,16 @@ export default defineComponent({
   },
 
   computed: {
-    leaderboarsSettings(): String {
+    leaderboarsSettings(): any {
       return this.$configuration.leaderboards
     },
-    trophyColors(): Array {
+    trophyColors(): Array<any> {
       return this.$information?.trophyColors
     },
-    trophyIconOptions(): Array {
+    trophyIconOptions(): Array<any> {
       return this.$information.trophyIcons
     },
-    inputBorder(): String {
+    inputBorder(): string {
       return this.$information?.conditionalPrimaryBorder
     },
     token() {

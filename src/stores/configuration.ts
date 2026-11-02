@@ -21,44 +21,44 @@ export const configuration = defineStore('configuration', {
     },
     layout: {
       autoHideToolbar: true,
-      visibleTicketCounts: [],
+      visibleTicketCounts: [] as any[],
       component: 'grid-layout',
       panels: [] as DashboardPanel[]
     }
   }),
 
   getters: {
-    theLayout(): Object {
+    theLayout(): any {
       return this.layout
     },
-    theAutoRefresh(): Object {
+    theAutoRefresh(): any {
       return this.autoRefresh
     },
-    autoHideToolbar(): Boolean {
+    autoHideToolbar(): boolean {
       return this.layout?.autoHideToolbar
     },
     layoutPanels(): DashboardPanel[] {
       return this.layout?.panels ?? []
     },
-    layoutComponent(): String {
+    layoutComponent(): string {
       return this.layout?.component
     },
-    trophyIcon(): String {
+    trophyIcon(): string {
       return this.leaderboards?.trophyIcon
     },
-    showTrophies(): Boolean {
+    showTrophies(): boolean {
       return this.leaderboards?.showThrophies
     },
-    leaderboardsLength(): Number {
+    leaderboardsLength(): number {
       return this.leaderboards?.length
     },
-    visibleTicketCounts(): Array {
+    visibleTicketCounts(): Array<any> {
       return this.layout?.visibleTicketCounts
     }
   },
 
   actions: {
-    updateLayout(layout: Array) {
+    updateLayout(layout: Array<any>) {
       this.layout = layout
       this.saveConfigurationToStore()
     },
@@ -77,17 +77,17 @@ export const configuration = defineStore('configuration', {
       }
     },
 
-    updateVisibleStatuses(visibleCounts: Array) {
+    updateVisibleStatuses(visibleCounts: Array<any>) {
       this.layout.visibleTicketCounts = visibleCounts
       this.saveConfigurationToStore()
     },
 
-    updateAutoRefreshSettings(autoRefresh: Object) {
+    updateAutoRefreshSettings(autoRefresh: any) {
       this.autoRefresh = autoRefresh
       this.saveConfigurationToStore()
     },
 
-    updateLeaderboardSettings(leaderboards: Object) {
+    updateLeaderboardSettings(leaderboards: any) {
       this.leaderboards = leaderboards
       this.saveConfigurationToStore()
     },

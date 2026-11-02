@@ -35,7 +35,7 @@ export default defineComponent({
       default: () => []
     },
     additionalData: {
-      type: [Array, Object],
+      type: Object,
       required: false,
       default: () => {}
     },
@@ -60,7 +60,7 @@ export default defineComponent({
     return {
       updateToken: 0,
       isLoading: true,
-      uniqueFields: []
+      uniqueFields: [] as any[]
     }
   },
 
@@ -94,7 +94,7 @@ export default defineComponent({
     generateCustomFieldStatistics() {
       this.uniqueFields = []
 
-      let customFields = this.tickets.map((ticket) => get(ticket, this.customField))
+      let customFields = this.tickets.map((ticket: any) => get(ticket, this.customField))
       let uniqueFieldsList = uniq(customFields)
 
       if (uniqueFieldsList.length == 1) {
@@ -111,7 +111,7 @@ export default defineComponent({
         if (uniqueCustomField) {
           let customFieldSet = {
             name: uniqueCustomField,
-            ticket_count: customFields.filter((field) => field == uniqueCustomField)?.length
+            ticket_count: customFields.filter((field: any) => field == uniqueCustomField)?.length
           }
           this.uniqueFields.push(customFieldSet)
         }
@@ -120,7 +120,7 @@ export default defineComponent({
       if (this.showUndefined) {
         this.uniqueFields.push({
           name: 'Undefined',
-          ticket_count: customFields.filter((customField) => !customField)?.length
+          ticket_count: customFields.filter((customField: any) => !customField)?.length
         })
       }
 

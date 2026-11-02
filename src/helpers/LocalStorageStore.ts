@@ -1,5 +1,5 @@
 // Shared localStorage read/write helpers for Pinia store persistence.
-export function saveToLocalStorage(key: string, data: Object) {
+export function saveToLocalStorage(key: string, data: any) {
   localStorage.setItem(key, JSON.stringify(data))
 }
 

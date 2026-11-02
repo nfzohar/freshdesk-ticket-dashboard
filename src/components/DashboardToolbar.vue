@@ -99,7 +99,7 @@
 
 <script lang="ts">
 import { format } from 'date-fns'
-import { defineComponent } from 'vue'
+import { defineComponent, type PropType } from 'vue'
 import HelpSection from '@/components/HelpSection.vue'
 import ThemeToggle from '@/components/general/ThemeToggle.vue'
 import AllTicketsList from '@/components/AllTicketsList.vue'
@@ -114,7 +114,7 @@ export default defineComponent({
 
   props: {
     allTickets: {
-      type: [Array, Object],
+      type: Array as PropType<any[]>,
       required: true
     },
     isFetchingTickets: {
@@ -152,7 +152,7 @@ export default defineComponent({
 
   data() {
     return {
-      timeoutId: '',
+      timeoutId: undefined as ReturnType<typeof setTimeout> | undefined,
       modalsOpen: false,
       toolbarShow: false,
       lastTicketDate: new Date().toDateString(),
@@ -170,19 +170,19 @@ export default defineComponent({
   },
 
   computed: {
-    isLoading(): Boolean {
+    isLoading(): boolean {
       return this.isFetchingTickets
     },
-    autoHide(): Boolean {
+    autoHide(): boolean {
       return this.$configuration?.autoHideToolbar
     },
-    primaryColorText(): Boolean {
+    primaryColorText(): string {
       return this.$information.textOnPrimaryColor
     },
-    textOnSecondaryColor(): Boolean {
+    textOnSecondaryColor(): string {
       return this.$information.textOnSecondaryColor
     },
-    appTitle(): String {
+    appTitle(): string {
       return import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'
     }
   },
@@ -194,8 +194,8 @@ export default defineComponent({
   methods: {
     findTicketCreationDates() {
       let ticketCreationDates = this.allTickets
-        .map((ticket: { created_at: String }) => new Date(ticket?.created_at))
-        .filter((date) => date)
+        .map((ticket: { created_at: string }) => new Date(ticket?.created_at))
+        .filter((date: any) => date)
 
       ticketCreationDates = ticketCreationDates.sort(
         (date1: Date, date2: Date) => this.epochDateForm(date1) - this.epochDateForm(date2)

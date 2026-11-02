@@ -11,7 +11,7 @@ const toast = useToast()
 export const ROUND_CHART_TYPES = ['pie', 'doughnut', 'polar-area']
 
 // Main authentication check method.
-export function checkAuthCredentials(username: String, password: String) {
+export function checkAuthCredentials(username: string, password: string) {
   let authenticationSuccess = false
 
   if (auth().authenticated) {
@@ -48,7 +48,7 @@ export function checkAuthCredentials(username: String, password: String) {
 }
 
 // src(modified): https://gist.github.com/krabs-github/ec56e4f1c12cddf86ae9c551aa9d9e04
-export function colorIsDark(color: String) {
+export function colorIsDark(color: string) {
   if (!color) {
     return false
   }
@@ -115,7 +115,7 @@ export function updatePanelInState(panelId: string, property: string, newValue: 
 
 // Generate a name, ticket_count dataset for graph display.
 export function generateGraphDataset(
-  valueList: Object,
+  valueList: any,
   sortProp = 'name-asc',
   labelField = 'name',
   valueField = 'ticket_count'
@@ -167,13 +167,13 @@ export function listenForKey(eventKey = '', performFunction: Function) {
 }
 
 // Fetch choices of a ticekt field with given label.
-export function ticketFieldOptions(ticketFieldArray: Array, label: String) {
+export function ticketFieldOptions(ticketFieldArray: Array<any>, label: string) {
   const index = ticketFieldArray.findIndex((field) => field?.label?.toLocaleLowerCase() == label)
   return get(ticketFieldArray, `[${index}].choices`) ?? []
 }
 
 // Take filters from information store and parse them into the api call url.
-export function filterParser(apiCallUrl: String, filtersList: Object) {
+export function filterParser(apiCallUrl: string, filtersList: any) {
   let urlWithParameters = new Array()
 
   const dateFilters = Object.values(filtersList?.date_filters ?? [])
@@ -185,7 +185,7 @@ export function filterParser(apiCallUrl: String, filtersList: Object) {
 
   const fieldFilters = filtersList?.field_filters
 
-  fieldFilters?.forEach((fieldFilter) => {
+  fieldFilters?.forEach((fieldFilter: any) => {
     if (fieldFilter['value'] != '') {
       const fieldParams = setFieldFilter(fieldFilter)
       urlWithParameters.push(fieldParams)
@@ -203,7 +203,7 @@ export function filterParser(apiCallUrl: String, filtersList: Object) {
 }
 
 // Ticket field filters parser.
-export function setFieldFilter(ticketFieldFilter: Object) {
+export function setFieldFilter(ticketFieldFilter: any) {
   const ticketField = ticketFieldFilter?.name
   const filterValue = ticketFieldFilter?.value ?? ''
 
@@ -216,7 +216,7 @@ export function setFieldFilter(ticketFieldFilter: Object) {
 }
 
 // Date filters parser.
-export function setDateFilter(dateObject: { to: String; from: String; field: string }) {
+export function setDateFilter(dateObject: { to: string; from: string; field: string }) {
   const dateParams = []
 
   if (dateObject?.from) {

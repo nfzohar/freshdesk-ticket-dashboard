@@ -11,13 +11,13 @@ export const auth = defineStore('auth', {
   }),
 
   getters: {
-    authenticated(): Boolean {
+    authenticated(): boolean {
       return this.auth
     },
-    domain(): String {
+    domain(): string {
       return this.domainURL
     },
-    api_key(): String {
+    api_key(): string {
       return this.apiKey
     }
   },

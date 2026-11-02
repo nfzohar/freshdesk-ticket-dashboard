@@ -39,7 +39,7 @@ export default defineComponent({
   },
 
   computed: {
-    storedTicketFields(): Array {
+    storedTicketFields(): Array<any> {
       return Object.values(this.$information?.storedAdminTicketFields)
     }
   },

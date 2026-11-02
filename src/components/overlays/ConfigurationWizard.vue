@@ -84,10 +84,10 @@ export default defineComponent({
   },
 
   computed: {
-    layoutDefined(): Boolean {
+    layoutDefined(): boolean {
       return this.$configuration?.layoutPanels?.length > 0
     },
-    subtitle(): String {
+    subtitle(): string {
       return this.page && this.page <= this.steps.length
         ? `Step ${this.page} of ${this.steps.length} · ${this.steps[this.page - 1]}`
         : 'Start from a preset or build your own dashboard layout.'

@@ -173,28 +173,28 @@ export default defineComponent({
   },
 
   computed: {
-    allCurrentFilters(): Object {
+    allCurrentFilters(): any {
       return {
         field_filters: this.filters,
         date_filters: this.dates
       }
     },
-    filterPresets(): Object {
+    filterPresets(): any {
       return this.$information?.savedFilterSets
     },
-    primaryColorText(): String {
+    primaryColorText(): string {
       return this.$information?.textOnPrimaryColor
     },
-    secondaryColorText(): String {
+    secondaryColorText(): string {
       return this.$information?.textOnSecondaryColor
     },
-    storedFilters(): Array {
+    storedFilters(): Array<any> {
       return Object.values(this.$information?.storedFilters ?? [])
     },
-    storedDateFilters(): Array {
+    storedDateFilters(): Array<any> {
       return Object.values(this.$information?.storedDateFilters ?? this.dates)
     },
-    storedTicketFields(): Array {
+    storedTicketFields(): Array<any> {
       return Object.values(this.$information?.storedAdminTicketFields)
     }
   },
@@ -220,7 +220,7 @@ export default defineComponent({
       this.dates = this.storedDateFilters
     },
 
-    updateFilters(filtersObject: Array) {
+    updateFilters(filtersObject: any) {
       this.dates = filtersObject['date_filters']
       this.filters = filtersObject['field_filters']
 
@@ -231,7 +231,7 @@ export default defineComponent({
       this.open = false
     },
 
-    ticketFieldsLabel(filter) {
+    ticketFieldsLabel(filter: any) {
       let index = filter.label.toLocaleLowerCase()
 
       let fields = {
@@ -241,7 +241,7 @@ export default defineComponent({
       return fields[index] ?? 'label'
     },
 
-    ticketFieldsValue(filter) {
+    ticketFieldsValue(filter: any) {
       let index = filter.label.toLocaleLowerCase()
 
       let fields = {
@@ -251,9 +251,9 @@ export default defineComponent({
       return fields[index] ?? 'value'
     },
 
-    addNewPreset(filters: Array, dates: Object) {
+    addNewPreset(filters: Array<any>, dates: any) {
       let presets = Object.values(this.filterPresets ?? [])
-      let presetNames = presets.map((preset) => preset?.name)
+      let presetNames = presets.map((preset: any) => preset?.name)
 
       if (!this.filterPresetName || presetNames.includes(this.filterPresetName)) {
         this.$toast.error('A unique name is required for saved presets.')
@@ -270,9 +270,9 @@ export default defineComponent({
       this.filterPresetName = ''
     },
 
-    removePreset(presetName: String) {
+    removePreset(presetName: string) {
       let presets = Object.values(this.filterPresets ?? [])
-      presets = presets.filter((preset) => preset?.name != presetName)
+      presets = presets.filter((preset: any) => preset?.name != presetName)
 
       this.$information?.setFilterPresets(presets)
     }

@@ -34,13 +34,13 @@ export default defineComponent({
 
   data() {
     return {
-      uniqueTags: []
+      uniqueTags: [] as any[]
     }
   },
 
   computed: {
     tags() {
-      return this.tickets?.map((ticket) => ticket.tags)
+      return this.tickets?.map((ticket: any) => ticket.tags)
     }
   },
 
@@ -65,7 +65,7 @@ export default defineComponent({
       }
 
       uniqueTagList?.forEach((tag) => {
-        let ticketsOfTags = this.tags?.filter((aTag) => aTag?.includes(tag))
+        let ticketsOfTags = this.tags?.filter((aTag: any) => aTag?.includes(tag))
 
         this.uniqueTags.push({
           name: tag,
@@ -77,7 +77,7 @@ export default defineComponent({
       this.uniqueTags.reverse()
     },
 
-    setSingleTagObject(uniqueTagList: Array) {
+    setSingleTagObject(uniqueTagList: Array<any>) {
       let tag = {
         name: get(uniqueTagList, '[0]'),
         ticket_count: this.tags?.length

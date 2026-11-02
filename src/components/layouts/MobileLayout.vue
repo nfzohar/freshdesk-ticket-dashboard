@@ -10,9 +10,9 @@
           :sort-by="panel?.sortBy"
           :additional-data="panel.data"
           :display-type="panel.displayType"
-          @updatedGraphSort="(value) => updatePanel(value, panel?.id, 'sortBy')"
-          @toggleVisibility="(value) => updatePanel(value, panel?.id, 'visible')"
-          @updatedDisplayType="(value) => updatePanel(value, panel?.id, 'displayType')"
+          @updatedGraphSort="(value: any) => updatePanel(value, panel?.id, 'sortBy')"
+          @toggleVisibility="(value: any) => updatePanel(value, panel?.id, 'visible')"
+          @updatedDisplayType="(value: any) => updatePanel(value, panel?.id, 'displayType')"
         />
       </div>
     </div>

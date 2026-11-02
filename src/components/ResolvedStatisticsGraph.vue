@@ -75,14 +75,14 @@ export default defineComponent({
       default: () => []
     },
     lastTicketDate: {
-      type: Date,
+      type: String,
       required: false,
-      default: new Date()
+      default: () => new Date().toDateString()
     },
     firstTicketDate: {
-      type: Date,
+      type: String,
       required: false,
-      default: new Date()
+      default: () => new Date().toDateString()
     }
   },
 
@@ -146,20 +146,20 @@ export default defineComponent({
         }
       ]
     },
-    datasetLabels(): String {
+    datasetLabels(): string {
       return this.months?.map((month) => month?.label)
     },
-    textOnSecondaryColor(): String {
+    textOnSecondaryColor(): string {
       return this.$information?.textOnSecondaryColor
     },
-    statuses(): Array {
+    statuses(): Array<any> {
       return Object.values(this.$information?.storedStatuses ?? [])
     },
-    selectedIsLeapYear(): Boolean {
+    selectedIsLeapYear(): boolean {
       let year = Number(this.selectedYear)
       return (0 == year % 4 && 0 != year % 100) || 0 == year % 400
     },
-    months(): Array {
+    months(): Array<any> {
       return this.$information?.months
     },
     graphTypes() {
@@ -206,12 +206,12 @@ export default defineComponent({
       }
     },
 
-    buildTicketsArray(ticketsOfYear, status: String, dateField: String) {
+    buildTicketsArray(ticketsOfYear: any, status: string, dateField: string) {
       let statusId = this.findStatusId(status)
 
-      let ticketsOfStatus = ticketsOfYear.filter((yearsTicket) => yearsTicket.status == statusId)
+      let ticketsOfStatus = ticketsOfYear.filter((yearsTicket: any) => yearsTicket.status == statusId)
 
-      ticketsOfStatus.forEach((ticket) => {
+      ticketsOfStatus.forEach((ticket: any) => {
         ticket['sorting_index'] = Number(fdate(get(ticket, dateField), 'M'))
       })
       ticketsOfStatus = groupBy(ticketsOfStatus, 'sorting_index')
@@ -221,10 +221,10 @@ export default defineComponent({
           ticketsOfStatus[month] = []
         }
       }
-      return Object.values(ticketsOfStatus).map((month) => month?.length)
+      return Object.values(ticketsOfStatus).map((month: any) => month?.length)
     },
 
-    findStatusId(label: String) {
+    findStatusId(label: string) {
       return this.statuses?.filter((status) => status?.value == label)[0]?.id
     }
   }

@@ -175,18 +175,18 @@ export default defineComponent({
         }
       }
     },
-    legendPosition(): String {
+    legendPosition(): string {
       if (['bezier-line', 'line'].includes(this.type)) return 'bottom'
       if (['pie', 'doughnut', 'polar-area'].includes(this.type)) return 'left'
       return 'top'
     },
-    graphIndexAxis(): String {
+    graphIndexAxis(): string {
       return this.type == 'h-bar' ? 'y' : 'x'
     },
     graphTension() {
       return this.type == 'bezier-line' ? 0.5 : 0
     },
-    showGraphLegend(): Boolean {
+    showGraphLegend(): boolean {
       return (
         this.displayGraphLegend ||
         ['bezier-line', 'line', 'pie', 'doughnut', 'polar-area'].includes(this.type)
@@ -197,10 +197,10 @@ export default defineComponent({
     },
     // Part-to-whole charts need one color per segment; bar/line charts are a
     // single series across categories, so magnitude (bar length) carries the data.
-    isRound(): Boolean {
+    isRound(): boolean {
       return ROUND_CHART_TYPES.includes(this.type)
     },
-    chartType(): String {
+    chartType(): string {
       if (this.type == 'pie') return 'PieChart'
       if (this.type == 'v-bar') return 'BarChart'
       if (this.type == 'h-bar') return 'BarChart'

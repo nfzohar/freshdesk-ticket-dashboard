@@ -19,13 +19,13 @@ export default defineComponent({
 
   methods: {
     setEnvVarColors() {
-      let root = document.querySelector(':root')
+      let root = document.documentElement
 
       let primaryColor = import.meta.env.VITE_THEME_PRIMARY_COLOR || 'white'
       let secondaryColor = import.meta.env.VITE_THEME_SECONDARY_COLOR || 'gainsboro'
 
-      root?.style?.setProperty('--primary-color', primaryColor)
-      root?.style?.setProperty('--secondary-color', secondaryColor)
+      root.style.setProperty('--primary-color', primaryColor)
+      root.style.setProperty('--secondary-color', secondaryColor)
     },
     setEnvTitle() {
       document.title = import.meta.env.VITE_APP_TITLE || 'Freshdesk Ticket Dashboard'

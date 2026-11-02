@@ -32,10 +32,10 @@ export default defineComponent({
   },
 
   computed: {
-    layout(): String {
+    layout(): string {
       return this.$configuration?.layoutComponent
     },
-    darkPrimaryColor(): Boolean {
+    darkPrimaryColor(): boolean {
       return this.$information?.isPrimaryColorDark
     },
     statuses(): any {
@@ -44,11 +44,11 @@ export default defineComponent({
     statusGroupedTickets(): any {
       return this.tickets?.length ? groupBy(this.tickets, 'status') : []
     },
-    visibleCounters(): Array {
+    visibleCounters(): Array<any> {
       return Object.values(this.$configuration?.visibleTicketCounts ?? [])
     },
     validStatuses(): any {
-      let labels = this.statuses.map((status) => status?.label)
+      let labels = this.statuses.map((status: any) => status?.label)
       labels.unshift('All', 'Unresolved')
       return labels
     },
@@ -70,7 +70,7 @@ export default defineComponent({
           }
           case 'Unresolved': {
             let resolved = [this.getStatusId('Closed'), this.getStatusId('Resolved')]
-            return this.tickets?.filter((ticket) => !resolved.includes(ticket?.status)).length
+            return this.tickets?.filter((ticket: any) => !resolved.includes(ticket?.status)).length
           }
           default: {
             let statusId = this.getStatusId(status)
@@ -82,7 +82,7 @@ export default defineComponent({
 
     getStatusId(statusLabel: string) {
       return this.statuses?.length
-        ? this.statuses?.filter((status) => status.label == statusLabel)[0]?.id ?? 0
+        ? this.statuses?.filter((status: any) => status.label == statusLabel)[0]?.id ?? 0
         : 0
     }
   }

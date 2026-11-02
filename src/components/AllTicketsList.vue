@@ -62,7 +62,7 @@ export default defineComponent({
   },
 
   methods: {
-    setTicketId(id: Number) {
+    setTicketId(id: number) {
       this.selectedTicketId = id
     }
   }

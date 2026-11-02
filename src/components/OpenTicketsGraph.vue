@@ -88,14 +88,14 @@ export default defineComponent({
       default: () => []
     },
     lastTicketDate: {
-      type: Date,
+      type: String,
       required: false,
-      default: new Date()
+      default: () => new Date().toDateString()
     },
     firstTicketDate: {
-      type: Date,
+      type: String,
       required: false,
-      default: new Date()
+      default: () => new Date().toDateString()
     }
   },
 
@@ -105,16 +105,16 @@ export default defineComponent({
       updateToken: 0,
       isLoading: true,
       selectedYear: '',
-      ticketsOfYear: [],
+      ticketsOfYear: [] as any,
       showNumbers: false,
-      yearsWithTickets: []
+      yearsWithTickets: [] as any[]
     }
   },
 
   watch: {
     'tickets.length'() {
       this.splitTicketsByYear()
-      this.buildTicketsArray()
+      this.generateTicketsOfYearArray()
     },
     selectedYear() {
       this.generateTicketsOfYearArray()
@@ -140,10 +140,10 @@ export default defineComponent({
         { max: Infinity, class: 'bg-primary-600 text-on-primary', title: 'More than 200 tickets.' }
       ]
     },
-    textOnSecondaryColor(): String {
+    textOnSecondaryColor(): string {
       return this.$information?.textOnSecondaryColor
     },
-    months(): Array {
+    months(): Array<any> {
       return this.$information?.months
     }
   },
@@ -158,13 +158,15 @@ export default defineComponent({
 
     generateTicketsOfYearArray() {
       this.ticketsOfYear = this.tickets.filter(
-        (ticket) => fdate(ticket?.created_at, 'y') == this.selectedYear
+        (ticket: any) => fdate(ticket?.created_at, 'y') == this.selectedYear
       )
 
-      this.ticketsOfYear = groupBy(this.ticketsOfYear, (ticket) => fdate(ticket?.created_at, 'L'))
+      this.ticketsOfYear = groupBy(this.ticketsOfYear, (ticket: any) =>
+        fdate(ticket?.created_at, 'L')
+      )
 
-      this.ticketsOfYear = Object.values(this.ticketsOfYear).map((month) =>
-        groupBy(month, (ticket) => fdate(ticket?.created_at, 'd'))
+      this.ticketsOfYear = Object.values(this.ticketsOfYear).map((month: any) =>
+        groupBy(month, (ticket: any) => fdate(ticket?.created_at, 'd'))
       )
 
       this.isLoading = false

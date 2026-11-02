@@ -7,7 +7,7 @@
 <script lang="ts">
 import { clone, get } from 'lodash'
 import format from 'date-fns/format'
-import { defineComponent } from 'vue'
+import { defineComponent, type PropType } from 'vue'
 import writeXlsxFile from 'write-excel-file'
 
 export default defineComponent({
@@ -17,7 +17,7 @@ export default defineComponent({
 
   props: {
     allTickets: {
-      type: Array,
+      type: Array as PropType<any[]>,
       required: false,
       default: () => []
     }
@@ -70,7 +70,7 @@ export default defineComponent({
       })
     },
 
-    buildExportRow(ticket: Object) {
+    buildExportRow(ticket: any) {
       let basicRow = [
         // ID
         {
@@ -164,12 +164,12 @@ export default defineComponent({
 
     getStatusLabel(statusId: string) {
       return get(
-        this.statuses.filter((status) => status?.id == statusId),
+        this.statuses.filter((status: any) => status?.id == statusId),
         '[0].label'
       )
     },
 
-    titleCase(word: String) {
+    titleCase(word: string) {
       return String(word)
         .replace('_', ' ')
         .replace('_', ' ')

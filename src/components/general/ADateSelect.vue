@@ -43,7 +43,7 @@ export default defineComponent({
   },
 
   computed: {
-    primaryColorText(): String {
+    primaryColorText(): string {
       return this.$information?.textOnPrimaryColor
     }
   },

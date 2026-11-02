@@ -70,7 +70,7 @@ export default defineComponent({
         ? this.defSelectedTab
         : this.tabKeywords[this.defSelectedTab - 1]
     },
-    textClass(): String {
+    textClass(): string {
       return this.$information?.textOnPrimaryColor
     }
   },
@@ -80,7 +80,7 @@ export default defineComponent({
   },
 
   methods: {
-    slug(word) {
+    slug(word: any) {
       return toLower(word).replaceAll(' ', '_')
     },
 

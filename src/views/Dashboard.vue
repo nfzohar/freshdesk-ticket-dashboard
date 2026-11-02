@@ -63,6 +63,15 @@ import LoginOverlay from '@/components/overlays/LoginOverlay.vue'
 import FetchingOverlay from '@/components/overlays/FetchingOverlay.vue'
 import ConfigurationWizard from '@/components/overlays/ConfigurationWizard.vue'
 
+// Paced, but no longer the old flat 6s-per-page wait: plenty of accounts have far
+// more rate-limit budget than that implies. Only back off hard once the account's
+// own remaining-requests count (reported by Freshdesk on every response) runs low.
+const FETCH_DELAY = 250
+const RATE_LIMIT_SAFETY_BUFFER = 10
+const RATE_LIMIT_BACKOFF_DELAY = 5000
+// Fallback wait on a 429 with no Retry-After header.
+const DEFAULT_RETRY_AFTER_SECONDS = 15
+
 export default defineComponent({
   name: 'TheDashboard',
 
@@ -78,8 +87,8 @@ export default defineComponent({
   data() {
     return {
       page: 1,
-      tickets: [],
-      ticketsTemp: [],
+      tickets: [] as any[],
+      ticketsTemp: [] as any[],
       apiCallUrl: '',
       startYear: '',
       timeoutId: null,
@@ -97,6 +106,9 @@ export default defineComponent({
       searchPageSize: 30,
       searchMaxPages: 10,
       resultsTruncated: false,
+      // Requests left in Freshdesk's current rate-limit window, from the most
+      // recent response's X-RateLimit-Remaining header; null until first known.
+      rateLimitRemaining: null as number | null,
       wizardOpen: false,
       editMode: false,
       // Set after the custom wizard path: open edit mode once the dashboard is ready.
@@ -123,7 +135,7 @@ export default defineComponent({
         !(this.wizardOpen && !this.wizardClosable)
       )
     },
-    allTickets(): Object {
+    allTickets(): any {
       return this.tickets?.flat() ?? []
     },
     // Edit mode always uses the grid, also when the carousel is the chosen layout.
@@ -135,16 +147,16 @@ export default defineComponent({
         ? { editMode: this.editMode, onExitEdit: () => (this.editMode = false) }
         : {}
     },
-    anyFiltersSet(): Boolean {
+    anyFiltersSet(): boolean {
       return (
         this.storedFilters?.date_filters?.length > 0 ||
         this.storedFilters?.field_filters?.length > 0
       )
     },
-    autoRefresh(): Boolean {
+    autoRefresh(): any {
       return this.$configuration.theAutoRefresh
     },
-    storedFilters(): Array {
+    storedFilters(): any {
       return {
         field_filters: this.$information?.storedFilters,
         date_filters: this.$information?.storedDateFilters
@@ -153,6 +165,14 @@ export default defineComponent({
     statStartYear(): string {
       let year = import.meta.env?.VITE_FRESHDESK_START_YEAR ?? '1970'
       return new Date(year).toISOString()
+    },
+    // Fetch the next page right away while there's ample rate-limit budget left;
+    // only back off once it's running low, so a long pagination run doesn't trip a 429.
+    nextFetchDelay(): number {
+      if (this.rateLimitRemaining != null && this.rateLimitRemaining <= RATE_LIMIT_SAFETY_BUFFER) {
+        return RATE_LIMIT_BACKOFF_DELAY
+      }
+      return FETCH_DELAY
     }
   },
 
@@ -270,34 +290,85 @@ export default defineComponent({
     },
 
     async fetchTickets(run: number) {
-      await ApiCall.get(`${this.apiCallUrl}&page=${this.page}`).then((response) => {
+      let raw
+
+      try {
+        raw = await ApiCall.getWithResponse(`${this.apiCallUrl}&page=${this.page}`)
+      } catch (error: any) {
         if (run != this.fetchRun) {
           return
         }
+        this.handleFetchError(error, run)
+        return
+      }
 
-        if (response) {
-          this.ticketsTemp[this.page] = Object.values(response?.results ?? response)
+      if (run != this.fetchRun) {
+        return
+      }
+
+      this.trackRateLimit(raw?.headers)
+      const response = raw?.data
+
+      if (response) {
+        this.ticketsTemp[this.page] = Object.values(response?.results ?? response)
+      }
+
+      if (this.isLastPage(response)) {
+        this.keepFetching = false
+        this.resultsTruncated = this.isTruncatedSearch(response)
+
+        if (this.ticketsTemp.flat().length) {
+          this.refershTicketsFromTemp()
+        } else {
+          this.stopLoading()
+          this.$toast.clear()
+          this.$toast.error('No tickets to display found.')
         }
+        return
+      }
 
-        if (this.isLastPage(response)) {
-          this.keepFetching = false
-          this.resultsTruncated = this.isTruncatedSearch(response)
+      this.page++
+      this.fetchTimeoutId = setTimeout(() => {
+        this.fetchTickets(run)
+      }, this.nextFetchDelay)
+    },
 
-          if (this.ticketsTemp.flat().length) {
-            this.refershTicketsFromTemp()
-          } else {
-            this.stopLoading()
-            this.$toast.clear()
-            this.$toast.error('No tickets to display found.')
-          }
-          return
-        }
+    // A 429 waits out exactly what Freshdesk's Retry-After header asks for and
+    // resumes the same run; any other failure stops and shows what was fetched so far.
+    handleFetchError(error: any, run: number) {
+      if (error?.response?.status == 429) {
+        // Retry-After often isn't readable cross-origin unless Freshdesk opts it into
+        // Access-Control-Expose-Headers; the fallback below covers that case safely.
+        const retryAfter = Number(this.readHeader(error.response.headers, 'retry-after'))
+        const delaySeconds = retryAfter || DEFAULT_RETRY_AFTER_SECONDS
 
-        this.page++
-        this.fetchTimeoutId = setTimeout(() => {
-          this.fetchTickets(run)
-        }, 6000)
-      })
+        this.$toast.info(`Freshdesk API rate limit reached. Resuming in ${delaySeconds}s…`)
+        this.fetchTimeoutId = setTimeout(() => this.fetchTickets(run), delaySeconds * 1000)
+        return
+      }
+
+      this.keepFetching = false
+      this.stopLoading()
+      this.$toast.clear()
+      this.$toast.error(error?.message || 'Data could not be loaded. Please try again.')
+    },
+
+    // Freshdesk may or may not list this in Access-Control-Expose-Headers for a
+    // cross-origin call; when it doesn't, this silently stays unset and
+    // nextFetchDelay just keeps using the fast path — handleFetchError's 429
+    // handling (not this proactive check) is the real backstop either way.
+    trackRateLimit(headers: any) {
+      const remaining = Number(this.readHeader(headers, 'x-ratelimit-remaining'))
+
+      if (!isNaN(remaining)) {
+        this.rateLimitRemaining = remaining
+      }
+    },
+
+    // AxiosHeaders (what a browser response actually carries) only reliably exposes
+    // header values through get(), not plain bracket access — this works for either.
+    readHeader(headers: any, name: string) {
+      return typeof headers?.get == 'function' ? headers.get(name) : headers?.[name]
     },
 
     isLastPage(response: any) {

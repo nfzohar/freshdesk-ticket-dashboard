@@ -54,7 +54,7 @@ export default defineComponent({
   },
 
   computed: {
-    latestTicket(): Object {
+    latestTicket(): any {
       return this.tickets[0]
     }
   }

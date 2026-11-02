@@ -10,11 +10,11 @@ const storeLocalStorageKey = 'stored_dashboard_information'
 
 export const information = defineStore('information', {
   state: () => ({
-    filters: [],
-    dateFilters: [],
-    ticketFields: [],
-    savedFilterSets: [],
-    adminTicketFields: [],
+    filters: [] as any[],
+    dateFilters: [] as any[],
+    ticketFields: [] as any[],
+    savedFilterSets: [] as any[],
+    adminTicketFields: [] as any[],
 
     isPrimaryColorDark: colorIsDark(import.meta.env.VITE_THEME_PRIMARY_COLOR),
     isSecondaryColorDark: colorIsDark(import.meta.env.VITE_THEME_SECONDARY_COLOR),
@@ -95,78 +95,78 @@ export const information = defineStore('information', {
   }),
 
   getters: {
-    storedFilters(): Object {
+    storedFilters(): any {
       return this.filters
     },
-    storedDateFilters(): Object {
+    storedDateFilters(): any {
       return this.dateFilters
     },
-    storedAdminTicketFields(): Object {
+    storedAdminTicketFields(): any {
       return this.adminTicketFields
     },
-    autoRefreshTimeShortcuts(): Array {
+    autoRefreshTimeShortcuts(): Array<any> {
       return this.autoRefreshShortcuts
     },
-    listOfAvailableTicketFields(): Array {
+    listOfAvailableTicketFields(): Array<any> {
       return this.ticketFields
     },
-    storedAgents(): Object {
+    storedAgents(): any {
       return ticketFieldOptions(this.adminTicketFields, 'agent')
     },
-    storedGroups(): Object {
+    storedGroups(): any {
       return ticketFieldOptions(this.adminTicketFields, 'group')
     },
-    storedStatuses(): Object {
+    storedStatuses(): any {
       return ticketFieldOptions(this.adminTicketFields, 'status')
     },
-    storedSources(): Object {
+    storedSources(): any {
       return ticketFieldOptions(this.adminTicketFields, 'source')
     },
-    storedPriorities(): Object {
+    storedPriorities(): any {
       return ticketFieldOptions(this.adminTicketFields, 'priority')
     },
-    trophyIcons(): Array {
+    trophyIcons(): Array<any> {
       return this.leaderboardsTrophy?.icons
     },
-    trophyColors(): Array {
+    trophyColors(): Array<any> {
       return this.leaderboardsTrophy?.colors
     },
     // Theme-aware classes: the surface/ink tokens switch with light and dark mode,
     // and on-primary is derived from the primary colour at build time.
-    textOnPrimaryColor(): String {
+    textOnPrimaryColor(): string {
       return 'text-on-primary'
     },
-    textOnSecondaryColor(): String {
+    textOnSecondaryColor(): string {
       return 'text-ink'
     },
-    bgAccentPrimaryColor(): String {
+    bgAccentPrimaryColor(): string {
       return 'bg-primary-600'
     },
-    bgAccentSecondaryColor(): String {
+    bgAccentSecondaryColor(): string {
       return 'bg-surface-2'
     },
-    conditionalPrimaryBorder(): String {
+    conditionalPrimaryBorder(): string {
       return 'border border-line'
     }
   },
 
   actions: {
-    setFilters(newValue: Array) {
+    setFilters(newValue: Array<any>) {
       this.filters = newValue
       this.saveConfigurationToStore()
     },
 
-    setDateFilters(newValue: Array) {
+    setDateFilters(newValue: Array<any>) {
       this.dateFilters = newValue
       this.saveConfigurationToStore()
     },
 
-    setFilterPresets(newValue: Array) {
+    setFilterPresets(newValue: Array<any>) {
       this.savedFilterSets = newValue
       this.saveConfigurationToStore()
     },
 
-    setAdminTicketFields(newValue: Array) {
+    setAdminTicketFields(newValue: Array<any>) {
       this.adminTicketFields = newValue
       this.saveConfigurationToStore()
     },
@@ -202,7 +202,7 @@ export const information = defineStore('information', {
       removeFromLocalStorage(storeLocalStorageKey)
     },
 
-    saveTicketFields(ticket: Object) {
+    saveTicketFields(ticket: any) {
       const ignoredFields = [
         'id',
         'type',

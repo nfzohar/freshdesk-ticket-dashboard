@@ -75,10 +75,10 @@ export default defineComponent({
   },
 
   computed: {
-    currentAutoRefreshSettings(): String {
+    currentAutoRefreshSettings(): any {
       return this.$configuration.theAutoRefresh
     },
-    intervalShortcuts(): Array {
+    intervalShortcuts(): Array<any> {
       return this.$information.autoRefreshShortcuts
     }
   },

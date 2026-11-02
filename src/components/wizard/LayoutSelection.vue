@@ -65,19 +65,19 @@ export default defineComponent({
   },
 
   computed: {
-    currentlySelectedLayout(): String {
+    currentlySelectedLayout(): string {
       return this.$configuration?.layoutComponent
     },
-    primaryColorText(): String {
+    primaryColorText(): string {
       return this.$information?.textOnPrimaryColor
     },
-    secondaryColorText(): String {
+    secondaryColorText(): string {
       return this.$information?.textOnSecondaryColor
     }
   },
 
   methods: {
-    setLayoutOrientation(value: String) {
+    setLayoutOrientation(value: string) {
       let newLayout = this.$configuration.theLayout
       newLayout.component = value
 

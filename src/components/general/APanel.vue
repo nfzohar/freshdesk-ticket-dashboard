@@ -155,18 +155,18 @@ export default defineComponent({
     hasColorPalette() {
       return ROUND_CHART_TYPES.includes(this.selectedView)
     },
-    accentSecondaryBg(): String {
+    accentSecondaryBg(): string {
       return this.$information?.bgAccentSecondaryColor
     },
-    panelBorder(): String {
+    panelBorder(): string {
       return this.$information?.conditionalPrimaryBorder
     },
-    dataset(): Object {
+    dataset(): any {
       return this.isSortable
         ? generateGraphDataset(this.datasetSource, this.sortBy)
         : this.datasetSource
     },
-    sortIcon(): String {
+    sortIcon(): string {
       if (this.selectedSortBy == this.sorts[0]) return 'fa-arrow-up-a-z'
       if (this.selectedSortBy == this.sorts[1]) return 'fa-arrow-down-a-z'
       if (this.selectedSortBy == this.sorts[2]) return 'fa-arrow-up-1-9'

@@ -53,7 +53,7 @@ export default defineComponent({
   },
 
   computed: {
-    primaryColorIsDark(): Boolean {
+    primaryColorIsDark(): boolean {
       return this.$information.isPrimaryColorDark
     }
   }

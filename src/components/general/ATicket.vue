@@ -58,7 +58,7 @@ export default defineComponent({
 
   props: {
     theTicket: {
-      type: String,
+      type: Object,
       required: false,
       default: () => {}
     },
@@ -85,20 +85,20 @@ export default defineComponent({
     tags() {
       return this.theTicket?.tags?.length ? this.theTicket?.tags?.join(', ') : 'None'
     },
-    primaryColorDarkt(): String {
+    primaryColorDarkt(): string {
       return this.$information?.textOnPrimaryColor
     },
-    storedStatuses(): Array {
+    storedStatuses(): Array<any> {
       return Object.values(this.$information?.storedStatuses)
     },
-    status(): String {
+    status(): string {
       let status = this.storedStatuses?.filter((status) => status?.id == this.theTicket?.status)
       return get(status, '[0].label') ?? 'N/A'
     },
-    primaryColorText(): String {
+    primaryColorText(): string {
       return `text-${this.$information?.isPrimaryColorDark ? 'white' : 'black'}`
     },
-    primaryAccentedBg(): String {
+    primaryAccentedBg(): string {
       return this.$information?.isPrimaryColorDark ? 'bg-primary-600' : 'bg-primary-400'
     }
   }

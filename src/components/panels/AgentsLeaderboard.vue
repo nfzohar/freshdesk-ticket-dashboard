@@ -62,23 +62,23 @@ export default defineComponent({
     leaderboardsLength(): number {
       return this.$configuration?.leaderboardsLength
     },
-    trophyColors(): Array {
+    trophyColors(): Array<any> {
       return this.$information?.trophyColors
     },
-    trophyIcon(): String {
+    trophyIcon(): string {
       return this.$configuration?.trophyIcon
     },
-    showTrophies(): Boolean {
+    showTrophies(): boolean {
       return this.$configuration?.showTrophies
     },
 
-    topCountedAgents(): Object {
+    topCountedAgents(): any {
       return Object.values(this.sortedAgents?.slice(0, this.leaderboardsLength))
     },
     graphData() {
       return {
-        labels: this.topCountedAgents?.map((field) => field?.name),
-        values: this.topCountedAgents?.map((field) => field?.ticket_count)
+        labels: this.topCountedAgents?.map((field: any) => field?.name),
+        values: this.topCountedAgents?.map((field: any) => field?.ticket_count)
       }
     }
   },

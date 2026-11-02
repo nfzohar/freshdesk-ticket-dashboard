@@ -24,9 +24,9 @@
               :sort-by="panel?.sortBy"
               :additional-data="panel?.data"
               :display-type="panel?.displayType"
-              @updatedGraphSort="(value) => updatePanel(value, panel?.id, 'sortBy')"
-              @toggleVisibility="(value) => updatePanel(value, panel?.id, 'visible')"
-              @updatedDisplayType="(value) => updatePanel(value, panel?.id, 'displayType')"
+              @updatedGraphSort="(value: any) => updatePanel(value, panel?.id, 'sortBy')"
+              @toggleVisibility="(value: any) => updatePanel(value, panel?.id, 'visible')"
+              @updatedDisplayType="(value: any) => updatePanel(value, panel?.id, 'displayType')"
             />
           </div>
         </template>
@@ -93,7 +93,7 @@ export default defineComponent({
 
   computed: {
     // Slides follow the grid's reading order; counters are pinned above the carousel.
-    panels(): Array {
+    panels(): Array<any> {
       return panelsInReadingOrder(this.$configuration?.layoutPanels).filter(
         (panel) => panel?.component != 'TicketCounters'
       )
@@ -101,14 +101,14 @@ export default defineComponent({
     panelIds() {
       return this.panels?.map((panel) => panel?.id)
     },
-    optionsFormStyle(): String {
+    optionsFormStyle(): string {
       return `${this.$information?.textOnSecondaryColor}
       ${this.$information?.conditionalPrimaryBorder}
       ${this.$information?.bgAccentSecondaryColor}`
     },
 
-    graphDimensions(): String {
-      if (!this.$configuration.visibleStatuses?.length) {
+    graphDimensions(): string {
+      if (!this.$configuration.visibleTicketCounts?.length) {
         return 'w-11/12 h-80vh'
       }
       return this.tempStop ? 'w-1/2 h-50vh' : 'w-2/3 h-70vh'
@@ -133,7 +133,7 @@ export default defineComponent({
   },
 
   methods: {
-    setGraphWidth(panel: Object) {
+    setGraphWidth(panel: any) {
       let halpWidthViews = ['pie', 'doughnut']
 
       return this.tempStop
